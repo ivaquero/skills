@@ -285,6 +285,13 @@ rumdl check skills/project-py/
   原因：根 `pyproject.toml` 同时设了 `fix = true` 与 `fix-only = true`。CLI 的
   `--no-fix` 只关掉前者，`fix-only` 仍在，而它的语义正是「照改不误、改完不报」。
   对策：只想检视时两个都要加 —— `--no-fix --no-fix-only`；只想看会改什么用 `--diff`。
+- **`ruff format` 会无条件把 CRLF 换成 LF，`--check` 的退出码因此骗人。**
+  现象：`ruff format --check` 对一批文件报 `would be reformatted`，落盘后 `git diff` 却是整文件重写
+  （每个 hunk 只有行尾变化）；对写完的临时副本再比对，行内容一模一样。
+  原因：`ruff format` 规范化行尾 —— 存量仓库里 `python/`、`blender/`、`cv40examples/` 大量文件是 CRLF。
+  对策：判断「内容是否已格式化」**不看 `--check` 退出码**：把文件复制到临时目录跑 `ruff format`，
+  再按行比对（`splitlines()` 不看行尾），无差异即为已格式化；确认原文件确需落盘时，
+  写回后要把换行还原（`write_text(..., newline="\r\n")`），否则整文件 diff。
 - **`ty check` 裸跑刷出一片假警报。**
   现象：普通项目里满屏 `unresolved-import`。
   原因：`ty` 默认拿系统 Python 当检查环境，那里没有项目依赖。
