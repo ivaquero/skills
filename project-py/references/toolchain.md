@@ -156,7 +156,7 @@ git checkout -- <path>        # 还原被顺手改掉的文件
 这一行可以很长……
 ```
 
-### 为什么 ty 必须借 `micromamba run`
+## 为什么 ty 必须借 `micromamba run`
 
 `ty` 需要一个**装有依赖**的解释器来解析导入。裸跑会让它拿系统 Python 当检查环境，
 于普通项目刷出大量 `unresolved-import` **假警报**。
@@ -167,6 +167,26 @@ git checkout -- <path>        # 还原被顺手改掉的文件
 - **不要**把环境绝对路径写进 `ty.toml`：路径失效时 ty 会以
   `Invalid environment.python setting` 直接失败（exit 2），比不配置更糟。
   同理**不要在文档、脚本、配置里写死解释器路径**。
+
+## `ty` 默认尊重 `.gitignore`，可让 `src.include` 静默失效
+
+ignore 过滤只作用于**配置里的 `include`**，且默认开启。于是只要某个已在
+`[tool.ty.src] include` 声明的目录同时被 `.gitignore` 忽略（常见：`tests/`），
+ty 就跳过它且**不报任何提示** —— `ty check` 照旧打印 `All checks passed!`，
+那道门其实从没检查过那些文件。
+
+实测（ty 0.0.78，一个 17 + 11 个 `.py` 的项目）：`include = ["pkg", "tests"]`
+且 `tests` 被 gitignore 时，无参 `ty check` 只索引 `pkg` 的 17 个文件；
+显式传目录 `ty check pkg tests` 才覆盖；在 `[tool.ty.src]` 加
+`respect-ignore-files = false` 后，无参调用同样覆盖 28 个文件。
+
+对策二选一：
+
+- 在 `[tool.ty.src]` 写 `respect-ignore-files = false`，让声明的 `include`
+  真正生效 —— CLI 与编辑器行为一致，推荐；
+- 或在调用处**显式传目录**：显式路径不受 ignore 过滤。
+
+自查一行：`ty check -v` 的 `Indexed N file(s)` 是否等于该范围 `.py` 的实际总数。
 
 ## 独立脚本的 Python（非 conda 场景）
 

@@ -1,6 +1,6 @@
 ---
 name: project-py
-description: 编写、修改、检查、运行 Python 代码时使用。规定运行脚本前的虚拟环境探测与选择（交互对话框）、包管理器选择（只允许 micromamba/uv，任何情况下都不用 pip，缺包也要停下而不是 pip 补）、代码风格（enumerate、matplotlib 面向对象接口）、以及用 ruff + ty 做静态检查的完整流程。触发词：Python、py、ruff、ty、lint、类型检查、包管理、micromamba、mamba、conda、uv、matplotlib、subplots、运行脚本、虚拟环境。
+description: 编写、修改、检查、运行 Python 代码时使用。规定运行脚本前的虚拟环境探测与选择（交互对话框）、包管理器选择（只允许 micromamba/uv，任何情况下都不用 pip，缺包也要停下而不是 pip 补）、代码风格（enumerate、matplotlib 面向对象接口）、以及用 ruff + ty 做静态检查的完整流程。触发词：Python、py、ruff、ty、lint、类型检查、包管理、micromamba、mamba、conda、uv、matplotlib、subplots、运行脚本、虚拟环境、死代码、删除死代码、清理未使用代码。
 agent_created: true
 ---
 
@@ -203,6 +203,37 @@ micromamba run -n <选定的环境> ty check code python
 工具自己会咬人的那几处 —— `ruff check` 默认落盘、`ty` 裸跑刷假警报、子目录
 `pyproject.toml` 覆盖根规则集 —— 见「踩坑点」。
 
+## 删除死代码（精简工程 / 收尾时）
+
+用 `scripts/deadcode_scan.py` 找「没有任何地方引用」的顶层定义。只用标准库，**只读**，
+从不改文件：
+
+```bash
+python <本技能目录>/scripts/deadcode_scan.py <包目录> --root <项目根>
+```
+
+退出码 `0` 干净 / `1` 有候选（打到 stdout）/ `2` 参数或源码树读不了。
+**候选是线索，不是结论** —— 落刀前先读 `references/deadcode.md`，
+那里写了唯一的真盲区与删除时的四个注意点。
+
+三条硬规则：
+
+1. **带装饰器的顶层函数一律视为活代码。** `@app.get("/path")` 这类注册全靠
+   **路径字符串**，函数名不会第二次出现，纯引用计数必判它死刑。脚本已内置这条例外。
+2. **`--root` 要覆盖前端与打包元数据**（`templates/`、`static/`、`pyproject.toml`、
+   `scripts/`），否则被它们引用的符号会被误判成死代码。只被 `tests/` 引用的**不是**
+   死代码 —— 测试是资产。
+3. **删完立刻跑 lint。** 死函数常是某条 import 的唯一消费者，交给工具找而不是人眼
+   （实测：`defaultdict` 正是被删函数独占的）。顺序不变，先 format 再 check：
+
+```bash
+ruff format <路径> --exclude "*.ipynb"
+ruff check <路径> --no-fix --no-fix-only --exclude "*.ipynb"
+```
+
+删完再扫一次，应输出 `no unreferenced top-level definition found`。
+**删除属于重构**：静态门、回归测试、端到端输出比对一个都不能省。
+
 ## Markdown 文档检查：rumdl（**改完本技能自身的 .md 后必跑**）
 
 本技能是 Markdown 交付物，改动 `SKILL.md` 或 `references/*.md` 后必须用系统环境里的
@@ -276,6 +307,12 @@ rumdl check skills/project-py/
   现象：子目录里的代码突然不再被根配置的规则检查。
   原因：`ruff` 就近取配置，该目录会脱离根 `[tool.ruff.lint]`。
   对策：不在子目录新建 `pyproject.toml`。
+- **装饰器注册的端点会伪装成死代码。**
+  现象：扫描报某函数「全项目只出现一次」，删掉后接口 404。
+  原因：`@app.get("/evaluate/jobs/{job_id}")` 靠**路径字符串**登记，函数名不再出现，
+  纯引用计数看不见这层注册 —— 这是引用计数唯一的真盲区。
+  对策：带装饰器的顶层函数一律保留；`scripts/deadcode_scan.py` 已内置此例外，
+  连带它调用的私有 helper 也因「定义 + 调用」而安全。
 - **`ty.toml` 里写死解释器路径比不配置更糟。**
   现象：`ty` 直接以 `Invalid environment.python setting` 退出（exit 2）。
   原因：路径在换机或升级后失效，`ty` 不降级，而是报错退出。
@@ -304,6 +341,16 @@ rumdl check skills/project-py/
 - [ ] **已用 `AskUserQuestion` 让用户选定环境，选项里带了「暂停，我自己装」**
 - [ ] 在选定的那个环境里执行，**全程没有用 pip**（缺包就停下，不 pip 补）
 
+### 删除死代码后
+
+- [ ] 候选已逐条读过，`references/deadcode.md` 的盲区清单已核对（装饰器端点尤其）
+- [ ] 删除区间已过 `ast.parse` 语法门，写回后文本不含 `\r`（行尾未被翻转）
+- [ ] 删除处补回两行空行，没留下连续 3 行以上的空行
+- [ ] ① `ruff format <路径> --exclude "*.ipynb"`
+      ② `ruff check <路径> --no-fix --no-fix-only --exclude "*.ipynb"` 无输出
+      （F401 会替你把失去消费者的 import 找出来）
+- [ ] 复扫输出 `no unreferenced top-level definition found`
+
 ### 改动本技能自身时
 
 - [ ] ① 已执行 `rumdl check --fix skills/project-py/`
@@ -315,5 +362,9 @@ rumdl check skills/project-py/
 
 - `scripts/selfcheck.py` —— 本包自检（frontmatter 与目录名、`references/` 指针、
   命令 flag、禁止 `pip` 的语境）；只用标准库，离线一键跑通
+- `scripts/deadcode_scan.py` —— 死代码扫描（只读）：顶层符号引用计数 + 装饰器例外 +
+  连锁收敛；只用标准库，退出码 0/1/2
 - `references/toolchain.md` —— ruff / ty / micromamba / rumdl 的用法、
   **路径现取方式**、**运行脚本时的环境探测与选择**、隔离 venv、缓存放雷
+- `references/deadcode.md` —— 死代码清理流程：引用计数的安全边界、装饰器盲区、
+  连锁收敛、删除时的行尾与空行处理、验证清单

@@ -75,7 +75,7 @@ The third one is the extension path: adding a file type normally means editing `
 
 ### project-py
 
-Triggers: *Python, py, ruff, ty, lint, micromamba, mamba, conda, uv, matplotlib, subplots, plus the Chinese terms for type checking, package management, running a script and virtual environments.*
+Triggers: *Python, py, ruff, ty, lint, micromamba, mamba, conda, uv, matplotlib, subplots, dead code, plus the Chinese terms for type checking, package management, running a script, virtual environments and dead code.*
 
 ```text
 Add error bars to these plots and clean up the figure code.
@@ -293,9 +293,10 @@ Rules for writing `.py` source. Notebooks are explicitly out of scope.
 - **Running is gated too.** A script whose imports reach past the standard library is not executed until the machine's `micromamba` / `mamba` environments have been probed and the environment has been picked by the user in an interactive prompt. That prompt always carries a "pause, I will install it myself" exit, which ends the task instead of installing anything silently — and picking it hands the install back to the user rather than unlocking `pip`.
 - **Style.** Iterate with `enumerate()` / `zip()`, never `range(len())`; Matplotlib through the object-oriented interface with `constrained_layout=True`; batch decorations through `ax.set(...)` and pass spines as one list.
 - **Static checking order is fixed: format → check → ty.** Formatting is not optional, because `ruff check` passing says nothing about formatting. `ty` must be pointed at an interpreter that actually has the dependencies, or it floods the output with false `unresolved-import` alarms.
+- **What the dead-code scan reports is a lead, not a verdict.** `scripts/deadcode_scan.py` counts references to find unused top-level definitions, but **a decorated function is always treated as live** — `@app.get("/path")` registers through a path string, so the name never appears a second time, which is the one real blind spot of reference counting. Run the linter right after deleting: a dead function is often the only consumer of some import, and F401 will find the rest.
 - **No absolute paths and no pinned version numbers** anywhere in docs, scripts or config — including `ty.toml`. Both are resolved at run time, since a hard-coded path turns into wrong information the moment the machine changes.
 
-`references/toolchain.md` holds the command cookbook and the isolation notes.
+`references/toolchain.md` holds the command cookbook and the isolation notes, and `references/deadcode.md` holds the dead-code workflow along with its blind spots.
 
 Three paths into the same skill: a dependency change, an ordinary edit, and a script to run:
 

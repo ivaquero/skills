@@ -75,7 +75,7 @@ npx skills add <owner>/<repo> -y                 # 项目级（默认行为）
 
 ### project-py
 
-触发词：*Python、py、ruff、ty、lint、类型检查、包管理、micromamba、mamba、conda、uv、matplotlib、subplots、运行脚本、虚拟环境。*
+触发词：*Python、py、ruff、ty、lint、类型检查、包管理、micromamba、mamba、conda、uv、matplotlib、subplots、运行脚本、虚拟环境、死代码、删除死代码、清理未使用代码。*
 
 ```text
 给这些图加上误差棒，顺便把绘图代码收拾干净。
@@ -293,9 +293,10 @@ flowchart TD
 - **运行同样设门禁。** 只要脚本的 import 越出标准库，就不会直接跑——先探测本机的 `micromamba` / `mamba` 环境，再由你在交互提示里选定；该提示永远带一个「暂停，我自己装」的出口，选中即结束任务，而不是悄悄装点什么——选它意味着把装包交回给你，而不是解禁 `pip`。
 - **风格。** 用 `enumerate()` / `zip()` 迭代，绝不用 `range(len())`；Matplotlib 走面向对象接口并设 `constrained_layout=True`；装饰批量通过 `ax.set(...)`，spines 作为单个列表传入。
 - **静态检查顺序固定：format → check → ty。** 格式化不是可选项，因为 `ruff check` 过了并不代表格式没问题。`ty` 必须指向一个确实装了依赖的解释器，否则会刷出一大片假的 `unresolved-import` 告警。
+- **死代码扫出来的是线索，不是结论。** `scripts/deadcode_scan.py` 按引用计数找没人用的顶层定义，但**带装饰器的函数一律按活代码处理**——`@app.get("/path")` 靠路径字符串注册，函数名不会第二次出现，这是引用计数唯一的真盲区。删完立刻跑 lint：死函数常是某条 import 的唯一消费者，交给 F401 去找。
 - **任何地方都不写绝对路径、不写固定版本号**——文档、脚本、配置（含 `ty.toml`）一视同仁。两者都在运行时解析，因为硬编码的路径在机器一变的那一刻就变成错误信息。
 
-`references/toolchain.md` 存放命令速查与隔离注意事项。
+`references/toolchain.md` 存放命令速查与隔离注意事项，`references/deadcode.md` 存放死代码清理流程与它的盲区。
 
 三条路进入同一个 skill：变更依赖、普通改动，以及要运行的脚本：
 
