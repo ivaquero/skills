@@ -81,7 +81,8 @@
         "level_range",
         "level_mixed_label",
         "ask_options_per_question",
-        "questions_max_per_call"
+        "questions_max_per_call",
+        "hint_words_range"
       ],
       "properties": {
         "max_participants": {
@@ -124,6 +125,16 @@
           "type": "integer",
           "minimum": 1,
           "description": "单次提问调用最多包含的问题数。"
+        },
+        "hint_words_range": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "每题提示词条数区间 [下限, 上限]；产出中每题下方另起一行给出的提示词个数须落在此区间。"
         }
       }
     },

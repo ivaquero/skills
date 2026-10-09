@@ -390,7 +390,7 @@ flowchart TD
 
 ## Language corners
 
-Two sibling skills that generate the host kit for a weekly conversation circle: one page of immersive foreign-language host script, with thirty discussion questions woven into the host's lines rather than listed as a block, plus a vocabulary table grouped by part of speech. Both target the same fixed format — an egalitarian round table of ten people or fewer, ninety minutes, with no tutoring, no grouping and no homework.
+Two sibling skills that generate the host kit for a weekly conversation circle: one page of immersive foreign-language host script, with thirty discussion questions woven into the host's lines rather than listed as a block, three to five hint words on their own line under each question, plus a vocabulary table grouped by part of speech. Both target the same fixed format — an egalitarian round table of ten people or fewer, ninety minutes, with no tutoring, no grouping and no homework.
 
 They are the same package ported to two languages, so they share a file layout (`scripts/corner_config.py`, `corner_skill.py`, `corner_audit.py`), the same three commands, and the same intake shape. What differs is the language itself, the exam ladder each one tags against, and the topic pool.
 
@@ -402,7 +402,7 @@ They are the same package ported to two languages, so they share a file layout (
 | Output      | `docs/fr-<topic>.md`           | `docs/es-<topic>.md`           |
 | Config      | `assets/fr-corner-config.json` | `assets/es-corner-config.json` |
 
-**The config file is the only data source.** Grammar points, levels, scales, topic pool and dimensions, time allocation, vocabulary targets, the exam ladder and the output path template all live in the package's single JSON asset; `SKILL.md` describes the process, the style and the method and carries no option data of its own. Adding or removing an option means editing the JSON and nothing else.
+**The config file is the only data source.** Grammar points, levels, scales, topic pool and dimensions, time allocation, vocabulary targets, the per-question hint-word count, the exam ladder and the output path template all live in the package's single JSON asset; `SKILL.md` describes the process, the style and the method and carries no option data of its own. Adding or removing an option means editing the JSON and nothing else.
 
 **Each package serves one language, deliberately.** Neither one branches on language at run time. The only permitted differences between the two builds are the three identity constants at the top of `corner_config.py` — the package name, the language key and the config filename — and the audit fails if a package references the other one's config.
 
@@ -436,10 +436,11 @@ flowchart TD
     Q5["Q5 group size"] --> B["corner_skill.py exports fr-corner-brief.md"]
     B --> C["Read the brief, never re-ask what it already fixes"]
     C --> D["One page of host script, 30 questions woven into 3 parts"]
-    D --> E["Vocabulary table grouped by part of speech"]
-    E --> F["Write docs/fr-voyage.md"]
-    F --> G["rumdl fmt, skipped silently when rumdl is unavailable"]
-    G --> H["Open the preview"]
+    D --> E["3–5 hint words on their own line under each question"]
+    E --> F["Vocabulary table grouped by part of speech"]
+    F --> G["Write docs/fr-voyage.md"]
+    G --> H["rumdl fmt, skipped silently when rumdl is unavailable"]
+    H --> I["Open the preview"]
 ```
 
 ### anchor-spanish
@@ -460,10 +461,11 @@ flowchart TD
     Q5["Q5 group size"] --> B["corner_skill.py exports es-corner-brief.md"]
     B --> C["Read the brief, never re-ask what it already fixes"]
     C --> D["One page of host script, 30 questions woven into 3 parts"]
-    D --> E["Vocabulary table grouped by part of speech"]
-    E --> F["Write docs/es-viajes.md"]
-    F --> G["rumdl fmt, skipped silently when rumdl is unavailable"]
-    G --> H["Open the preview"]
+    D --> E["3–5 hint words on their own line under each question"]
+    E --> F["Vocabulary table grouped by part of speech"]
+    F --> G["Write docs/es-viajes.md"]
+    G --> H["rumdl fmt, skipped silently when rumdl is unavailable"]
+    H --> I["Open the preview"]
 ```
 
 ## Scoop buckets

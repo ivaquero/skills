@@ -61,6 +61,21 @@ def config_path() -> Path:
     return assets_dir() / DEFAULT_CONFIG_NAME
 
 
+def _is_hint_range(value: object) -> bool:
+    """`hint_words_range` 形态判定：两元素整数数组，且 1 ≤ 下限 ≤ 上限。
+
+    审计直读原始 JSON（不经过解析层的 `Constraint`），故自带一层形态校验；
+    非法值不给 `need()` 喂 —— 倒置的 `5–3` 会因是词汇量区间 `25–35` 的子串
+    而假报通过。取值合法性由解析层与 schema 两处也各管一遍。
+    """
+    if not isinstance(value, list) or len(value) != 2:
+        return False
+    low, high = value
+    if not (isinstance(low, int) and isinstance(high, int)):
+        return False
+    return 1 <= low <= high
+
+
 def _read(path: Path, what: str) -> tuple[str, str]:
     """读文本；失败时返回 `("", 原因)`，由调用方折成一条 `✗`。
 
@@ -176,6 +191,14 @@ def audit(cfg: dict, md: str) -> list[str]:
     need(str(c["max_participants"]), "constraints.max_participants")
     need(str(c["duration_minutes"]), "constraints.duration_minutes")
     need(f"（{c['ask_options_per_question']}）", "constraints.ask_options_per_question")
+    hint = c.get("hint_words_range")
+    if _is_hint_range(hint):
+        need(f"{hint[0]}–{hint[1]}", "constraints.hint_words_range")
+    else:
+        fails.append(
+            f"{tag} constraints.hint_words_range 应为 [下限, 上限]"
+            f"（1 ≤ 下限 ≤ 上限），实际 {hint!r}"
+        )
 
     # 4) time_allocation：分钟 + 占比都必须在表里出现，且自身守恒
     minutes_sum = sum(s["minutes"] for s in cfg["time_allocation"])

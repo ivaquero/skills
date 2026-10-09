@@ -23,7 +23,8 @@
     ],
     "level_mixed_label": "混合（B1–C2）",
     "ask_options_per_question": 6,
-    "questions_max_per_call": 4
+    "questions_max_per_call": 4,
+    "hint_words_range": [3, 5]
   },
   "grammar_points": {
     "adj_adv": {
@@ -515,7 +516,7 @@
       "pos_line": "- **Groupes POS（词性分组）**：{v}",
       "output_req_header": "## 产出要求（交给 skill 主体）",
       "output_req_intro": "请基于以上参数，生成一份完整的主持脚本（Markdown）：",
-      "structure_line": "结构：Ouverture → Brise-glace → Thème → Discussion（30 题，3 部分 × 10，带 DELF/DALF 标签，递进）→ Clôture",
+      "structure_line": "结构：Ouverture → Brise-glace → Thème → Discussion（30 题，3 部分 × 10，带 DELF/DALF 标签，递进）→ Clôture；每题下方另起一行给 3–5 个法文提示词（以 `·` 分隔）",
       "vocab_note_line": "各阶段提供法语主持词，并附按 POS 分组的词汇表",
       "exam_rules_prefix": "- **DELF/DALF 标注规则**：",
       "rubric_line": "- **{level}**：{abilities}（{feature}）",

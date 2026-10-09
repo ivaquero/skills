@@ -115,13 +115,16 @@ assets/fr-corner-config.json   唯一数据源（可选项 + 提问编排 + 风�
   "level_range": ["B1","B2","C1","C2"],
   "level_mixed_label": "混合（B1–C2）",
   "ask_options_per_question": 6,
-  "questions_max_per_call": 4
+  "questions_max_per_call": 4,
+  "hint_words_range": [3, 5]
 }
 ```
 
 - `ask_options_per_question=6`：单个 AskUserQuestion 选项上限。
   超过则按 6 个一组拆成多个子问题（id 形如 `Q1#1`、`Q1#2`）。
 - `questions_max_per_call=4`：单次调用最多提问数（与工具限制对齐）。
+- `hint_words_range=[3, 5]`：每题提示词的条数区间；`SKILL.md` 须写出同一串 `3–5`，
+  由 `corner_audit.py` 逐字比对（与 `ask_options_per_question` 同法）。
 
 ### `grammar_points`（依赖解析底座）
 
@@ -205,7 +208,7 @@ assets/fr-corner-config.json   唯一数据源（可选项 + 提问编排 + 风�
 | JSON 顶层键          | 内容                                                        | 消费方 / 对应章节                         |
 | -------------------- | ----------------------------------------------------------- | ----------------------------------------- |
 | `meta`               | 技能名、版本、简报文件名                                    | `scripts/corner_skill.py` 落盘命名        |
-| `constraints`        | 人数、时长、各题上限、分组大小                              | 校验 / SKILL.md「交互契约」的选项分组规则 |
+| `constraints`        | 人数、时长、选项上限、分组大小、提示词条数                  | 校验 / SKILL.md「交互契约」的选项分组规则 |
 | `grammar_points`     | 一级章节 → 二级条目树                                       | Q1、Q2                                    |
 | `participant_levels` | 水平档位（含「混合」）                                      | Q3                                        |
 | `scales`             | 规模（人数区间 + 总时长）                                   | Q5、时间分配校验                          |
@@ -360,7 +363,7 @@ python scripts/corner_audit.py                         # schema 引用 + 身份 
    `SKILL.md` frontmatter `name` == `SKILL_NAME` == `meta.skill_name`。
 3. **文档 ↔ 配置**：逐项核对 SKILL.md 与配置是否对得上：
    - `meta.version` 自查 X.Y.Z 形态（版本号唯一真源在配置，frontmatter 不写）
-   - `brief_filename`、`constraints`（人数 / 时长 / 选项上限）
+   - `brief_filename`、`constraints`（人数 / 时长 / 选项上限 / 提示词条数）
    - `time_allocation` 逐行核对分钟与占比，且分钟合计须等于 `duration_minutes`、pct 合计 ≈ 1.0
    - `style.output_path_template` / `pos_groups` / `phase_labels`
    - `vocab_targets` 区间、`exam.levels` 标签

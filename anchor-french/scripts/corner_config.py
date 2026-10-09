@@ -188,6 +188,7 @@ class Constraint:
     level_mixed_label: str
     ask_options_per_question: int
     questions_max_per_call: int
+    hint_words_range: tuple[int, ...]
 
     @classmethod
     def from_dict(cls, d: dict) -> Constraint:
@@ -200,10 +201,17 @@ class Constraint:
             "level_mixed_label",
             "ask_options_per_question",
             "questions_max_per_call",
+            "hint_words_range",
         }
         missing = required - set(d)
         if missing:
             raise ConfigError(f"constraints 缺失字段: {sorted(missing)}")
+        hint = tuple(int(x) for x in d["hint_words_range"])
+        if len(hint) != 2 or not (1 <= hint[0] <= hint[1]):
+            raise ConfigError(
+                f"constraints.hint_words_range 应为 [下限, 上限]（1 ≤ 下限 ≤ 上限），"
+                f"实际 {list(hint)}"
+            )
         return cls(
             max_participants=int(d["max_participants"]),
             duration_minutes=int(d["duration_minutes"]),
@@ -213,6 +221,7 @@ class Constraint:
             level_mixed_label=str(d["level_mixed_label"]),
             ask_options_per_question=int(d["ask_options_per_question"]),
             questions_max_per_call=int(d["questions_max_per_call"]),
+            hint_words_range=hint,
         )
 
 
@@ -868,6 +877,7 @@ def _demo() -> None:
     print("水平选项:", [o.label for o in cfg.level_options()])
     print("词汇量 B2:", cfg.vocab_range("B2"))
     print("时间分配:", [(t.label, t.minutes) for t in cfg.time_slots()])
+    print("每题提示词条数:", cfg.constraints.hint_words_range)
     print("Q1 负载(≤分组):", [p["id"] for p in cfg.build_ask_payload({})])
     print("题库话题:", [o.label for o in cfg.topic_pool_options()])
     print("话题维度(topic_options):", [o.label for o in cfg.topic_options()])
