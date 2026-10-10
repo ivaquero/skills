@@ -24,7 +24,10 @@
     "level_mixed_label": "混合（B1–C2）",
     "ask_options_per_question": 6,
     "questions_max_per_call": 4,
-    "hint_words_range": [3, 5]
+    "hint_words_range": [
+      3,
+      5
+    ]
   },
   "grammar_points": {
     "adj_adv": {
@@ -54,16 +57,12 @@
       "label": "直陈式动词系统",
       "children": [
         {
-          "id": "ind_pret_PERF",
-          "label": "过去时三分（perfecto vs indefinido vs imperfecto）"
-        },
-        {
           "id": "ind_indefinido",
           "label": "简单过去时（indefinido；不规则 -uv- / -i- / -j- 组）"
         },
         {
           "id": "ind_imperfecto",
-          "label": "未完成过去时（imperfecto）vs indefinido"
+          "label": "未完成过去时（imperfecto）"
         },
         {
           "id": "ind_ir_a",
@@ -355,6 +354,16 @@
       "id": "vida_urbana",
       "label": "城市生活 La vida urbana",
       "desc": "交通、邻里、城市与乡村"
+    },
+    {
+      "id": "aprendizaje_espanol",
+      "label": "西语学习 El aprendizaje del español",
+      "desc": "学习动机、难点、方法与资源"
+    },
+    {
+      "id": "aprendizaje_ingles",
+      "label": "英语学习 El aprendizaje del inglés",
+      "desc": "学习经历、口语练习、方法交流"
     }
   ],
   "time_allocation": [

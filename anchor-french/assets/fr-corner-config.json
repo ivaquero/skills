@@ -311,6 +311,16 @@
       "id": "vie_urbaine",
       "label": "城市生活 Vie urbaine",
       "desc": "交通、邻里、城市与乡村"
+    },
+    {
+      "id": "apprentissage_francais",
+      "label": "法语学习 Apprentissage du français",
+      "desc": "学习动机、难点、方法与资源"
+    },
+    {
+      "id": "apprentissage_anglais",
+      "label": "英语学习 Apprentissage de l'anglais",
+      "desc": "学习经历、口语练习、方法交流"
     }
   ],
   "time_allocation": [
