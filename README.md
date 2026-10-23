@@ -2,7 +2,7 @@
 
 [English](README.en.md)
 
-一组 我的日常 Agent Skill 的集合。
+一组我的日常 Agent Skill 的集合。
 
 每个 skill 都是一个自包含的包：一份由模型按需加载的 `SKILL.md`，外加 `scripts/`（确定性的代码）、`references/`（长文档，按需读取）和 `assets/`（模板与数据，永不进入上下文）。skill 的 frontmatter 里 `name` 必须等于其目录名，否则不会被加载。
 

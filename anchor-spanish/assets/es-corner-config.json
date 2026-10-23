@@ -528,6 +528,7 @@
     "pure_spanish": true,
     "no_hr": true,
     "no_full_line_bold": true,
+    "meta_as_list": true,
     "output_path_template": "docs/es-{topic}.md",
     "pos_groups": [
       "Sustantivos",

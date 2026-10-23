@@ -270,6 +270,7 @@
       "required": [
         "no_hr",
         "no_full_line_bold",
+        "meta_as_list",
         "output_path_template",
         "pos_groups",
         "phase_labels",
@@ -284,6 +285,10 @@
         "no_full_line_bold": {
           "type": "boolean",
           "description": "为 true 时禁止整行加粗的伪标题。"
+        },
+        "meta_as_list": {
+          "type": "boolean",
+          "description": "为 true 时产出文档开头的基本信息（水平 / 语法点 / 话题 / 规模）写成无序列表，不用引用块。"
         },
         "output_path_template": {
           "type": "string",

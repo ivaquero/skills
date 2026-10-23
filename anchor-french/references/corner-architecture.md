@@ -86,21 +86,21 @@ assets/fr-corner-config.json   唯一数据源（可选项 + 提问编排 + 风�
 
 顶层键（除 `$schema` 外均为 schema 的 `required`）：
 
-| 键                   | 类型                              | 说明                                                                                                                                                 |
-| -------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `$schema`            | string                            | 本目录内 JSON Schema（`corner-config.schema.v1.json`）的相对路径，供编辑器做补全与实时校验；审计会校验它能解析到真实文件                             |
-| `meta`               | object                            | 元信息：`skill_name` / `version` / `display_name` / `config_owner` / `source_of_truth` / `brief_filename` / `note`                                   |
-| `constraints`        | object                            | 全局硬约束（见下）                                                                                                                                   |
-| `grammar_points`     | object{id: {id,label,children[]}} | **Q1 一级语法点 → Q2 二级条目** 的嵌套映射，是依赖解析的核心                                                                                         |
-| `participant_levels` | array[Option]                     | Q3 水平选项（B1/B2/C1/C2/混合）                                                                                                                      |
-| `scales`             | array[Option]                     | Q5 规模选项（含 people_min/max/minutes）                                                                                                             |
-| `topic_dimensions`   | array[Option]                     | 话题生成维度（方法论参考），含 `desc`                                                                                                                |
-| `topic_pool`         | array[Option]                     | Q4 话题题库（选题库 / 🎲 随机 / 自定义来源），含 `desc`                                                                                              |
-| `time_allocation`    | array[TimeSlot]                   | 固定 90 分钟环节分配（phase/label/pct/minutes）                                                                                                      |
-| `vocab_targets`      | object{level:[min,max]}           | 各水平生词量区间                                                                                                                                     |
-| `exam`               | object                            | `levels` / `rules` / `rubric[]`：本包的评分体系对照（法语 DELF/DALF）                                                                                |
-| `question_plan`      | array[QuestionSpec]               | **交互问题编排**（驱动 intake 状态机）                                                                                                               |
-| `style`              | object                            | 风格约定：`pure_french` / `no_hr` / `no_full_line_bold` / `output_path_template` / `pos_groups[]` / `phase_labels{}` / `section_labels{}` / `i18n{}` |
+| 键                   | 类型                              | 说明                                                                                                                                                                  |
+| -------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `$schema`            | string                            | 本目录内 JSON Schema（`corner-config.schema.v1.json`）的相对路径，供编辑器做补全与实时校验；审计会校验它能解析到真实文件                                              |
+| `meta`               | object                            | 元信息：`skill_name` / `version` / `display_name` / `config_owner` / `source_of_truth` / `brief_filename` / `note`                                                    |
+| `constraints`        | object                            | 全局硬约束（见下）                                                                                                                                                    |
+| `grammar_points`     | object{id: {id,label,children[]}} | **Q1 一级语法点 → Q2 二级条目** 的嵌套映射，是依赖解析的核心                                                                                                          |
+| `participant_levels` | array[Option]                     | Q3 水平选项（B1/B2/C1/C2/混合）                                                                                                                                       |
+| `scales`             | array[Option]                     | Q5 规模选项（含 people_min/max/minutes）                                                                                                                              |
+| `topic_dimensions`   | array[Option]                     | 话题生成维度（方法论参考），含 `desc`                                                                                                                                 |
+| `topic_pool`         | array[Option]                     | Q4 话题题库（选题库 / 🎲 随机 / 自定义来源），含 `desc`                                                                                                               |
+| `time_allocation`    | array[TimeSlot]                   | 固定 90 分钟环节分配（phase/label/pct/minutes）                                                                                                                       |
+| `vocab_targets`      | object{level:[min,max]}           | 各水平生词量区间                                                                                                                                                      |
+| `exam`               | object                            | `levels` / `rules` / `rubric[]`：本包的评分体系对照（法语 DELF/DALF）                                                                                                 |
+| `question_plan`      | array[QuestionSpec]               | **交互问题编排**（驱动 intake 状态机）                                                                                                                                |
+| `style`              | object                            | 风格约定：`pure_french` / `no_hr` / `no_full_line_bold` / `meta_as_list` / `output_path_template` / `pos_groups[]` / `phase_labels{}` / `section_labels{}` / `i18n{}` |
 
 > `brief_filename`（meta 内）：简报落盘文件名（`fr-corner-brief.md`）；`export_brief()` 据此决定输出名，不硬编码。
 
@@ -200,7 +200,7 @@ assets/fr-corner-config.json   唯一数据源（可选项 + 提问编排 + 风�
 
 - 该键仅供 skill 正文与人工阅读时判别产出语言，**解析层不读取**（`scripts/corner_config.py` 无需任何分支）。
 - 其余 `style` 键为通用键，仅取值不同：
-  - `no_hr` / `no_full_line_bold` / `output_path_template`
+  - `no_hr` / `no_full_line_bold` / `meta_as_list` / `output_path_template`
   - `pos_groups[]` / `phase_labels{}` / `section_labels{}` / `i18n{}`
 
 ### 顶层键的消费方
