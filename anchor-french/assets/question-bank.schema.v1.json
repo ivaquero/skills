@@ -292,7 +292,8 @@
             ],
             "description": "Drill items only: the reference answer from the source; other genres omit this key."
           }
-        }
+        },
+        "additionalProperties": false
       }
     }
   }
