@@ -31,7 +31,7 @@
         "exam_family",
         "levels",
         "level_span",
-        "difficulty_span",
+        "cefr_span",
         "grammar",
         "hint_label",
         "hint_count_range",
@@ -105,7 +105,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Distinct level tags found in the questions, sorted B1 to C2."
+          "description": "Distinct level tags in the source document (family prefix + band, e.g. DELF B1), sorted B1 to C2; the only home of the family prefix, which dump uses to rebuild the (DELF B2) marker. A range entry such as DELF B1 → B2 is presentation only — questions store the lower band in cefr."
         },
         "level_span": {
           "type": [
@@ -114,12 +114,12 @@
           ],
           "description": "Level range derived from the first and last entry of levels (e.g. B1–C2); null when ungraded (drill)."
         },
-        "difficulty_span": {
+        "cefr_span": {
           "type": [
             "string",
             "null"
           ],
-          "description": "Normalised CEFR range across all questions, computed from the per-question difficulty blocks (e.g. B1–B2); unlike level_span it also covers drill banks, which carry no level tag."
+          "description": "Normalised CEFR range across all questions, computed from the per-question cefr band (e.g. B1–B2); unlike level_span it also covers drill banks, which carry no level tag."
         },
         "grammar": {
           "type": "array",
@@ -241,8 +241,7 @@
           "phase",
           "part",
           "text",
-          "level",
-          "difficulty",
+          "cefr",
           "hints"
         ],
         "properties": {
@@ -274,38 +273,10 @@
             "minLength": 1,
             "description": "Question text, in the package language only, without level tag or hints."
           },
-          "level": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Level tag including the family prefix (e.g. DELF B1); null when the source gives none."
-          },
-          "difficulty": {
-            "type": [
-              "object",
-              "null"
-            ],
-            "description": "Normalised difficulty of this question, independent of the exam family: a single CEFR band, so questions are sortable and filterable by CEFR alone. null only when neither a level tag nor a difficulty section exists.",
-            "required": [
-              "cefr",
-              "source"
-            ],
-            "properties": {
-              "cefr": {
-                "type": "string",
-                "pattern": "^[ABC][12]$",
-                "description": "CEFR band of the question; for a range such as B1 → B2 use the lower band, the full range stays in level."
-              },
-              "source": {
-                "type": "string",
-                "enum": [
-                  "tag",
-                  "section"
-                ],
-                "description": "Where the difficulty came from: tag = the per-question level tag; section = the section heading of a source that grades by section (e.g. Niveau Simple / Niveau Avancé)."
-              }
-            }
+          "cefr": {
+            "type": "string",
+            "pattern": "^[ABC][12]$",
+            "description": "CEFR band of the question, independent of the exam family, so questions are sortable and filterable by CEFR alone; for a range such as B1 → B2 use the lower band. The family prefix is not stored per question: it is resolved from meta.levels."
           },
           "hints": {
             "type": "array",

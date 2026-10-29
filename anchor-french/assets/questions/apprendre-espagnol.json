@@ -20,7 +20,7 @@
       "DALF C1"
     ],
     "level_span": "B1–C1",
-    "difficulty_span": "B1–C1",
+    "cefr_span": "B1–C1",
     "grammar": [
       "passé composé",
       "imparfait",
@@ -107,11 +107,7 @@
       "phase": "brise_glace",
       "part": null,
       "text": "Depuis quand apprends-tu l'espagnol tout seul ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "depuis un an",
         "en autodidacte",
@@ -125,11 +121,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Comment as-tu eu l'idée d'apprendre l'espagnol ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "un voyage",
         "une chanson",
@@ -144,11 +136,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Pourquoi as-tu choisi de l'apprendre seul(e) ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "la liberté",
         "mon propre rythme",
@@ -163,11 +151,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Quels outils utilisais-tu au début ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "une application",
         "des vidéos",
@@ -182,11 +166,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Combien de temps y consacrais-tu chaque semaine ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "dix minutes",
         "le soir",
@@ -201,11 +181,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Comment mémorisais-tu le vocabulaire ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "des cartes",
         "un carnet",
@@ -220,11 +196,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Avais-tu du mal à prononcer certains sons ? Lesquels ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "le son « j »",
         "le r roulé",
@@ -239,11 +211,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Quel mot espagnol as-tu appris en premier ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "« hola »",
         "« gracias »",
@@ -258,11 +226,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Comment se passait une séance typique chez toi ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "seul(e)",
         "à la maison",
@@ -277,11 +241,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Quel souvenir gardes-tu de tes débuts ?",
-      "level": "DELF B1 → B2",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "une anecdote",
         "une erreur",
@@ -296,11 +256,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "As-tu déjà voyagé dans un pays hispanophone ? Raconte.",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "l'Espagne",
         "le Mexique",
@@ -315,11 +271,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "As-tu déjà parlé espagnol avec un locuteur natif ? Comment cela s'est-il passé ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "un voisin",
         "un marché",
@@ -334,11 +286,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Quelle série ou quelle chanson t'a aidé(e) à progresser ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "une série latino-américaine",
         "les sous-titres",
@@ -353,11 +301,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Qu'est-ce qui t'a le plus aidé(e) : écouter, lire ou parler ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "des podcasts",
         "des articles",
@@ -372,11 +316,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Quelle difficulté t'a bloqué(e), et comment l'as-tu surmontée ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "la conjugaison",
         "les temps du passé",
@@ -391,11 +331,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "As-tu déjà arrêté, puis repris ? Raconte.",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "arrêter",
         "reprendre",
@@ -410,11 +346,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Comment organisais-tu ton apprentissage ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "un planning",
         "des objectifs",
@@ -429,11 +361,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Quel progrès as-tu remarqué au fil des mois ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "mieux comprendre",
         "oser parler",
@@ -448,11 +376,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "As-tu déjà mélangé l'espagnol avec une autre langue ? Raconte.",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "mélanger",
         "le portugais",
@@ -467,11 +391,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Si tu pouvais recommencer, que changerais-tu dans ta méthode ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "commencer plus tôt",
         "pratiquer chaque jour",
@@ -486,11 +406,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Peut-on vraiment apprendre une langue tout seul ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "tout seul",
         "les limites",
@@ -505,11 +421,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "L'espagnol est-il vraiment facile quand on parle français ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "une langue proche",
         "les faux amis",
@@ -524,11 +436,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Faut-il commencer par la grammaire ou par la conversation ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "la grammaire",
         "la conversation",
@@ -543,11 +451,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Les applications suffisent-elles pour apprendre une langue ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "une application",
         "la régularité",
@@ -562,11 +466,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Comment savoir si l'on progresse quand on apprend seul(e) ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "se tester",
         "un enregistrement",
@@ -581,11 +481,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Une langue étrangère change-t-elle notre façon de penser ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "la vision du monde",
         "une nuance",
@@ -600,11 +496,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Les traducteurs automatiques menacent-ils l'apprentissage des langues ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "un traducteur",
         "l'intelligence artificielle",
@@ -619,11 +511,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Faut-il se corriger soi-même quand on apprend seul(e) ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "se corriger",
         "l'erreur",
@@ -638,11 +526,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Apprendre une langue, est-ce surtout une question de méthode ou de motivation ?",
-      "level": "DALF C1",
-      "difficulty": {
-        "cefr": "C1",
-        "source": "tag"
-      },
+      "cefr": "C1",
       "hints": [
         "une méthode",
         "la motivation",
@@ -657,11 +541,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "L'apprentissage en autonomie est-il un luxe ou une nécessité aujourd'hui ?",
-      "level": "DALF C1",
-      "difficulty": {
-        "cefr": "C1",
-        "source": "tag"
-      },
+      "cefr": "C1",
       "hints": [
         "l'autonomie",
         "un luxe",

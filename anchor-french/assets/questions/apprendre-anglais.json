@@ -20,7 +20,7 @@
       "DALF C1"
     ],
     "level_span": "B1–C1",
-    "difficulty_span": "B1–C1",
+    "cefr_span": "B1–C1",
     "grammar": [
       "passé composé",
       "imparfait"
@@ -106,11 +106,7 @@
       "phase": "brise_glace",
       "part": null,
       "text": "Quand as-tu commencé à apprendre l'anglais ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "à l'école primaire",
         "au collège",
@@ -124,11 +120,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Où apprenais-tu l'anglais quand tu étais à l'école ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "la salle de classe",
         "le collège",
@@ -143,11 +135,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Comment était ton premier professeur d'anglais ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "strict(e)",
         "patient(e)",
@@ -162,11 +150,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Quelle était ta première impression de cette langue ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "nouvelle",
         "étrange",
@@ -181,11 +165,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Qu'est-ce que tu aimais, et qu'est-ce que tu n'aimais pas, dans les cours d'anglais ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "les chansons",
         "la grammaire",
@@ -200,11 +180,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Qu'est-ce que tu faisais pour mémoriser le vocabulaire ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "une liste de mots",
         "par cœur",
@@ -219,11 +195,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Avais-tu peur de parler anglais devant la classe ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "rougir",
         "avoir honte",
@@ -238,11 +210,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Quel mot ou quelle expression anglaise as-tu appris(e) en premier ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "« hello »",
         "« thank you »",
@@ -257,11 +225,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Comment se passait un cours d'anglais typique à cette époque ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "écouter",
         "répéter",
@@ -276,11 +240,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Quel souvenir d'école lié à l'anglais gardes-tu avec le plus de tendresse ?",
-      "level": "DELF B1 → B2",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "un professeur",
         "une bonne note",
@@ -295,11 +255,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "As-tu déjà voyagé dans un pays anglophone ? Raconte.",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "l'Angleterre",
         "les États-Unis",
@@ -314,11 +270,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Comment as-tu le plus progressé : à l'école, en voyage ou seul(e) ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "à l'école",
         "en voyage",
@@ -333,11 +285,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Quel film ou quelle série t'a aidé(e) à mieux comprendre l'anglais ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "une série américaine",
         "les sous-titres",
@@ -352,11 +300,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "As-tu déjà parlé anglais avec un étranger ? Comment cela s'est-il passé ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "un touriste",
         "demander son chemin",
@@ -371,11 +315,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Quelle chanson anglaise as-tu essayé(e) de comprendre mot à mot ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "les paroles",
         "une chanson connue",
@@ -390,11 +330,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "As-tu déjà passé un examen d'anglais ? Comment cela s'est-il déroulé ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "un examen",
         "réviser",
@@ -409,11 +345,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Qu'est-ce qui t'a le plus aidé(e) : écouter, lire ou parler ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "écouter la radio",
         "lire des livres",
@@ -428,11 +360,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "As-tu déjà abandonné l'anglais, puis recommencé ? Raconte.",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": [
         "arrêter",
         "reprendre",
@@ -447,11 +375,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Quel progrès as-tu remarqué au fil des années ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "mieux comprendre",
         "oser parler",
@@ -466,11 +390,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Si tu pouvais recommencer ton apprentissage, que changerais-tu ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "commencer plus tôt",
         "voyager",
@@ -485,11 +405,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Pourquoi l'anglais est-il devenu si important aujourd'hui ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "la mondialisation",
         "internet",
@@ -504,11 +420,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Faut-il commencer l'anglais dès l'école primaire ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "dès l'enfance",
         "jouer",
@@ -523,11 +435,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Les traducteurs automatiques et l'intelligence artificielle remplaceront-ils l'apprentissage des langues ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "un traducteur",
         "l'intelligence artificielle",
@@ -542,11 +450,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Vaut-il mieux parler plusieurs langues un peu, ou une seule très bien ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "plusieurs langues",
         "couramment",
@@ -561,11 +465,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "L'anglais menace-t-il les autres langues et les autres cultures ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "une langue menacée",
         "la culture",
@@ -580,11 +480,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Le niveau d'anglais crée-t-il des inégalités entre les personnes ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "une inégalité",
         "une chance",
@@ -599,11 +495,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Peut-on vraiment apprendre une langue après quarante ans ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "la mémoire",
         "à tout âge",
@@ -618,11 +510,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Qu'est-ce qui compte le plus : la grammaire ou la confiance en soi ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": [
         "la grammaire",
         "oser parler",
@@ -637,11 +525,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Apprendre une langue, est-ce surtout une question de méthode ou de motivation ?",
-      "level": "DALF C1",
-      "difficulty": {
-        "cefr": "C1",
-        "source": "tag"
-      },
+      "cefr": "C1",
       "hints": [
         "une méthode",
         "la motivation",
@@ -656,11 +540,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Le plurilinguisme devrait-il être un droit ou une obligation ?",
-      "level": "DALF C1",
-      "difficulty": {
-        "cefr": "C1",
-        "source": "tag"
-      },
+      "cefr": "C1",
       "hints": [
         "le plurilinguisme",
         "un droit",

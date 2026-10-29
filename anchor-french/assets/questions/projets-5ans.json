@@ -19,7 +19,7 @@
       "DELF B1 → B2"
     ],
     "level_span": "B1–B2",
-    "difficulty_span": "B1–B2",
+    "cefr_span": "B1–B2",
     "grammar": [
       "futur proche",
       "futur simple"
@@ -102,11 +102,7 @@
       "phase": "brise_glace",
       "part": null,
       "text": "Quel est ton tout premier projet pour les mois qui viennent ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -115,11 +111,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Quel pays rêves-tu de visiter un jour ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -128,11 +120,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Pourquoi cette destination t'attire-t-elle ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -141,11 +129,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Quelle sera ta prochaine grande destination de voyage dans les cinq prochaines années ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -154,11 +138,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Avec qui vas-tu partir en voyage ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -167,11 +147,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Que feras-tu de spécial pendant ce voyage ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -180,11 +156,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Aimes-tu lire ? Quel type de livre préfères-tu ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -193,11 +165,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Combien de livres lis-tu par an en ce moment ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -206,11 +174,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Quel livre veux-tu lire absolument d'ici cinq ans ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -219,11 +183,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Quel auteur ou quel sujet veux-tu découvrir ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -232,11 +192,7 @@
       "phase": "discussion",
       "part": 1,
       "text": "Où et quand vas-tu prendre le temps de lire ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -245,11 +201,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Fais-tu un métier qui te plaît aujourd'hui ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -258,11 +210,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Quel domaine t'intéresse pour l'avenir ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -271,11 +219,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Quel métier veux-tu exercer dans cinq ans ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -284,11 +228,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Que vas-tu faire pour y arriver (études, formation) ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -297,11 +237,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Où travailleras-tu dans cinq ans ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -310,11 +246,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Comment est ta santé aujourd'hui ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -323,11 +255,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Fais-tu du sport en ce moment ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -336,11 +264,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Quel plan de santé veux-tu suivre dans les cinq prochaines années ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -349,11 +273,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Que vas-tu manger ou bouger de différent ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -362,11 +282,7 @@
       "phase": "discussion",
       "part": 2,
       "text": "Avec qui vas-tu faire du sport ou des promenades ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -375,11 +291,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Comment dépenses-tu ton argent aujourd'hui ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -388,11 +300,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "As-tu un budget ou des économies ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -401,11 +309,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Quelle sera ta plus grande dépense dans les cinq prochaines années ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -414,11 +318,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Pourquoi est-ce un si grand projet pour toi ?",
-      "level": "DELF B1 → B2",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -427,11 +327,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Comment vas-tu financer cette dépense ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -440,11 +336,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Où habites-tu maintenant ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -453,11 +345,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Es-tu satisfait de ton logement actuel ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -466,11 +354,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Où vas-tu habiter dans cinq ans ?",
-      "level": "DELF B1",
-      "difficulty": {
-        "cefr": "B1",
-        "source": "tag"
-      },
+      "cefr": "B1",
       "hints": []
     },
     {
@@ -479,11 +363,7 @@
       "phase": "discussion",
       "part": 3,
       "text": "Seul, en famille ou avec des amis ? Et ton logement futur sera-t-il différent ? En quoi ?",
-      "level": "DELF B2",
-      "difficulty": {
-        "cefr": "B2",
-        "source": "tag"
-      },
+      "cefr": "B2",
       "hints": []
     }
   ]

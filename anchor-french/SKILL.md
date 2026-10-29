@@ -93,13 +93,13 @@ md 里出现题库没有的问题、或把题库的题改了字，都算违约�
    同一话题再生成时**追加到同一份文件**、沿用 `id` 续号，不要新建第二份。
 2. **写题库**：结构照 `assets/question-bank.schema.v1.json`。`meta` 的 `skill_name` / `lang` / `kind` / `slug` /
    `topic_id` / `topic_in_pool` / `exam_family` 必须与本包身份和配置一致，`topic_label` 只写法文那一段；
-   每题带 `level`（等级标注原文，形如 `DELF B2`）与 `difficulty`（`cefr` / `source`；`cefr` 是单个档位
-   B1–C2，源标注为区间（`B1 → B2`）时取首档，完整区间仍由 `level` 保留）。
+   每题只带 `cefr`（单个 CEFR 档位：源标注 `DELF B2` 就写 `B2`，是区间（`B1 → B2`）时取首档）。
+   家族前缀不逐题重复——`meta.levels` 是它唯一的家，`dump` 据此还原 `(DELF B2)` 这样的标注。
    **题库内不出现中文** —— 中文注记只留在配置的 `topic_pool`。
 3. **过闸门**：`python scripts/corner_bank.py check assets/questions/<slug>.json` —— 验结构、等级 ⊂ `exam_family`、
-   `level` 与 `difficulty` 自洽、提示词条数、话题池对齐、整篇无中文。
+   `cefr` 落在 `meta.levels` 的档位里、提示词条数、话题池对齐、整篇无中文。
 4. **取题目块**：`python scripts/corner_bank.py dump assets/questions/<slug>.json`（`--part N` 只取一部分）
-   直接输出可粘贴的题目行 + 提示词行：编号连续、等级标注与提示词逐字来自题库。
+   直接输出可粘贴的题目行 + 提示词行：编号连续、等级标注（`cefr` 反查 `meta.levels`）与提示词逐字来自题库。
 5. **写主持词**：只在题目行之间写开场 / 过渡 / 结语。**题目行与提示词行一个字都不改** ——
    要改就改题库，再重新 dump。
 6. **回查**：`python scripts/corner_bank.py verify assets/questions/<slug>.json <md 路径>` ——
@@ -221,9 +221,9 @@ md 里出现题库没有的问题、或把题库的题改了字，都算违约�
   原因：题库只存法文；中文注记只留在配置 `topic_pool` 的 label 里。
   对策：`meta.topic_label` 只写 label 里法文那一段。
 - **C 档写 DALF，不是 DELF。**
-  现象：`check` 报某题 `level` 的考试家族不在 `exam_family` 内。
+  现象：`check` 报 `meta.levels` 的某项家族不在 `exam_family` 内。
   原因：`exam_family` 是 `DELF/DALF`，B1 / B2 属DELF、C1 / C2 属DALF。
-  对策：写题库时逐题核对前缀。
+  对策：`meta.levels` 逐项核对前缀，`dump` 的 `(DALF C1)` 全靠它拼。
 
 ## 附录 A · 生成框架与方法（无法数据化的部分）
 

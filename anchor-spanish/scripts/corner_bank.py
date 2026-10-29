@@ -61,7 +61,7 @@ META_KEYS = (
     "exam_family",
     "levels",
     "level_span",
-    "difficulty_span",
+    "cefr_span",
     "grammar",
     "hint_label",
     "hint_count_range",
@@ -74,11 +74,9 @@ QUESTION_KEYS = (
     "phase",
     "part",
     "text",
-    "level",
-    "difficulty",
+    "cefr",
     "hints",
 )
-DIFFICULTY_KEYS = ("cefr", "source")
 
 
 class BankError(Exception):
@@ -137,6 +135,24 @@ def _pool_of(cfg) -> dict[str, str]:
     return {}
 
 
+def _level_tag(meta: dict, cefr: str | None) -> str:
+    """按 `cefr` 反查源文档里的等级标注（家族前缀 + 档位）。
+
+    `meta.levels` 是家族前缀唯一的家；区间项（`DELF B1 → B2`）不参与反查，
+    因为题库记的 `cefr` 是首档，用同档的单值项即可唯一确定。
+    """
+    if not cefr:
+        return ""
+    for tag in meta.get("levels") or []:
+        text = str(tag)
+        if "→" in text or "->" in text:
+            continue
+        bands = LEVEL_BANDS.findall(text)
+        if bands and bands[0] == cefr:
+            return text
+    return str(cefr)
+
+
 def _validate_meta(meta: dict, path: Path, doc: dict, cfg, fails: list[str]) -> None:
     tag = path.name
     missing = [k for k in META_KEYS if k not in meta]
@@ -163,6 +179,17 @@ def _validate_meta(meta: dict, path: Path, doc: dict, cfg, fails: list[str]) -> 
     )
     if not meta.get("levels") and meta.get("kind") == "corner_script":
         fails.append(f"{tag} corner_script 应有 meta.levels")
+    families = {
+        f.strip() for f in str(meta.get("exam_family", "")).split("/") if f.strip()
+    }
+    for lv in meta.get("levels") or []:
+        if not LEVEL_TAG.fullmatch(f"({lv})"):
+            fails.append(f"{tag} meta.levels 的 {lv!r} 不是等级标签")
+        elif families and str(lv).split()[0] not in families:
+            fails.append(
+                f"{tag} meta.levels 的 {lv!r} 家族不在 "
+                f"meta.exam_family={meta.get('exam_family')!r} 内"
+            )
     # 话题池对齐：入池话题的 id 必须在配置里，label 也应能对上配置那一项的文案。
     tid = meta.get("topic_id")
     if tid is not None and cfg is not None:
@@ -191,9 +218,7 @@ def _validate_questions(bank: dict, path: Path, fails: list[str]) -> None:
     meta = bank.get("meta", {})
     hint_label = meta.get("hint_label")
     rng = meta.get("hint_count_range")
-    families = {
-        f.strip() for f in str(meta.get("exam_family", "")).split("/") if f.strip()
-    }
+    levels = meta.get("levels") or []
     for i, q in enumerate(qs, 1):
         if not isinstance(q, dict):
             fails.append(f"{tag} 第 {i} 题不是对象")
@@ -202,6 +227,9 @@ def _validate_questions(bank: dict, path: Path, fails: list[str]) -> None:
         if missing:
             fails.append(f"{tag} 第 {i} 题缺键: {', '.join(missing)}")
             continue
+        extra = sorted(set(q) - set(QUESTION_KEYS) - {"answer"})
+        if extra:
+            fails.append(f"{tag} 第 {i} 题多出未知键: {', '.join(extra)}")
         if q["id"] != i:
             fails.append(f"{tag} 第 {i} 题 id={q['id']} 不连续")
         if not str(q["text"]).strip():
@@ -210,34 +238,13 @@ def _validate_questions(bank: dict, path: Path, fails: list[str]) -> None:
             fails.append(f"{tag} 第 {i} 题 phase={q['phase']!r} 不在 phases")
         if q["part"] is not None and q["part"] not in parts:
             fails.append(f"{tag} 第 {i} 题 part={q['part']} 不在 parts")
-        if q["level"] is not None and not LEVEL_TAG.fullmatch(f"({q['level']})"):
-            fails.append(f"{tag} 第 {i} 题 level={q['level']!r} 不是等级标签")
-        elif q["level"] and families and q["level"].split()[0] not in families:
+        cefr = q["cefr"]
+        if cefr not in RANK:
+            fails.append(f"{tag} 第 {i} 题 cefr 非法: {cefr!r}")
+        elif _level_tag(meta, cefr) not in [str(lv) for lv in levels]:
             fails.append(
-                f"{tag} 第 {i} 题 level={q['level']!r} 的考试家族不在 "
-                f"meta.exam_family={meta.get('exam_family')!r} 内"
+                f"{tag} 第 {i} 题 cefr={cefr} 在 meta.levels 里没有同档的等级标签"
             )
-        d = q["difficulty"]
-        if not isinstance(d, dict):
-            fails.append(f"{tag} 第 {i} 题 difficulty 缺失")
-        else:
-            miss_d = [k for k in DIFFICULTY_KEYS if k not in d]
-            if miss_d:
-                fails.append(f"{tag} 第 {i} 题 difficulty 缺键: {', '.join(miss_d)}")
-            else:
-                cefr = d["cefr"]
-                if cefr not in RANK:
-                    fails.append(f"{tag} 第 {i} 题 difficulty 的 cefr 非法: {cefr!r}")
-                elif q["level"]:
-                    bands = LEVEL_BANDS.findall(str(q["level"]))
-                    if bands and bands[0] != cefr:
-                        fails.append(
-                            f"{tag} 第 {i} 题 level={q['level']!r} 与 cefr={cefr} 不符"
-                        )
-                if d["source"] == "tag" and not q["level"]:
-                    fails.append(f"{tag} 第 {i} 题 source=tag 但无等级标注")
-                if d["source"] == "section" and q["level"]:
-                    fails.append(f"{tag} 第 {i} 题 source=section 却有等级标注")
         if not isinstance(q["hints"], list):
             fails.append(f"{tag} 第 {i} 题 hints 应为数组")
         elif q["hints"] and not hint_label:
@@ -289,11 +296,13 @@ def validate_bank(path: str | Path, cfg=None) -> list[str]:
 # ─────────────────────────── 输出题目块 ───────────────────────────
 
 
-def _question_lines(q: dict, hint_label: str | None) -> list[str]:
+def _question_lines(q: dict, meta: dict) -> list[str]:
     """一条题按 md 语法展开：题文 + 等级标注 + 下一行提示词。"""
     num = f"{q['id']}."
-    tag = f" ({q['level']})" if q.get("level") else ""
-    out = [f"{num} {q['text']}{tag}\\"]
+    tag = _level_tag(meta, q.get("cefr"))
+    suffix = f" ({tag})" if tag else ""
+    out = [f"{num} {q['text']}{suffix}\\"]
+    hint_label = meta.get("hint_label")
     if q.get("hints") and hint_label:
         pad = " " * (len(num) + 1)
         out.append(f"{pad}{hint_label} : {' · '.join(q['hints'])}")
@@ -303,7 +312,6 @@ def _question_lines(q: dict, hint_label: str | None) -> list[str]:
 def dump_questions(bank: dict, part: int | None = None) -> str:
     """把题库（可只取一部分）渲染成可直接粘进主持脚本的 md 片段。"""
     meta = bank["meta"]
-    hint_label = meta.get("hint_label")
     label_of_part = {
         p["index"]: p["heading"].lstrip("#").strip() for p in bank["parts"]
     }
@@ -318,7 +326,7 @@ def dump_questions(bank: dict, part: int | None = None) -> str:
                 out.append("### " + label_of_part.get(q["part"], q["phase"]))
             else:
                 out.append("## " + q["phase"])
-        out.extend(_question_lines(q, hint_label))
+        out.extend(_question_lines(q, meta))
     return "\n".join(out) + "\n"
 
 
@@ -408,8 +416,18 @@ def verify_md(bank: dict, md_path: str | Path) -> list[str]:
                 f"    md  : {item['text']}\n"
                 f"    题库: {_norm(q['text'])}"
             )
-        if q["level"] and item["level"] != q["level"]:
-            fails.append(f"{where}等级标注={item['level']!r}，题库为 {q['level']!r}")
+        expected = _level_tag(meta, q["cefr"])
+        bands = LEVEL_BANDS.findall(item["level"] or "")
+        if not item["level"]:
+            fails.append(f"{where}缺等级标注（题库 cefr={q['cefr']}）")
+        elif expected and item["level"].split()[0] != expected.split()[0]:
+            fails.append(
+                f"{where}等级标注={item['level']!r} 的家族应为 {expected.split()[0]!r}"
+            )
+        elif bands and bands[0] != q["cefr"]:
+            fails.append(
+                f"{where}等级标注={item['level']!r} 的首档与题库 cefr={q['cefr']} 不符"
+            )
         if q["hints"] and item["hints"] != q["hints"]:
             fails.append(
                 f"{where}提示词与题库不符\n    md  : {' · '.join(item['hints'])}\n"
