@@ -23,7 +23,8 @@ agent_created: true
   法语角请用独立技能包 `anchor-french`。
 - **规模与时长**：**≤10 人 / 固定 90 分钟**（来自 `constraints.max_participants`、`constraints.duration_minutes`）。
 - **水平范围**：B1–C2（含「混合（B1–C2）」），不出现 A1 / A2。
-- **产出物**：单页 Markdown 主持脚本，路径模板见 `style.output_path_template`（`docs/es-{topic}.md`）。
+- **产出物**：单页 Markdown 主持脚本，路径模板见 `style.output_path_template`（`docs/es-{topic}.md`）；
+  外加本次问题的题库 `assets/questions/<slug>.json` —— 问题先入库，md 里的问题全部由它取出并回查。
 
 ## 技能包结构与运行
 
@@ -37,10 +38,11 @@ agent_created: true
 # 在技能包根目录执行
 python scripts/corner_config.py          # 加载并校验 assets/es-corner-config.json
 python scripts/corner_skill.py           # 驱动 intake 并导出简报
+python scripts/corner_bank.py check      # 校验 assets/questions/ 下全部题库
 python scripts/corner_audit.py           # schema / 身份 / 文档 ↔ 配置 / 纯度审计
 ```
 
-`corner_audit.py` 是唯一的机械闸门，四段依次跑：schema 引用 → 包身份 → 本文件 ↔ 配置取值 → 内容纯度。
+`corner_audit.py` 是唯一的机械闸门，五段依次跑：schema 引用 → 包身份 → 本文件 ↔ 配置取值 → 内容纯度 → 题库。
 报出不一致时退出码 `1`；自检自身跑不下去（包布局不对、配置或正文读不了）时退出码 `2`。
 
 ## 交互契约（intake）
@@ -82,9 +84,31 @@ python scripts/corner_audit.py           # schema / 身份 / 文档 ↔ 配置 /
 
 **简报已确定的参数不再询问**。
 
+### 题库优先：问题先进 JSON，md 的问题一律取自 JSON
+
+**问题只写一次，写在题库里。** `assets/questions/<slug>.json` 是问题的唯一真源，md 只是它的一次呈现；
+md 里出现题库没有的问题、或把题库的题改了字，都算违约（`verify` 会逐条打回）。
+
+1. **定 slug**：入池话题用 topic id（`viaje`）；自定义话题按西文题名取 kebab-case（`aprender-ingles`）。
+   同一话题再生成时**追加到同一份文件**、沿用 `id` 续号，不要新建第二份。
+2. **写题库**：结构照 `assets/question-bank.schema.v1.json`。`meta` 的 `skill_name` / `lang` / `kind` / `slug` /
+   `topic_id` / `topic_in_pool` / `exam_family` 必须与本包身份和配置一致，`topic_label` 只写西文那一段；
+   每题带 `level`（等级标注原文，形如 `DELE B2`）与 `difficulty`（`cefr_min` / `cefr_max` / `rank_min` /
+   `rank_max` / `source`；rank 固定 B1=1 · B2=2 · C1=3 · C2=4，源标注是区间时取首末两档）。
+   **题库内不出现中文** —— 中文注记只留在配置的 `topic_pool`。
+3. **过闸门**：`python scripts/corner_bank.py check assets/questions/<slug>.json` —— 验结构、等级 ⊂ `exam_family`、
+   `level` 与 `difficulty` 自洽、提示词条数、话题池对齐、整篇无中文。
+4. **取题目块**：`python scripts/corner_bank.py dump assets/questions/<slug>.json`（`--part N` 只取一部分）
+   直接输出可粘贴的题目行 + 提示词行：编号连续、等级标注与提示词逐字来自题库。
+5. **写主持词**：只在题目行之间写开场 / 过渡 / 结语。**题目行与提示词行一个字都不改** ——
+   要改就改题库，再重新 dump。
+6. **回查**：`python scripts/corner_bank.py verify assets/questions/<slug>.json <md 路径>` ——
+   题文、等级、提示词、顺序、题数逐条比对；md 多出或缺失题目一律报错。
+
 ### 生成主持词（纯西文；30 题穿插其中）
 
 输出为**一页可朗读的主持脚本**：问题不单列成块，而是穿插在主持词中、由引出语自然带出。
+题目行与提示词行一律取自上节题库（`corner_bank.py dump` 的输出），本节只写题目之间的主持词与过渡语。
 
 - **开场（Apertura）**：欢迎语（西文）→ 点明本次语法点 + 话题 + 目标。
 - **破冰（Rompehielos）**：一句轻松小问让全员开口，直接并入 Parte 1 第 1 题。
@@ -194,6 +218,18 @@ Preposiciones·Conjunciones / Pronombres / Otros。
   原因：`_resolve_answers()` 用 `level in vocab_targets else "mixed"` 兜底，
   `label_of_level()` 找不到就返回原值。
   对策：`level` 只从配置的 `participant_levels` 里取。
+- **手改 md 里的题目，闸门会打回。**
+  现象：`corner_bank.py verify` 报「第 N 条题文与题库不符」。
+  原因：md 不是题目的真源，题库才是 —— 主持词随便改，题文 / 等级 / 提示词不行。
+  对策：改题库 → 重新 `dump` → 再 `verify`。
+- **题库里带中文会被 check 拦下。**
+  现象：报「含 N 个中日韩字符/全角标点」。
+  原因：题库只存西文；中文注记只留在配置 `topic_pool` 的 label 里。
+  对策：`meta.topic_label` 只写 label 里西文那一段。
+- **等级标注只到 B1–C2，且前缀不能省。**
+  现象：`check` 报某题 `level` 的考试家族不在 `exam_family` 内，或 `level` 与 `difficulty` 不符。
+  原因：本包 `exam_family` 只有 `DELE`，水平区间也是 B1–C2（`constraints` 里同样没有 A1 / A2）。
+  对策：逐题写全 `DELE B1` / `DELE B2` / `DELE C1` / `DELE C2`，别只写 `B2`。
 
 ## 附录 A · 生成框架与方法（无法数据化的部分）
 

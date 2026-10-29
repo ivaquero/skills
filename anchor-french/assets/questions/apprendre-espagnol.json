@@ -1,0 +1,800 @@
+{
+  "$schema": "../question-bank.schema.v1.json",
+  "meta": {
+    "skill_name": "anchor-french",
+    "lang": "fr",
+    "kind": "corner_script",
+    "slug": "apprendre-espagnol",
+    "topic_id": null,
+    "topic_in_pool": false,
+    "topic_label": "Apprentissage de l'espagnol",
+    "title": "Apprendre l'espagnol en autodidacte",
+    "source_doc": "docs/fr-apprendre-espagnol.md",
+    "source_title": "French Corner — Apprendre l'espagnol en autodidacte",
+    "extracted_on": "2026-10-29",
+    "exam_family": "DELF/DALF",
+    "levels": [
+      "DELF B1",
+      "DELF B2",
+      "DELF B1 → B2",
+      "DALF C1"
+    ],
+    "level_span": "B1–C1",
+    "difficulty_span": "B1–C1",
+    "grammar": [
+      "passé composé",
+      "imparfait",
+      "pronoms relatifs"
+    ],
+    "hint_label": "Mots-clés",
+    "hint_count_range": [
+      4,
+      5
+    ],
+    "question_count": 30,
+    "part_count": 3
+  },
+  "phases": [
+    {
+      "id": "brise_glace",
+      "label": "Brise-glace",
+      "order": 1,
+      "question_count": 1
+    },
+    {
+      "id": "discussion",
+      "label": "Discussion",
+      "order": 2,
+      "question_count": 29
+    }
+  ],
+  "parts": [
+    {
+      "index": 1,
+      "label": "Mes débuts en autodidacte",
+      "heading": "Partie 1 — Mes débuts en autodidacte",
+      "note": null,
+      "themes": [],
+      "question_ids": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "index": 2,
+      "label": "Ce qui m'a fait avancer seul",
+      "heading": "Partie 2 — Ce qui m'a fait avancer seul(e)",
+      "note": "e",
+      "themes": [],
+      "question_ids": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "index": 3,
+      "label": "Apprendre seul : jusqu'où ?",
+      "heading": "Partie 3 — Apprendre seul : jusqu'où ?",
+      "note": null,
+      "themes": [],
+      "question_ids": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "src_no": 1,
+      "phase": "brise_glace",
+      "part": null,
+      "theme": null,
+      "text": "Depuis quand apprends-tu l'espagnol tout seul ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "depuis un an",
+        "en autodidacte",
+        "par moi-même",
+        "le soir"
+      ]
+    },
+    {
+      "id": 2,
+      "src_no": 2,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Comment as-tu eu l'idée d'apprendre l'espagnol ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "un voyage",
+        "une chanson",
+        "une série",
+        "une rencontre",
+        "une envie soudaine"
+      ]
+    },
+    {
+      "id": 3,
+      "src_no": 3,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Pourquoi as-tu choisi de l'apprendre seul(e) ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "la liberté",
+        "mon propre rythme",
+        "le coût",
+        "la curiosité",
+        "par hasard"
+      ]
+    },
+    {
+      "id": 4,
+      "src_no": 4,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Quels outils utilisais-tu au début ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "une application",
+        "des vidéos",
+        "un carnet",
+        "des podcasts",
+        "un site internet"
+      ]
+    },
+    {
+      "id": 5,
+      "src_no": 5,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Combien de temps y consacrais-tu chaque semaine ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "dix minutes",
+        "le soir",
+        "le week-end",
+        "une heure",
+        "irrégulièrement"
+      ]
+    },
+    {
+      "id": 6,
+      "src_no": 6,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Comment mémorisais-tu le vocabulaire ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "des cartes",
+        "un carnet",
+        "répéter à voix haute",
+        "par cœur",
+        "en contexte"
+      ]
+    },
+    {
+      "id": 7,
+      "src_no": 7,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Avais-tu du mal à prononcer certains sons ? Lesquels ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "le son « j »",
+        "le r roulé",
+        "le double l",
+        "l'accent",
+        "articuler"
+      ]
+    },
+    {
+      "id": 8,
+      "src_no": 8,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Quel mot espagnol as-tu appris en premier ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "« hola »",
+        "« gracias »",
+        "une chanson",
+        "une série",
+        "un mot simple"
+      ]
+    },
+    {
+      "id": 9,
+      "src_no": 9,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Comment se passait une séance typique chez toi ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "seul(e)",
+        "à la maison",
+        "écouter",
+        "répéter",
+        "noter les mots nouveaux"
+      ]
+    },
+    {
+      "id": 10,
+      "src_no": 10,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Quel souvenir gardes-tu de tes débuts ?",
+      "level": "DELF B1 → B2",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B2",
+        "rank_min": 1,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "une anecdote",
+        "une erreur",
+        "un fou rire",
+        "une première phrase",
+        "une fierté"
+      ]
+    },
+    {
+      "id": 11,
+      "src_no": 11,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "As-tu déjà voyagé dans un pays hispanophone ? Raconte.",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "l'Espagne",
+        "le Mexique",
+        "un séjour",
+        "une auberge",
+        "commander un plat"
+      ]
+    },
+    {
+      "id": 12,
+      "src_no": 12,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "As-tu déjà parlé espagnol avec un locuteur natif ? Comment cela s'est-il passé ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "un voisin",
+        "un marché",
+        "balbutier",
+        "se faire comprendre",
+        "être fier(-ère)"
+      ]
+    },
+    {
+      "id": 13,
+      "src_no": 13,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Quelle série ou quelle chanson t'a aidé(e) à progresser ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "une série latino-américaine",
+        "les sous-titres",
+        "le refrain",
+        "une voix",
+        "le rythme"
+      ]
+    },
+    {
+      "id": 14,
+      "src_no": 14,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Qu'est-ce qui t'a le plus aidé(e) : écouter, lire ou parler ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "des podcasts",
+        "des articles",
+        "une application",
+        "un échange linguistique",
+        "pratiquer"
+      ]
+    },
+    {
+      "id": 15,
+      "src_no": 15,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Quelle difficulté t'a bloqué(e), et comment l'as-tu surmontée ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "la conjugaison",
+        "les temps du passé",
+        "ce qui m'a aidé",
+        "persévérer",
+        "une astuce"
+      ]
+    },
+    {
+      "id": 16,
+      "src_no": 16,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "As-tu déjà arrêté, puis repris ? Raconte.",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "arrêter",
+        "reprendre",
+        "perdre la motivation",
+        "un déclic",
+        "s'y remettre"
+      ]
+    },
+    {
+      "id": 17,
+      "src_no": 17,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Comment organisais-tu ton apprentissage ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "un planning",
+        "des objectifs",
+        "chaque jour",
+        "une routine",
+        "être régulier(-ière)"
+      ]
+    },
+    {
+      "id": 18,
+      "src_no": 18,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Quel progrès as-tu remarqué au fil des mois ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "mieux comprendre",
+        "oser parler",
+        "un vocabulaire plus riche",
+        "plus fluide",
+        "moins d'hésitation"
+      ]
+    },
+    {
+      "id": 19,
+      "src_no": 19,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "As-tu déjà mélangé l'espagnol avec une autre langue ? Raconte.",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "mélanger",
+        "le portugais",
+        "l'italien",
+        "un faux ami",
+        "se tromper"
+      ]
+    },
+    {
+      "id": 20,
+      "src_no": 20,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Si tu pouvais recommencer, que changerais-tu dans ta méthode ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "commencer plus tôt",
+        "pratiquer chaque jour",
+        "un échange",
+        "voyager",
+        "oser dès le début"
+      ]
+    },
+    {
+      "id": 21,
+      "src_no": 21,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Peut-on vraiment apprendre une langue tout seul ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "tout seul",
+        "les limites",
+        "la motivation",
+        "un guide",
+        "progresser"
+      ]
+    },
+    {
+      "id": 22,
+      "src_no": 22,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "L'espagnol est-il vraiment facile quand on parle français ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "une langue proche",
+        "les faux amis",
+        "la conjugaison",
+        "une illusion",
+        "se méfier"
+      ]
+    },
+    {
+      "id": 23,
+      "src_no": 23,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Faut-il commencer par la grammaire ou par la conversation ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "la grammaire",
+        "la conversation",
+        "les règles",
+        "l'immersion",
+        "l'équilibre"
+      ]
+    },
+    {
+      "id": 24,
+      "src_no": 24,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Les applications suffisent-elles pour apprendre une langue ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "une application",
+        "la régularité",
+        "les limites",
+        "la dépendance",
+        "la motivation"
+      ]
+    },
+    {
+      "id": 25,
+      "src_no": 25,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Comment savoir si l'on progresse quand on apprend seul(e) ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "se tester",
+        "un enregistrement",
+        "un locuteur natif",
+        "un objectif",
+        "se comparer"
+      ]
+    },
+    {
+      "id": 26,
+      "src_no": 26,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Une langue étrangère change-t-elle notre façon de penser ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "la vision du monde",
+        "une nuance",
+        "la culture",
+        "traduire",
+        "ressentir"
+      ]
+    },
+    {
+      "id": 27,
+      "src_no": 27,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Les traducteurs automatiques menacent-ils l'apprentissage des langues ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "un traducteur",
+        "l'intelligence artificielle",
+        "un outil",
+        "la nuance",
+        "s'en servir"
+      ]
+    },
+    {
+      "id": 28,
+      "src_no": 28,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Faut-il se corriger soi-même quand on apprend seul(e) ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "se corriger",
+        "l'erreur",
+        "s'enregistrer",
+        "décourager",
+        "la fluidité"
+      ]
+    },
+    {
+      "id": 29,
+      "src_no": 29,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Apprendre une langue, est-ce surtout une question de méthode ou de motivation ?",
+      "level": "DALF C1",
+      "difficulty": {
+        "cefr_min": "C1",
+        "cefr_max": "C1",
+        "rank_min": 3,
+        "rank_max": 3,
+        "source": "tag"
+      },
+      "hints": [
+        "une méthode",
+        "la motivation",
+        "la régularité",
+        "la patience",
+        "persévérer"
+      ]
+    },
+    {
+      "id": 30,
+      "src_no": 30,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "L'apprentissage en autonomie est-il un luxe ou une nécessité aujourd'hui ?",
+      "level": "DALF C1",
+      "difficulty": {
+        "cefr_min": "C1",
+        "cefr_max": "C1",
+        "rank_min": 3,
+        "rank_max": 3,
+        "source": "tag"
+      },
+      "hints": [
+        "l'autonomie",
+        "un luxe",
+        "une nécessité",
+        "le temps",
+        "la discipline"
+      ]
+    }
+  ]
+}

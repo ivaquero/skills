@@ -1,0 +1,798 @@
+{
+  "$schema": "../question-bank.schema.v1.json",
+  "meta": {
+    "skill_name": "anchor-spanish",
+    "lang": "es",
+    "kind": "corner_script",
+    "slug": "aprender-ingles",
+    "topic_id": "aprendizaje_ingles",
+    "topic_in_pool": true,
+    "topic_label": "El aprendizaje del inglés",
+    "title": "Aprender inglés: mi recorrido",
+    "source_doc": "docs/es-aprender-ingles.md",
+    "source_title": "Rincón de español — Aprender inglés: mi recorrido",
+    "extracted_on": "2026-10-29",
+    "exam_family": "DELE",
+    "levels": [
+      "DELE B1",
+      "DELE B2"
+    ],
+    "level_span": "B1–B2",
+    "difficulty_span": "B1–B2",
+    "grammar": [
+      "pretérito indefinido",
+      "imperfecto"
+    ],
+    "hint_label": "Palabras clave",
+    "hint_count_range": [
+      5,
+      5
+    ],
+    "question_count": 30,
+    "part_count": 3
+  },
+  "phases": [
+    {
+      "id": "rompehielos",
+      "label": "Rompehielos",
+      "order": 1,
+      "question_count": 1
+    },
+    {
+      "id": "discusion",
+      "label": "Discusión",
+      "order": 2,
+      "question_count": 29
+    }
+  ],
+  "parts": [
+    {
+      "index": 1,
+      "label": "Mis comienzos con el inglés",
+      "heading": "Parte 1 — Mis comienzos con el inglés",
+      "note": null,
+      "themes": [],
+      "question_ids": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "index": 2,
+      "label": "Los momentos que me hicieron avanzar",
+      "heading": "Parte 2 — Los momentos que me hicieron avanzar",
+      "note": null,
+      "themes": [],
+      "question_ids": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "index": 3,
+      "label": "El inglés y la sociedad",
+      "heading": "Parte 3 — El inglés y la sociedad",
+      "note": null,
+      "themes": [],
+      "question_ids": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "src_no": 1,
+      "phase": "rompehielos",
+      "part": null,
+      "theme": null,
+      "text": "¿Cuándo empezaste a aprender inglés?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "a los ocho años",
+        "en primaria",
+        "en el colegio",
+        "por obligación",
+        "un profesor"
+      ]
+    },
+    {
+      "id": 2,
+      "src_no": 2,
+      "phase": "discusion",
+      "part": 1,
+      "theme": null,
+      "text": "¿Dónde estudiabas inglés cuando eras pequeño o pequeña?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "en el colegio",
+        "el instituto",
+        "una academia",
+        "dos horas por semana",
+        "una clase grande"
+      ]
+    },
+    {
+      "id": 3,
+      "src_no": 3,
+      "phase": "discusion",
+      "part": 1,
+      "theme": null,
+      "text": "¿Cómo era tu primer profesor o profesora de inglés? ¿Cómo te hablaba?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "estricto/a",
+        "paciente",
+        "severo/a",
+        "simpático/a",
+        "me hablaba en inglés"
+      ]
+    },
+    {
+      "id": 4,
+      "src_no": 4,
+      "phase": "discusion",
+      "part": 1,
+      "theme": null,
+      "text": "¿Qué te pareció el inglés la primera vez que lo escuchaste?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "raro",
+        "difícil",
+        "divertido",
+        "la pronunciación",
+        "me daba miedo"
+      ]
+    },
+    {
+      "id": 5,
+      "src_no": 5,
+      "phase": "discusion",
+      "part": 1,
+      "theme": null,
+      "text": "¿Qué te gustaba y qué no te gustaba de las clases de inglés?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "las canciones",
+        "los ejercicios",
+        "los dictados",
+        "hablar en público",
+        "la gramática"
+      ]
+    },
+    {
+      "id": 6,
+      "src_no": 6,
+      "phase": "discusion",
+      "part": 1,
+      "theme": null,
+      "text": "¿Qué hacías para memorizar el vocabulario?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "una lista de palabras",
+        "de memoria",
+        "unas tarjetas",
+        "repetir en voz alta",
+        "por la noche"
+      ]
+    },
+    {
+      "id": 7,
+      "src_no": 7,
+      "phase": "discusion",
+      "part": 1,
+      "theme": null,
+      "text": "¿Te daba vergüenza hablar inglés delante de la clase?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "ponerme rojo/a",
+        "tener miedo",
+        "equivocarme",
+        "tartamudear",
+        "quedarme callado/a"
+      ]
+    },
+    {
+      "id": 8,
+      "src_no": 8,
+      "phase": "discusion",
+      "part": 1,
+      "theme": null,
+      "text": "¿Cuál fue la primera palabra o frase en inglés que aprendiste?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "«hello»",
+        "«thank you»",
+        "una canción",
+        "una película",
+        "algo sencillo"
+      ]
+    },
+    {
+      "id": 9,
+      "src_no": 9,
+      "phase": "discusion",
+      "part": 1,
+      "theme": null,
+      "text": "Describe cómo era una clase de inglés típica en aquella época.",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "escuchar",
+        "repetir",
+        "leer en voz alta",
+        "hacer ejercicios",
+        "trabajar en grupos"
+      ]
+    },
+    {
+      "id": 10,
+      "src_no": 10,
+      "phase": "discusion",
+      "part": 1,
+      "theme": null,
+      "text": "¿Qué recuerdo de tu época de estudiante de inglés guardas con más cariño?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "un profesor/a",
+        "una buena nota",
+        "un viaje escolar",
+        "un amigo/a",
+        "un examen"
+      ]
+    },
+    {
+      "id": 11,
+      "src_no": 11,
+      "phase": "discusion",
+      "part": 2,
+      "theme": null,
+      "text": "¿Has viajado alguna vez a un país donde se habla inglés? Cuéntalo.",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "Inglaterra",
+        "Estados Unidos",
+        "un viaje",
+        "el aeropuerto",
+        "una aventura"
+      ]
+    },
+    {
+      "id": 12,
+      "src_no": 12,
+      "phase": "discusion",
+      "part": 2,
+      "theme": null,
+      "text": "¿Cómo progresaste más: en la escuela, viajando o por tu cuenta?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "en la escuela",
+        "en un viaje",
+        "solo/a",
+        "unos podcasts",
+        "unas películas"
+      ]
+    },
+    {
+      "id": 13,
+      "src_no": 13,
+      "phase": "discusion",
+      "part": 2,
+      "theme": null,
+      "text": "¿Qué película o serie te ayudó a entender mejor el inglés? ¿Qué te enseñó?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "una serie americana",
+        "los subtítulos",
+        "una comedia",
+        "la voz",
+        "el ritmo"
+      ]
+    },
+    {
+      "id": 14,
+      "src_no": 14,
+      "phase": "discusion",
+      "part": 2,
+      "theme": null,
+      "text": "¿Has hablado inglés con un extranjero alguna vez? ¿Cómo te fue?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "un turista",
+        "pedir direcciones",
+        "entender",
+        "quedarme en blanco",
+        "estar orgulloso/a"
+      ]
+    },
+    {
+      "id": 15,
+      "src_no": 15,
+      "phase": "discusion",
+      "part": 2,
+      "theme": null,
+      "text": "¿Qué canción en inglés intentaste entender palabra por palabra?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "la letra",
+        "el estribillo",
+        "cantar",
+        "traducir",
+        "una canción famosa"
+      ]
+    },
+    {
+      "id": 16,
+      "src_no": 16,
+      "phase": "discusion",
+      "part": 2,
+      "theme": null,
+      "text": "¿Has hecho algún examen de inglés? ¿Cómo te lo preparaste?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "un examen",
+        "repasar",
+        "los nervios",
+        "una nota",
+        "aprobar"
+      ]
+    },
+    {
+      "id": 17,
+      "src_no": 17,
+      "phase": "discusion",
+      "part": 2,
+      "theme": null,
+      "text": "¿Qué te ayudó más: escuchar, leer o hablar?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "escuchar la radio",
+        "leer libros",
+        "hablar con alguien",
+        "los subtítulos",
+        "practicar"
+      ]
+    },
+    {
+      "id": 18,
+      "src_no": 18,
+      "phase": "discusion",
+      "part": 2,
+      "theme": null,
+      "text": "¿Dejaste el inglés alguna vez y luego lo retomaste? Cuéntanos.",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "dejarlo",
+        "retomarlo",
+        "perder la motivación",
+        "un impulso",
+        "volver a empezar"
+      ]
+    },
+    {
+      "id": 19,
+      "src_no": 19,
+      "phase": "discusion",
+      "part": 2,
+      "theme": null,
+      "text": "¿A quién le pediste ayuda cuando no entendías algo de inglés?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "a mi profesor/a",
+        "a un amigo/a",
+        "a mi madre",
+        "le pregunté a…",
+        "me lo explicó"
+      ]
+    },
+    {
+      "id": 20,
+      "src_no": 20,
+      "phase": "discusion",
+      "part": 2,
+      "theme": null,
+      "text": "¿A quién le has contado tus avances con el inglés, y cómo se lo contaste?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "a mi familia",
+        "a mis compañeros",
+        "le dije que…",
+        "se lo conté todo",
+        "me felicitó"
+      ]
+    },
+    {
+      "id": 21,
+      "src_no": 21,
+      "phase": "discusion",
+      "part": 3,
+      "theme": null,
+      "text": "¿Por qué crees que el inglés es tan importante hoy en día?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "la globalización",
+        "internet",
+        "los negocios",
+        "el turismo",
+        "una lengua común"
+      ]
+    },
+    {
+      "id": 22,
+      "src_no": 22,
+      "phase": "discusion",
+      "part": 3,
+      "theme": null,
+      "text": "¿Se debería empezar el inglés en la escuela primaria?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "desde pequeños",
+        "jugar",
+        "las canciones",
+        "una ventaja",
+        "demasiado pronto"
+      ]
+    },
+    {
+      "id": 23,
+      "src_no": 23,
+      "phase": "discusion",
+      "part": 3,
+      "theme": null,
+      "text": "¿Crees que los traductores automáticos y la inteligencia artificial sustituirán el aprendizaje de idiomas?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "un traductor",
+        "la inteligencia artificial",
+        "una herramienta",
+        "los matices",
+        "usarla"
+      ]
+    },
+    {
+      "id": 24,
+      "src_no": 24,
+      "phase": "discusion",
+      "part": 3,
+      "theme": null,
+      "text": "¿Es mejor hablar varias lenguas un poco o una sola muy bien?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "varias lenguas",
+        "con fluidez",
+        "defenderme",
+        "exigente",
+        "la práctica"
+      ]
+    },
+    {
+      "id": 25,
+      "src_no": 25,
+      "phase": "discusion",
+      "part": 3,
+      "theme": null,
+      "text": "¿Crees que el inglés amenaza a otras lenguas y a otras culturas?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "una lengua en peligro",
+        "la cultura",
+        "palabras prestadas",
+        "la dominación",
+        "proteger"
+      ]
+    },
+    {
+      "id": 26,
+      "src_no": 26,
+      "phase": "discusion",
+      "part": 3,
+      "theme": null,
+      "text": "¿El nivel de inglés crea desigualdades entre las personas?",
+      "level": "DELE B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": [
+        "una desigualdad",
+        "una oportunidad",
+        "el nivel social",
+        "clases privadas",
+        "acceder a"
+      ]
+    },
+    {
+      "id": 27,
+      "src_no": 27,
+      "phase": "discusion",
+      "part": 3,
+      "theme": null,
+      "text": "¿Se puede aprender bien un idioma después de los cuarenta?",
+      "level": "DELE B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "la memoria",
+        "a cualquier edad",
+        "empezar tarde",
+        "la motivación",
+        "le diría que…"
+      ]
+    },
+    {
+      "id": 28,
+      "src_no": 28,
+      "phase": "discusion",
+      "part": 3,
+      "theme": null,
+      "text": "¿Qué cuenta más al aprender un idioma: la gramática o la confianza?",
+      "level": "DELE B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "la gramática",
+        "atreverse a hablar",
+        "cometer errores",
+        "la confianza",
+        "la práctica"
+      ]
+    },
+    {
+      "id": 29,
+      "src_no": 29,
+      "phase": "discusion",
+      "part": 3,
+      "theme": null,
+      "text": "Aprender una lengua, ¿es sobre todo cuestión de método o de motivación?",
+      "level": "DELE B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "un método",
+        "la motivación",
+        "la constancia",
+        "un ritmo",
+        "insistir"
+      ]
+    },
+    {
+      "id": 30,
+      "src_no": 30,
+      "phase": "discusion",
+      "part": 3,
+      "theme": null,
+      "text": "¿El multilingüismo debería ser un derecho o una obligación? ¿A quién beneficia?",
+      "level": "DELE B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": [
+        "el multilingüismo",
+        "un derecho",
+        "una obligación",
+        "la libertad",
+        "la escuela"
+      ]
+    }
+  ]
+}

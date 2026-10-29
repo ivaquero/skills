@@ -68,17 +68,22 @@ assets/fr-corner-config.json   唯一数据源（可选项 + 提问编排 + 风�
         ▼  scripts/corner_skill.py（skill 主体，驱动 intake 状态机）
    fr-corner-brief.md（Markdown 简报，落盘到当前工作目录）
         │
-        ▼  本 skill（读入简报）
-   docs/fr-<topic>.md（最终主持脚本）
+        ▼  本 skill（读入简报，先把问题写进题库）
+   assets/questions/<slug>.json（本题题库 —— 问题的唯一真源）
+        │
+        ▼  scripts/corner_bank.py（check → dump → verify）
+   docs/fr-<topic>.md（最终主持脚本，问题逐字取自题库）
 ```
 
-| 环节                           | 职责                                             | 不做什么                     |
-| ------------------------------ | ------------------------------------------------ | ---------------------------- |
-| `assets/fr-corner-config.json` | 存所有可选项与文案                               | —                            |
-| `scripts/corner_config.py`     | 解析、校验、派生（推荐话题、提问负载、简报渲染） | 不调用 LLM、不硬编码任何文案 |
-| `scripts/corner_skill.py`      | 按 `question_plan` 逐题收集、导出简报            | 不生成内容                   |
-| `scripts/corner_audit.py`      | 校验 schema 引用、包身份与配置取值               | 不改任何文件                 |
-| 本 skill（`SKILL.md`）         | 读简报 → 产出法文主持脚本                        | 不重新询问已收集的参数       |
+| 环节                           | 职责                                               | 不做什么                           |
+| ------------------------------ | -------------------------------------------------- | ---------------------------------- |
+| `assets/fr-corner-config.json` | 存所有可选项与文案                                 | —                                  |
+| `scripts/corner_config.py`     | 解析、校验、派生（推荐话题、提问负载、简报渲染）   | 不调用 LLM、不硬编码任何文案       |
+| `scripts/corner_skill.py`      | 按 `question_plan` 逐题收集、导出简报              | 不生成内容                         |
+| `assets/questions/<slug>.json` | 存本题全部问题（题文 / 等级 / 难度 / 提示词）      | 不含法文以外的文字；不改 md        |
+| `scripts/corner_bank.py`       | 校验题库、按 md 语法导出题目块、回查 md 与题库一致 | 不生成内容、不改 md                |
+| `scripts/corner_audit.py`      | 校验 schema 引用、包身份、配置取值与题库           | 不改任何文件                       |
+| 本 skill（`SKILL.md`）         | 读简报 → 写题库 → 产出法文主持脚本                 | 不重新询问已收集的参数；不手改题目 |
 
 > 工作流正文见 `SKILL.md`；表中「本 skill」一行即指它。文档 ↔ 配置的取值比对也以它为准。
 

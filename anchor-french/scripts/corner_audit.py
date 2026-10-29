@@ -301,6 +301,23 @@ def audit(cfg: dict, md: str) -> list[str]:
     return fails
 
 
+def audit_banks(cfg: dict) -> list[str]:
+    """题库段：`assets/questions/*.json` 逐份过 `corner_bank.validate_bank`。
+
+    题库是问题的唯一真源 —— 它坏了，产出的 md 必然跟着坏，所以并入同一道闸门。
+    包里还没有题库（新包）不算失败；有就必须全部通过。
+    话题池取值直接拿本段手上的裸配置 dict 比对，不额外加载 `SkillConfig`。
+    """
+    try:
+        from corner_bank import bank_paths, validate_bank
+    except ImportError as exc:  # 题库模块缺失属于自检跑不下去，这里折成 finding 更直白
+        return [f"[{SKILL_NAME}/{LANG}] 题库校验不可用: {exc}"]
+    fails: list[str] = []
+    for p in bank_paths():
+        fails.extend(validate_bank(p, cfg))
+    return fails
+
+
 def _report(
     fails: list[str], notes: list[str] | None = None, *, code: int | None = None
 ) -> int:
@@ -328,9 +345,9 @@ def _report(
 
 
 def main() -> int:
-    """三段闸门：schema（引用 + 必填顶层键）→ 身份 → 文档 ↔ 配置 / 内容纯度。
+    """四段闸门：schema（引用 + 必填顶层键）→ 身份 → 文档 ↔ 配置 / 内容纯度 → 题库。
 
-    **三段全部跑完再收尾**，一次报全所有不一致（某段失败不截断后续段）—— 否则使用者
+    **四段全部跑完再收尾**，一次报全所有不一致（某段失败不截断后续段）—— 否则使用者
     要经历「改一处 → 重跑 → 又冒出一类新问题」。退出码见模块 docstring：
     `1` 是包内容的 finding，`2` 是自检自己跑不下去。
     """
@@ -359,6 +376,7 @@ def main() -> int:
     fails.extend(audit_schema(cfg))
     fails.extend(audit_identity(cfg, md))
     fails.extend(audit(cfg, md))
+    fails.extend(audit_banks(cfg))
     notes: list[str] = []
     remote = _remote_schema_ref(cfg)
     if remote:

@@ -1,0 +1,372 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Corner question bank v1 (question-bank)",
+  "description": "Schema for the per-topic question-bank files under assets/questions/ in a corner skill package. Describes structure and value domains only; no language-specific values — question text, hints, phase labels, topic labels and exam tags all come from the bank file itself. This file is byte-identical across language packages (enforced by a repository-level guard). Additional keys are allowed for forward-compatible extension.",
+  "type": "object",
+  "required": [
+    "meta",
+    "phases",
+    "parts",
+    "questions"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Path from the bank file to this schema, so editors can complete and validate it live."
+    },
+    "meta": {
+      "type": "object",
+      "required": [
+        "skill_name",
+        "lang",
+        "kind",
+        "slug",
+        "topic_id",
+        "topic_in_pool",
+        "topic_label",
+        "title",
+        "source_doc",
+        "source_title",
+        "extracted_on",
+        "exam_family",
+        "levels",
+        "level_span",
+        "difficulty_span",
+        "grammar",
+        "hint_label",
+        "hint_count_range",
+        "question_count",
+        "part_count"
+      ],
+      "properties": {
+        "skill_name": {
+          "type": "string",
+          "description": "Skill name; must equal the package directory name and the package config's meta.skill_name."
+        },
+        "lang": {
+          "type": "string",
+          "pattern": "^[a-z]{2,3}$",
+          "description": "ISO 639-1 language code; must match the package language."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "corner_script",
+            "drill"
+          ],
+          "description": "Source genre: corner_script = full host script (icebreaker + 3 discussion parts); drill = prompt/answer card without graded parts."
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "description": "Bank slug; must equal the file name without .json."
+        },
+        "topic_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Topic id from the package config's topic_pool; null for custom topics not in the pool."
+        },
+        "topic_in_pool": {
+          "type": "boolean",
+          "description": "Whether the topic is already listed in the package config's topic_pool — same truth value as topic_id being non-null."
+        },
+        "topic_label": {
+          "type": "string",
+          "description": "Display name of the topic, written in the package language only; no other language (Chinese included) appears anywhere in a bank. For pooled topics this is the package-language segment of the config label, while any Chinese gloss stays in the config."
+        },
+        "title": {
+          "type": "string",
+          "description": "Session title, taken from the source document's title or its meta line."
+        },
+        "source_doc": {
+          "type": "string",
+          "description": "Source document path (relative to the repository root) for traceability."
+        },
+        "source_title": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Top-level heading of the source document; null when it has none."
+        },
+        "extracted_on": {
+          "type": "string",
+          "format": "date",
+          "description": "Extraction date (YYYY-MM-DD)."
+        },
+        "exam_family": {
+          "type": "string",
+          "description": "Level-tag family used by the source, e.g. DELF/DALF or DELE."
+        },
+        "levels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Distinct level tags found in the questions, sorted B1 to C2."
+        },
+        "level_span": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Level range derived from the first and last entry of levels (e.g. B1–C2); null when ungraded (drill)."
+        },
+        "difficulty_span": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Normalised CEFR range across all questions, computed from the per-question difficulty blocks (e.g. B1–B2); unlike level_span it also covers drill banks, which carry no level tag."
+        },
+        "grammar": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Grammar points practised in this session, worded as in the package config's grammar_points labels."
+        },
+        "hint_label": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Prefix label of the hint field in the source document (e.g. Mots-clés or Palabras clave); null when there are no hints."
+        },
+        "hint_count_range": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Per-question hint count as [min, max]; null when there are no hints."
+        },
+        "question_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total number of questions; must equal the length of questions."
+        },
+        "part_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of discussion parts; must equal the length of parts (0 for drill)."
+        }
+      }
+    },
+    "phases": {
+      "type": "array",
+      "description": "Phases in source order (corner_script normally brise_glace + discussion; drill uses simple / avance).",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "order",
+          "question_count"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z_]+$",
+            "description": "Phase identifier, taken from this package's config style.phase_labels keys (hence written in the package language, not normalised across languages); questions[].phase references it."
+          },
+          "label": {
+            "type": "string",
+            "description": "Display name of the phase in the package language, matching the config's phase_labels value."
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Position of the phase in this session."
+          },
+          "question_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of questions in this phase."
+          }
+        }
+      }
+    },
+    "parts": {
+      "type": "array",
+      "description": "Discussion parts. A corner_script normally has 3 parts of 10 questions; drill has an empty array.",
+      "items": {
+        "type": "object",
+        "required": [
+          "index",
+          "label",
+          "heading",
+          "note",
+          "themes",
+          "question_ids"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Part number, 1-based, matching questions[].part."
+          },
+          "label": {
+            "type": "string",
+            "description": "Part title with the number and trailing parenthetical removed."
+          },
+          "heading": {
+            "type": "string",
+            "description": "Raw heading line from the source document, for traceability."
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Trailing parenthetical of the heading (e.g. grammar points and level range); null when absent."
+          },
+          "themes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Sub-topic headings inside the part, in order; empty when there are none."
+          },
+          "question_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Ids of the questions in this part (questions[].id), in order."
+          }
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "description": "Questions in source order; ids run 1..N without gaps.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "src_no",
+          "phase",
+          "part",
+          "theme",
+          "text",
+          "level",
+          "difficulty",
+          "hints"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Position within the file, continuous across phases (does not restart per phase)."
+          },
+          "src_no": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Question number printed in the source document; null when unnumbered (blockquote icebreaker, drill prompt)."
+          },
+          "phase": {
+            "type": "string",
+            "description": "Phase id; must appear in phases[].id."
+          },
+          "part": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Part number; null for the icebreaker and for drill items."
+          },
+          "theme": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Sub-topic heading the question belongs to; null when there is none."
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Question text, in the package language only, without level tag or hints."
+          },
+          "level": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Level tag including the family prefix (e.g. DELF B1); null when the source gives none."
+          },
+          "difficulty": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Normalised difficulty of this question, independent of the exam family: CEFR band plus a numeric rank, so questions are sortable and filterable. null only when neither a level tag nor a difficulty section exists.",
+            "required": [
+              "cefr_min",
+              "cefr_max",
+              "rank_min",
+              "rank_max",
+              "source"
+            ],
+            "properties": {
+              "cefr_min": {
+                "type": "string",
+                "pattern": "^[ABC][12]$",
+                "description": "Lowest CEFR band of the question: the band itself, or the first band of a range such as B1 → B2."
+              },
+              "cefr_max": {
+                "type": "string",
+                "pattern": "^[ABC][12]$",
+                "description": "Highest CEFR band; equal to cefr_min when the question has a single band."
+              },
+              "rank_min": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 4,
+                "description": "Numeric form of cefr_min: B1=1, B2=2, C1=3, C2=4."
+              },
+              "rank_max": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 4,
+                "description": "Numeric form of cefr_max."
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "tag",
+                  "section"
+                ],
+                "description": "Where the difficulty came from: tag = the per-question level tag; section = the section heading of a source that grades by section (e.g. Niveau Simple / Niveau Avancé)."
+              }
+            }
+          },
+          "hints": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Speaking prompts in source order; empty when the source gives none."
+          },
+          "answer": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Drill items only: the reference answer from the source; other genres omit this key."
+          }
+        }
+      }
+    }
+  }
+}

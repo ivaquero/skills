@@ -1,0 +1,617 @@
+{
+  "$schema": "../question-bank.schema.v1.json",
+  "meta": {
+    "skill_name": "anchor-french",
+    "lang": "fr",
+    "kind": "corner_script",
+    "slug": "avenir",
+    "topic_id": null,
+    "topic_in_pool": false,
+    "topic_label": "Carrière et avenir",
+    "title": "Carrière et avenir",
+    "source_doc": "docs/fr-avenir.md",
+    "source_title": "Atelier de conversation française",
+    "extracted_on": "2026-10-29",
+    "exam_family": "DELF/DALF",
+    "levels": [
+      "DELF B1",
+      "DELF B2",
+      "DALF C1",
+      "DALF C2"
+    ],
+    "level_span": "B1–C2",
+    "difficulty_span": "B1–C2",
+    "grammar": [
+      "futur simple",
+      "futur proche"
+    ],
+    "hint_label": null,
+    "hint_count_range": null,
+    "question_count": 30,
+    "part_count": 3
+  },
+  "phases": [
+    {
+      "id": "brise_glace",
+      "label": "Brise-glace",
+      "order": 1,
+      "question_count": 1
+    },
+    {
+      "id": "discussion",
+      "label": "Discussion",
+      "order": 2,
+      "question_count": 29
+    }
+  ],
+  "parts": [
+    {
+      "index": 1,
+      "label": "Mes projets et intentions",
+      "heading": "Partie 1 — Mes projets et intentions",
+      "note": null,
+      "themes": [],
+      "question_ids": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "index": 2,
+      "label": "Le métier idéal",
+      "heading": "Partie 2 — Le métier idéal",
+      "note": null,
+      "themes": [],
+      "question_ids": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "index": 3,
+      "label": "L'avenir du travail",
+      "heading": "Partie 3 — L'avenir du travail",
+      "note": null,
+      "themes": [],
+      "question_ids": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "src_no": 1,
+      "phase": "brise_glace",
+      "part": null,
+      "theme": null,
+      "text": "Que feras-tu après cette séance ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 2,
+      "src_no": 2,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Quel métier feras-tu plus tard ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 3,
+      "src_no": 3,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Où habiteras-tu dans trois ans ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 4,
+      "src_no": 4,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Combien d'heures travailleras-tu par semaine ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 5,
+      "src_no": 5,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Vas-tu changer de ville pour ton travail ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 6,
+      "src_no": 6,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Que feras-tu pour progresser dans ta carrière ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 7,
+      "src_no": 7,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Quels sacrifices devras-tu faire pour réussir ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 8,
+      "src_no": 8,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Comment organiseras-tu ton temps entre études et travail ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 9,
+      "src_no": 9,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Penses-tu que tu gagneras assez pour voyager ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 10,
+      "src_no": 10,
+      "phase": "discussion",
+      "part": 1,
+      "theme": null,
+      "text": "Quelle formation suivras-tu l'année prochaine ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 11,
+      "src_no": 11,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Quel sera ton métier de rêve ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 12,
+      "src_no": 12,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Sera-t-il créatif ou plutôt technique ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 13,
+      "src_no": 13,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Avec qui travailleras-tu dans ton entreprise idéale ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 14,
+      "src_no": 14,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Où sera situé ton bureau ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 15,
+      "src_no": 15,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Quelles qualités faudra-t-il avoir pour ce poste ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 16,
+      "src_no": 16,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Comment imagines-tu une journée type dans dix ans ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 17,
+      "src_no": 17,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Le télétravail fera-t-il partie de ton futur ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 18,
+      "src_no": 18,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Est-il certain que ce métier te rendra heureux ?",
+      "level": "DALF C1",
+      "difficulty": {
+        "cefr_min": "C1",
+        "cefr_max": "C1",
+        "rank_min": 3,
+        "rank_max": 3,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 19,
+      "src_no": 19,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Que deviendra ton secteur si l'IA progresse ?",
+      "level": "DALF C1",
+      "difficulty": {
+        "cefr_min": "C1",
+        "cefr_max": "C1",
+        "rank_min": 3,
+        "rank_max": 3,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 20,
+      "src_no": 20,
+      "phase": "discussion",
+      "part": 2,
+      "theme": null,
+      "text": "Quitteras-tu tout pour suivre une passion ?",
+      "level": "DALF C1",
+      "difficulty": {
+        "cefr_min": "C1",
+        "cefr_max": "C1",
+        "rank_min": 3,
+        "rank_max": 3,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 21,
+      "src_no": 21,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Le travail sera-t-il le même pour vos enfants ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 22,
+      "src_no": 22,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Quels métiers disparaîtront, selon vous ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 23,
+      "src_no": 23,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Les jeunes auront-ils plus de chances qu'avant ?",
+      "level": "DELF B1",
+      "difficulty": {
+        "cefr_min": "B1",
+        "cefr_max": "B1",
+        "rank_min": 1,
+        "rank_max": 1,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 24,
+      "src_no": 24,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Faudra-t-il travailler moins pour vivre mieux ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 25,
+      "src_no": 25,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "L'intelligence artificielle remplacera-t-elle les humains ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 26,
+      "src_no": 26,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Quel sera le métier le plus utile en 2050 ?",
+      "level": "DELF B2",
+      "difficulty": {
+        "cefr_min": "B2",
+        "cefr_max": "B2",
+        "rank_min": 2,
+        "rank_max": 2,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 27,
+      "src_no": 27,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "La société devra-t-elle garantir un revenu de base ?",
+      "level": "DALF C1",
+      "difficulty": {
+        "cefr_min": "C1",
+        "cefr_max": "C1",
+        "rank_min": 3,
+        "rank_max": 3,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 28,
+      "src_no": 28,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Le sens du travail changera-t-il avec les générations ?",
+      "level": "DALF C1",
+      "difficulty": {
+        "cefr_min": "C1",
+        "cefr_max": "C1",
+        "rank_min": 3,
+        "rank_max": 3,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 29,
+      "src_no": 29,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "Jusqu'où ira la flexibilisation de l'emploi ?",
+      "level": "DALF C2",
+      "difficulty": {
+        "cefr_min": "C2",
+        "cefr_max": "C2",
+        "rank_min": 4,
+        "rank_max": 4,
+        "source": "tag"
+      },
+      "hints": []
+    },
+    {
+      "id": 30,
+      "src_no": 30,
+      "phase": "discussion",
+      "part": 3,
+      "theme": null,
+      "text": "L'avenir du travail sera-t-il digne de ce nom ?",
+      "level": "DALF C2",
+      "difficulty": {
+        "cefr_min": "C2",
+        "cefr_max": "C2",
+        "rank_min": 4,
+        "rank_max": 4,
+        "source": "tag"
+      },
+      "hints": []
+    }
+  ]
+}
