@@ -405,9 +405,9 @@ class SkillConfig:
               "multiSelect": bool,
               "options": [{"label": str, "description": str}, ...]
             }
-        注意：当选项数 > ask_options_per_question 时，按 ask_options_per_question 个一组拆成多个
-        子问题，子问题共享同一父 key（父 id 形如 "Q1#1"、"Q1#2"），由主体
-        合并回 Q1 的 state 条目。
+        注意：当选项数 > ask_options_per_question 时，按 ask_options_per_question
+        个一组拆成多个子问题，子问题共享同一父 key（父 id 形如 "Q1#1"、"Q1#2"），
+        由主体合并回 Q1 的 state 条目。
         """
         q = self.next_question(state)
         if q is None:
@@ -429,7 +429,8 @@ class SkillConfig:
         if len(chunks) > self.constraints.questions_max_per_call:
             raise ConfigError(
                 f"{q.id} 共 {len(options)} 个选项需拆成 {len(chunks)} 组，"
-                f"超过 questions_max_per_call={self.constraints.questions_max_per_call}；"
+                "超过 questions_max_per_call="
+                f"{self.constraints.questions_max_per_call}；"
                 "尾部选项将无法触达。请提高 questions_max_per_call 或减少选项数。"
             )
         payload = []

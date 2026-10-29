@@ -93,8 +93,8 @@ md 里出现题库没有的问题、或把题库的题改了字，都算违约�
    同一话题再生成时**追加到同一份文件**、沿用 `id` 续号，不要新建第二份。
 2. **写题库**：结构照 `assets/question-bank.schema.v1.json`。`meta` 的 `skill_name` / `lang` / `kind` / `slug` /
    `topic_id` / `topic_in_pool` / `exam_family` 必须与本包身份和配置一致，`topic_label` 只写法文那一段；
-   每题带 `level`（等级标注原文，形如 `DELF B2`）与 `difficulty`（`cefr_min` / `cefr_max` / `rank_min` /
-   `rank_max` / `source`；rank 固定 B1=1 · B2=2 · C1=3 · C2=4，源标注是区间时取首末两档）。
+   每题带 `level`（等级标注原文，形如 `DELF B2`）与 `difficulty`（`cefr` / `source`；`cefr` 是单个档位
+   B1–C2，源标注为区间（`B1 → B2`）时取首档，完整区间仍由 `level` 保留）。
    **题库内不出现中文** —— 中文注记只留在配置的 `topic_pool`。
 3. **过闸门**：`python scripts/corner_bank.py check assets/questions/<slug>.json` —— 验结构、等级 ⊂ `exam_family`、
    `level` 与 `difficulty` 自洽、提示词条数、话题池对齐、整篇无中文。

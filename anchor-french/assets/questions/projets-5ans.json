@@ -48,11 +48,6 @@
       "index": 1,
       "label": "Loisirs et découvertes",
       "heading": "Partie 1 — Loisirs et découvertes",
-      "note": null,
-      "themes": [
-        "Voyages : la destination dans 5 ans",
-        "Livres : la lecture dans 5 ans"
-      ],
       "question_ids": [
         2,
         3,
@@ -70,11 +65,6 @@
       "index": 2,
       "label": "Travail et santé",
       "heading": "Partie 2 — Travail et santé",
-      "note": null,
-      "themes": [
-        "Travail : le métier dans 5 ans",
-        "Santé : le plan santé dans 5 ans"
-      ],
       "question_ids": [
         12,
         13,
@@ -92,11 +82,6 @@
       "index": 3,
       "label": "Vie matérielle et avenir",
       "heading": "Partie 3 — Vie matérielle et avenir",
-      "note": null,
-      "themes": [
-        "Dépenses : la plus grande dépense dans 5 ans",
-        "Logement : où habiter dans 5 ans"
-      ],
       "question_ids": [
         22,
         23,
@@ -116,14 +101,10 @@
       "src_no": 1,
       "phase": "brise_glace",
       "part": null,
-      "theme": null,
       "text": "Quel est ton tout premier projet pour les mois qui viennent ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -133,14 +114,10 @@
       "src_no": 2,
       "phase": "discussion",
       "part": 1,
-      "theme": "Voyages : la destination dans 5 ans",
       "text": "Quel pays rêves-tu de visiter un jour ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -150,14 +127,10 @@
       "src_no": 3,
       "phase": "discussion",
       "part": 1,
-      "theme": "Voyages : la destination dans 5 ans",
       "text": "Pourquoi cette destination t'attire-t-elle ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -167,14 +140,10 @@
       "src_no": 4,
       "phase": "discussion",
       "part": 1,
-      "theme": "Voyages : la destination dans 5 ans",
       "text": "Quelle sera ta prochaine grande destination de voyage dans les cinq prochaines années ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -184,14 +153,10 @@
       "src_no": 5,
       "phase": "discussion",
       "part": 1,
-      "theme": "Voyages : la destination dans 5 ans",
       "text": "Avec qui vas-tu partir en voyage ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -201,14 +166,10 @@
       "src_no": 6,
       "phase": "discussion",
       "part": 1,
-      "theme": "Voyages : la destination dans 5 ans",
       "text": "Que feras-tu de spécial pendant ce voyage ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -218,14 +179,10 @@
       "src_no": 7,
       "phase": "discussion",
       "part": 1,
-      "theme": "Livres : la lecture dans 5 ans",
       "text": "Aimes-tu lire ? Quel type de livre préfères-tu ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -235,14 +192,10 @@
       "src_no": 8,
       "phase": "discussion",
       "part": 1,
-      "theme": "Livres : la lecture dans 5 ans",
       "text": "Combien de livres lis-tu par an en ce moment ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -252,14 +205,10 @@
       "src_no": 9,
       "phase": "discussion",
       "part": 1,
-      "theme": "Livres : la lecture dans 5 ans",
       "text": "Quel livre veux-tu lire absolument d'ici cinq ans ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -269,14 +218,10 @@
       "src_no": 10,
       "phase": "discussion",
       "part": 1,
-      "theme": "Livres : la lecture dans 5 ans",
       "text": "Quel auteur ou quel sujet veux-tu découvrir ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -286,14 +231,10 @@
       "src_no": 11,
       "phase": "discussion",
       "part": 1,
-      "theme": "Livres : la lecture dans 5 ans",
       "text": "Où et quand vas-tu prendre le temps de lire ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -303,14 +244,10 @@
       "src_no": 12,
       "phase": "discussion",
       "part": 2,
-      "theme": "Travail : le métier dans 5 ans",
       "text": "Fais-tu un métier qui te plaît aujourd'hui ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -320,14 +257,10 @@
       "src_no": 13,
       "phase": "discussion",
       "part": 2,
-      "theme": "Travail : le métier dans 5 ans",
       "text": "Quel domaine t'intéresse pour l'avenir ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -337,14 +270,10 @@
       "src_no": 14,
       "phase": "discussion",
       "part": 2,
-      "theme": "Travail : le métier dans 5 ans",
       "text": "Quel métier veux-tu exercer dans cinq ans ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -354,14 +283,10 @@
       "src_no": 15,
       "phase": "discussion",
       "part": 2,
-      "theme": "Travail : le métier dans 5 ans",
       "text": "Que vas-tu faire pour y arriver (études, formation) ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -371,14 +296,10 @@
       "src_no": 16,
       "phase": "discussion",
       "part": 2,
-      "theme": "Travail : le métier dans 5 ans",
       "text": "Où travailleras-tu dans cinq ans ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -388,14 +309,10 @@
       "src_no": 17,
       "phase": "discussion",
       "part": 2,
-      "theme": "Santé : le plan santé dans 5 ans",
       "text": "Comment est ta santé aujourd'hui ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -405,14 +322,10 @@
       "src_no": 18,
       "phase": "discussion",
       "part": 2,
-      "theme": "Santé : le plan santé dans 5 ans",
       "text": "Fais-tu du sport en ce moment ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -422,14 +335,10 @@
       "src_no": 19,
       "phase": "discussion",
       "part": 2,
-      "theme": "Santé : le plan santé dans 5 ans",
       "text": "Quel plan de santé veux-tu suivre dans les cinq prochaines années ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -439,14 +348,10 @@
       "src_no": 20,
       "phase": "discussion",
       "part": 2,
-      "theme": "Santé : le plan santé dans 5 ans",
       "text": "Que vas-tu manger ou bouger de différent ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -456,14 +361,10 @@
       "src_no": 21,
       "phase": "discussion",
       "part": 2,
-      "theme": "Santé : le plan santé dans 5 ans",
       "text": "Avec qui vas-tu faire du sport ou des promenades ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -473,14 +374,10 @@
       "src_no": 22,
       "phase": "discussion",
       "part": 3,
-      "theme": "Dépenses : la plus grande dépense dans 5 ans",
       "text": "Comment dépenses-tu ton argent aujourd'hui ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -490,14 +387,10 @@
       "src_no": 23,
       "phase": "discussion",
       "part": 3,
-      "theme": "Dépenses : la plus grande dépense dans 5 ans",
       "text": "As-tu un budget ou des économies ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -507,14 +400,10 @@
       "src_no": 24,
       "phase": "discussion",
       "part": 3,
-      "theme": "Dépenses : la plus grande dépense dans 5 ans",
       "text": "Quelle sera ta plus grande dépense dans les cinq prochaines années ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -524,14 +413,10 @@
       "src_no": 25,
       "phase": "discussion",
       "part": 3,
-      "theme": "Dépenses : la plus grande dépense dans 5 ans",
       "text": "Pourquoi est-ce un si grand projet pour toi ?",
       "level": "DELF B1 → B2",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B2",
-        "rank_min": 1,
-        "rank_max": 2,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -541,14 +426,10 @@
       "src_no": 26,
       "phase": "discussion",
       "part": 3,
-      "theme": "Dépenses : la plus grande dépense dans 5 ans",
       "text": "Comment vas-tu financer cette dépense ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -558,14 +439,10 @@
       "src_no": 27,
       "phase": "discussion",
       "part": 3,
-      "theme": "Logement : où habiter dans 5 ans",
       "text": "Où habites-tu maintenant ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -575,14 +452,10 @@
       "src_no": 28,
       "phase": "discussion",
       "part": 3,
-      "theme": "Logement : où habiter dans 5 ans",
       "text": "Es-tu satisfait de ton logement actuel ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -592,14 +465,10 @@
       "src_no": 29,
       "phase": "discussion",
       "part": 3,
-      "theme": "Logement : où habiter dans 5 ans",
       "text": "Où vas-tu habiter dans cinq ans ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -609,14 +478,10 @@
       "src_no": 30,
       "phase": "discussion",
       "part": 3,
-      "theme": "Logement : où habiter dans 5 ans",
       "text": "Seul, en famille ou avec des amis ? Et ton logement futur sera-t-il différent ? En quoi ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []

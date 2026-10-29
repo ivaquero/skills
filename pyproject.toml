@@ -5,19 +5,12 @@ target-version = "py314"
 line-length = 88
 
 [tool.ruff.format]
-# Enable reformatting of code snippets in docstrings
 docstring-code-format = true
-# Format all docstring code snippets with a line length of 60
-docstring-code-line-length = 60
-# Use `\n` line endings for all files
-line-ending = "lf"
-# Keep markdown out of the formatter: `ruff` also formats the ```python
-# fences inside `.md`, and `line-ending = "lf"` would then rewrite the CRLF
-# fences of the packages that ship CRLF -- a diff that reads as a no-op
-# while the file's line endings really do flip.
-exclude = ["*.md"]
 
-skip-magic-trailing-comma = true
+docstring-code-line-length = 60
+line-ending = "lf"
+skip-magic-trailing-comma = false
+exclude = ["*.md"]
 
 [tool.ruff.lint]
 extend-select = [

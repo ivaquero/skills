@@ -203,8 +203,6 @@
           "index",
           "label",
           "heading",
-          "note",
-          "themes",
           "question_ids"
         ],
         "properties": {
@@ -220,20 +218,6 @@
           "heading": {
             "type": "string",
             "description": "Raw heading line from the source document, for traceability."
-          },
-          "note": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Trailing parenthetical of the heading (e.g. grammar points and level range); null when absent."
-          },
-          "themes": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Sub-topic headings inside the part, in order; empty when there are none."
           },
           "question_ids": {
             "type": "array",
@@ -256,7 +240,6 @@
           "src_no",
           "phase",
           "part",
-          "theme",
           "text",
           "level",
           "difficulty",
@@ -286,13 +269,6 @@
             ],
             "description": "Part number; null for the icebreaker and for drill items."
           },
-          "theme": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Sub-topic heading the question belongs to; null when there is none."
-          },
           "text": {
             "type": "string",
             "minLength": 1,
@@ -310,36 +286,16 @@
               "object",
               "null"
             ],
-            "description": "Normalised difficulty of this question, independent of the exam family: CEFR band plus a numeric rank, so questions are sortable and filterable. null only when neither a level tag nor a difficulty section exists.",
+            "description": "Normalised difficulty of this question, independent of the exam family: a single CEFR band, so questions are sortable and filterable by CEFR alone. null only when neither a level tag nor a difficulty section exists.",
             "required": [
-              "cefr_min",
-              "cefr_max",
-              "rank_min",
-              "rank_max",
+              "cefr",
               "source"
             ],
             "properties": {
-              "cefr_min": {
+              "cefr": {
                 "type": "string",
                 "pattern": "^[ABC][12]$",
-                "description": "Lowest CEFR band of the question: the band itself, or the first band of a range such as B1 → B2."
-              },
-              "cefr_max": {
-                "type": "string",
-                "pattern": "^[ABC][12]$",
-                "description": "Highest CEFR band; equal to cefr_min when the question has a single band."
-              },
-              "rank_min": {
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 4,
-                "description": "Numeric form of cefr_min: B1=1, B2=2, C1=3, C2=4."
-              },
-              "rank_max": {
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 4,
-                "description": "Numeric form of cefr_max."
+                "description": "CEFR band of the question; for a range such as B1 → B2 use the lower band, the full range stays in level."
               },
               "source": {
                 "type": "string",

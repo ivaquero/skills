@@ -49,8 +49,6 @@
       "index": 1,
       "label": "Souvenirs de voyage",
       "heading": "Partie 1 — Souvenirs de voyage (passé composé, DELF B1→DELF B2)",
-      "note": "passé composé, DELF B1→DELF B2",
-      "themes": [],
       "question_ids": [
         2,
         3,
@@ -68,8 +66,6 @@
       "index": 2,
       "label": "Voyages imaginaires",
       "heading": "Partie 2 — Voyages imaginaires (conditionnel, DELF B1→DALF C1)",
-      "note": "conditionnel, DELF B1→DALF C1",
-      "themes": [],
       "question_ids": [
         12,
         13,
@@ -87,8 +83,6 @@
       "index": 3,
       "label": "Voyager et société",
       "heading": "Partie 3 — Voyager et société (débat, DELF B1→DALF C2)",
-      "note": "débat, DELF B1→DALF C2",
-      "themes": [],
       "question_ids": [
         22,
         23,
@@ -109,14 +103,10 @@
       "src_no": null,
       "phase": "brise_glace",
       "part": null,
-      "theme": null,
       "text": "Où es-tu allé(e) en voyage la dernière fois ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -126,14 +116,10 @@
       "src_no": 1,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Avec qui es-tu parti(e) ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -143,14 +129,10 @@
       "src_no": 2,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Qu'est-ce que tu as fait là-bas ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -160,14 +142,10 @@
       "src_no": 3,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Quel plat as-tu le plus aimé ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -177,14 +155,10 @@
       "src_no": 4,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "As-tu réservé ton billet en ligne ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -194,14 +168,10 @@
       "src_no": 5,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Raconte une anecdote marrante qui t'est arrivée en voyage.",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -211,14 +181,10 @@
       "src_no": 6,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Quelle a été ta destination la plus inoubliable, et pourquoi ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -228,14 +194,10 @@
       "src_no": 7,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "As-tu découvert une culture très différente de la tienne ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -245,14 +207,10 @@
       "src_no": 8,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "As-tu déjà eu un problème pendant un voyage ? Comment as-tu réagi ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -262,14 +220,10 @@
       "src_no": 9,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Le voyage a-t-il changé ton regard sur le monde ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -279,14 +233,10 @@
       "src_no": 10,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Si tu devais choisir un seul souvenir à garder, lequel serait-ce ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -296,14 +246,10 @@
       "src_no": 11,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Si tu avais plus d'argent, où irais-tu ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -313,14 +259,10 @@
       "src_no": 12,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Avec qui voudrais-tu partir en voyage ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -330,14 +272,10 @@
       "src_no": 13,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Que ferais-tu si tu pouvais voyager gratuitement ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -347,14 +285,10 @@
       "src_no": 14,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Quand partirais-tu si tu avais une semaine libre ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -364,14 +298,10 @@
       "src_no": 15,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Si tu devais vivre dans une autre ville, laquelle choisirais-tu ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -381,14 +311,10 @@
       "src_no": 16,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Que conseillerais-tu à un ami qui visite ton pays ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -398,14 +324,10 @@
       "src_no": 17,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Si le climat changeait, comment tes habitudes de voyage changeraient-elles ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -415,14 +337,10 @@
       "src_no": 18,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Quel moyen de transport choisirais-tu pour un long voyage ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -432,14 +350,10 @@
       "src_no": 19,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Si tu pouvais remonter le temps, quel voyage referais-tu ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -449,14 +363,10 @@
       "src_no": 20,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Si tout le monde pouvait voyager, le monde en serait-il meilleur, ou plus uniforme ?",
       "level": "DALF C1",
       "difficulty": {
-        "cefr_min": "C1",
-        "cefr_max": "C1",
-        "rank_min": 3,
-        "rank_max": 3,
+        "cefr": "C1",
         "source": "tag"
       },
       "hints": []
@@ -466,14 +376,10 @@
       "src_no": 21,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Préfères-tu voyager seul(e) ou accompagné(e) ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -483,14 +389,10 @@
       "src_no": 22,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Une langue étrangère t'a-t-elle aidé(e) en voyage ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -500,14 +402,10 @@
       "src_no": 23,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Que ferais-tu pour réduire l'impact écologique de tes voyages ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -517,14 +415,10 @@
       "src_no": 24,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Préférerais-tu un voyage luxe ou une aventure modeste ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -534,14 +428,10 @@
       "src_no": 25,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Que ferais-tu si tu étais perdu(e), sans téléphone, dans une ville étrangère ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -551,14 +441,10 @@
       "src_no": 26,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Combien de pays as-tu visités, et lequel recommanderais-tu ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -568,14 +454,10 @@
       "src_no": 27,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Certains disent que voyager seul est mieux — es-tu d'accord ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -585,14 +467,10 @@
       "src_no": 28,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Il faut que les touristes respectent la culture locale — que penses-tu ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -602,14 +480,10 @@
       "src_no": 29,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Le tourisme de masse détruit les sites célèbres ; que faudrait-il faire ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -619,14 +493,10 @@
       "src_no": 30,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Le voyage « transforme » les gens — est-ce toujours vrai selon toi ?",
       "level": "DALF C2",
       "difficulty": {
-        "cefr_min": "C2",
-        "cefr_max": "C2",
-        "rank_min": 4,
-        "rank_max": 4,
+        "cefr": "C2",
         "source": "tag"
       },
       "hints": []

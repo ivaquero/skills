@@ -52,8 +52,6 @@
       "index": 1,
       "label": "Mes débuts avec l'anglais",
       "heading": "Partie 1 — Mes débuts avec l'anglais",
-      "note": null,
-      "themes": [],
       "question_ids": [
         2,
         3,
@@ -70,8 +68,6 @@
       "index": 2,
       "label": "Les moments qui m'ont fait progresser",
       "heading": "Partie 2 — Les moments qui m'ont fait progresser",
-      "note": null,
-      "themes": [],
       "question_ids": [
         11,
         12,
@@ -89,8 +85,6 @@
       "index": 3,
       "label": "Les langues et la société",
       "heading": "Partie 3 — Les langues et la société",
-      "note": null,
-      "themes": [],
       "question_ids": [
         21,
         22,
@@ -111,14 +105,10 @@
       "src_no": 1,
       "phase": "brise_glace",
       "part": null,
-      "theme": null,
       "text": "Quand as-tu commencé à apprendre l'anglais ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -133,14 +123,10 @@
       "src_no": 2,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Où apprenais-tu l'anglais quand tu étais à l'école ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -156,14 +142,10 @@
       "src_no": 3,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Comment était ton premier professeur d'anglais ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -179,14 +161,10 @@
       "src_no": 4,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Quelle était ta première impression de cette langue ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -202,14 +180,10 @@
       "src_no": 5,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Qu'est-ce que tu aimais, et qu'est-ce que tu n'aimais pas, dans les cours d'anglais ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -225,14 +199,10 @@
       "src_no": 6,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Qu'est-ce que tu faisais pour mémoriser le vocabulaire ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -248,14 +218,10 @@
       "src_no": 7,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Avais-tu peur de parler anglais devant la classe ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -271,14 +237,10 @@
       "src_no": 8,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Quel mot ou quelle expression anglaise as-tu appris(e) en premier ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -294,14 +256,10 @@
       "src_no": 9,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Comment se passait un cours d'anglais typique à cette époque ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -317,14 +275,10 @@
       "src_no": 10,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Quel souvenir d'école lié à l'anglais gardes-tu avec le plus de tendresse ?",
       "level": "DELF B1 → B2",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B2",
-        "rank_min": 1,
-        "rank_max": 2,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -340,14 +294,10 @@
       "src_no": 11,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "As-tu déjà voyagé dans un pays anglophone ? Raconte.",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -363,14 +313,10 @@
       "src_no": 12,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Comment as-tu le plus progressé : à l'école, en voyage ou seul(e) ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -386,14 +332,10 @@
       "src_no": 13,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Quel film ou quelle série t'a aidé(e) à mieux comprendre l'anglais ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -409,14 +351,10 @@
       "src_no": 14,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "As-tu déjà parlé anglais avec un étranger ? Comment cela s'est-il passé ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -432,14 +370,10 @@
       "src_no": 15,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Quelle chanson anglaise as-tu essayé(e) de comprendre mot à mot ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -455,14 +389,10 @@
       "src_no": 16,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "As-tu déjà passé un examen d'anglais ? Comment cela s'est-il déroulé ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -478,14 +408,10 @@
       "src_no": 17,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Qu'est-ce qui t'a le plus aidé(e) : écouter, lire ou parler ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -501,14 +427,10 @@
       "src_no": 18,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "As-tu déjà abandonné l'anglais, puis recommencé ? Raconte.",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -524,14 +446,10 @@
       "src_no": 19,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Quel progrès as-tu remarqué au fil des années ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -547,14 +465,10 @@
       "src_no": 20,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Si tu pouvais recommencer ton apprentissage, que changerais-tu ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -570,14 +484,10 @@
       "src_no": 21,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Pourquoi l'anglais est-il devenu si important aujourd'hui ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -593,14 +503,10 @@
       "src_no": 22,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Faut-il commencer l'anglais dès l'école primaire ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -616,14 +522,10 @@
       "src_no": 23,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Les traducteurs automatiques et l'intelligence artificielle remplaceront-ils l'apprentissage des langues ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -639,14 +541,10 @@
       "src_no": 24,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Vaut-il mieux parler plusieurs langues un peu, ou une seule très bien ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -662,14 +560,10 @@
       "src_no": 25,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "L'anglais menace-t-il les autres langues et les autres cultures ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -685,14 +579,10 @@
       "src_no": 26,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Le niveau d'anglais crée-t-il des inégalités entre les personnes ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -708,14 +598,10 @@
       "src_no": 27,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Peut-on vraiment apprendre une langue après quarante ans ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -731,14 +617,10 @@
       "src_no": 28,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Qu'est-ce qui compte le plus : la grammaire ou la confiance en soi ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -754,14 +636,10 @@
       "src_no": 29,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Apprendre une langue, est-ce surtout une question de méthode ou de motivation ?",
       "level": "DALF C1",
       "difficulty": {
-        "cefr_min": "C1",
-        "cefr_max": "C1",
-        "rank_min": 3,
-        "rank_max": 3,
+        "cefr": "C1",
         "source": "tag"
       },
       "hints": [
@@ -777,14 +655,10 @@
       "src_no": 30,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Le plurilinguisme devrait-il être un droit ou une obligation ?",
       "level": "DALF C1",
       "difficulty": {
-        "cefr_min": "C1",
-        "cefr_max": "C1",
-        "rank_min": 3,
-        "rank_max": 3,
+        "cefr": "C1",
         "source": "tag"
       },
       "hints": [

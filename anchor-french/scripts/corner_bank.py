@@ -5,11 +5,9 @@
 
 子命令（`python scripts/corner_bank.py ...`）：
 
-| 子命令                | 作用                                                            |
-| --------------------- | --------------------------------------------------------------- |
-| `check [PATH ...]`    | 校验题库结构、取值、与配置话题池的对齐；缺省校验全部题库        |
-| `dump BANK [--part N]`| 按 md 语法输出题目块（题文 + 等级 + 提示词），供粘进主持脚本     |
-| `verify BANK MD`      | 回查 md 里的题目是否与题库逐条一致（题文 / 等级 / 提示词 / 顺序）|
+- `check [PATH ...]`：校验题库结构、取值、与话题池对齐；缺省校验全部题库。
+- `dump BANK [--part N]`：按 md 语法输出题目块（题文 + 等级 + 提示词）。
+- `verify BANK MD`：回查 md 的题目与题库逐条一致（题文 / 等级 / 提示词 / 顺序）。
 
 退出码：`0` 通过；`1` 有发现；`2` 用法错或文件读不了。
 """
@@ -23,13 +21,14 @@ from pathlib import Path
 
 from corner_config import LANG, SKILL_NAME, assets_dir, load_config
 
-__all__ = ["BankError", "load_bank", "validate_bank", "dump_questions", "verify_md"]
+__all__ = ["BankError", "dump_questions", "load_bank", "validate_bank", "verify_md"]
 
 QUESTIONS_DIRNAME = "questions"
 
 # 与 schema 同步的取值域（schema 是给人看的，这里是给闸门用的）。
 KINDS = frozenset({"corner_script", "drill"})
 RANK = {"B1": 1, "B2": 2, "C1": 3, "C2": 4}
+LEVEL_BANDS = re.compile(r"[A-C][12]")
 LEVEL_TAG = re.compile(
     r"[（(]\s*((?:DELF|DALF|DELE)\s+[A-C][12](?:\s*(?:→|->)\s*[A-C][12])?)\s*[）)]"
 )
@@ -48,15 +47,38 @@ INDEX_HEADING = {
 }
 
 META_KEYS = (
-    "skill_name", "lang", "kind", "slug", "topic_id", "topic_in_pool",
-    "topic_label", "title", "source_doc", "source_title", "extracted_on",
-    "exam_family", "levels", "level_span", "difficulty_span", "grammar",
-    "hint_label", "hint_count_range", "question_count", "part_count",
+    "skill_name",
+    "lang",
+    "kind",
+    "slug",
+    "topic_id",
+    "topic_in_pool",
+    "topic_label",
+    "title",
+    "source_doc",
+    "source_title",
+    "extracted_on",
+    "exam_family",
+    "levels",
+    "level_span",
+    "difficulty_span",
+    "grammar",
+    "hint_label",
+    "hint_count_range",
+    "question_count",
+    "part_count",
 )
 QUESTION_KEYS = (
-    "id", "src_no", "phase", "part", "theme", "text", "level", "difficulty", "hints",
+    "id",
+    "src_no",
+    "phase",
+    "part",
+    "text",
+    "level",
+    "difficulty",
+    "hints",
 )
-DIFFICULTY_KEYS = ("cefr_min", "cefr_max", "rank_min", "rank_max", "source")
+DIFFICULTY_KEYS = ("cefr", "source")
 
 
 class BankError(Exception):
@@ -97,7 +119,10 @@ def _norm(text: str) -> str:
 
 
 def _pool_of(cfg) -> dict[str, str]:
-    """话题池 id → label；`cfg` 可以是 `SkillConfig`，也可以是裸配置 dict（审计那段手上只有 dict）。"""
+    """话题池 id → label；`cfg` 可以是 `SkillConfig`，也可以是裸配置 dict。
+
+    审计那一段手上只有裸 dict。
+    """
     if cfg is None:
         return {}
     pool = getattr(cfg, "topic_pool", None)
@@ -118,7 +143,9 @@ def _validate_meta(meta: dict, path: Path, doc: dict, cfg, fails: list[str]) -> 
     if missing:
         fails.append(f"{tag} meta 缺键: {', '.join(missing)}")
     if meta.get("skill_name") != SKILL_NAME:
-        fails.append(f"{tag} meta.skill_name={meta.get('skill_name')!r} 应为 {SKILL_NAME!r}")
+        fails.append(
+            f"{tag} meta.skill_name={meta.get('skill_name')!r} 应为 {SKILL_NAME!r}"
+        )
     if meta.get("lang") != LANG:
         fails.append(f"{tag} meta.lang={meta.get('lang')!r} 应为 {LANG!r}")
     if meta.get("kind") not in KINDS:
@@ -129,9 +156,11 @@ def _validate_meta(meta: dict, path: Path, doc: dict, cfg, fails: list[str]) -> 
         fails.append(f"{tag} meta.extracted_on 应为 YYYY-MM-DD")
     if meta.get("topic_in_pool") is not (meta.get("topic_id") is not None):
         fails.append(f"{tag} meta.topic_in_pool 与 topic_id 是否为 null 不一致")
-    for k in ("topic_label", "title", "source_doc"):
-        if not str(meta.get(k) or "").strip():
-            fails.append(f"{tag} meta.{k} 为空")
+    fails.extend(
+        f"{tag} meta.{k} 为空"
+        for k in ("topic_label", "title", "source_doc")
+        if not str(meta.get(k) or "").strip()
+    )
     if not meta.get("levels") and meta.get("kind") == "corner_script":
         fails.append(f"{tag} corner_script 应有 meta.levels")
     # 话题池对齐：入池话题的 id 必须在配置里，label 也应能对上配置那一项的文案。
@@ -162,7 +191,9 @@ def _validate_questions(bank: dict, path: Path, fails: list[str]) -> None:
     meta = bank.get("meta", {})
     hint_label = meta.get("hint_label")
     rng = meta.get("hint_count_range")
-    families = {f.strip() for f in str(meta.get("exam_family", "")).split("/") if f.strip()}
+    families = {
+        f.strip() for f in str(meta.get("exam_family", "")).split("/") if f.strip()
+    }
     for i, q in enumerate(qs, 1):
         if not isinstance(q, dict):
             fails.append(f"{tag} 第 {i} 题不是对象")
@@ -194,15 +225,15 @@ def _validate_questions(bank: dict, path: Path, fails: list[str]) -> None:
             if miss_d:
                 fails.append(f"{tag} 第 {i} 题 difficulty 缺键: {', '.join(miss_d)}")
             else:
-                lo, hi = d["cefr_min"], d["cefr_max"]
-                if lo not in RANK or hi not in RANK:
-                    fails.append(f"{tag} 第 {i} 题 difficulty 的 cefr 非法: {lo}/{hi}")
-                elif (RANK[lo], RANK[hi]) != (d["rank_min"], d["rank_max"]):
-                    fails.append(f"{tag} 第 {i} 题 difficulty 的 cefr 与 rank 不一致")
-                if q["level"] and not str(q["level"]).endswith(str(hi)):
-                    fails.append(
-                        f"{tag} 第 {i} 题 level={q['level']!r} 与 cefr_max={hi} 不符"
-                    )
+                cefr = d["cefr"]
+                if cefr not in RANK:
+                    fails.append(f"{tag} 第 {i} 题 difficulty 的 cefr 非法: {cefr!r}")
+                elif q["level"]:
+                    bands = LEVEL_BANDS.findall(str(q["level"]))
+                    if bands and bands[0] != cefr:
+                        fails.append(
+                            f"{tag} 第 {i} 题 level={q['level']!r} 与 cefr={cefr} 不符"
+                        )
                 if d["source"] == "tag" and not q["level"]:
                     fails.append(f"{tag} 第 {i} 题 source=tag 但无等级标注")
                 if d["source"] == "section" and q["level"]:
@@ -211,23 +242,26 @@ def _validate_questions(bank: dict, path: Path, fails: list[str]) -> None:
             fails.append(f"{tag} 第 {i} 题 hints 应为数组")
         elif q["hints"] and not hint_label:
             fails.append(f"{tag} 第 {i} 题有提示词，但 meta.hint_label 为空")
-        elif q["hints"] and isinstance(rng, list) and len(rng) == 2:
-            if not rng[0] <= len(q["hints"]) <= rng[1]:
-                fails.append(
-                    f"{tag} 第 {i} 题提示词 {len(q['hints'])} 条，越界 {rng[0]}–{rng[1]}"
-                )
+        elif (
+            q["hints"]
+            and isinstance(rng, list)
+            and len(rng) == 2
+            and not rng[0] <= len(q["hints"]) <= rng[1]
+        ):
+            fails.append(
+                f"{tag} 第 {i} 题提示词 {len(q['hints'])} 条，越界 {rng[0]}–{rng[1]}"
+            )
     ids = {q.get("id") for q in qs if isinstance(q, dict)}
     for p in bank.get("parts", []):
         ghost = [i for i in p.get("question_ids", []) if i not in ids]
         if ghost:
             fails.append(f"{tag} part {p.get('index')} 引用不存在的题号 {ghost}")
-    counts = {
-        pid: sum(1 for q in qs if q.get("phase") == pid)
-        for pid in phases
-    }
-    for p in bank.get("phases", []):
-        if p.get("question_count") != counts.get(p.get("id")):
-            fails.append(f"{tag} phase {p.get('id')} 的 question_count 与实题数不符")
+    counts = {pid: sum(1 for q in qs if q.get("phase") == pid) for pid in phases}
+    fails.extend(
+        f"{tag} phase {p.get('id')} 的 question_count 与实题数不符"
+        for p in bank.get("phases", [])
+        if p.get("question_count") != counts.get(p.get("id"))
+    )
 
 
 def validate_bank(path: str | Path, cfg=None) -> list[str]:
@@ -238,9 +272,8 @@ def validate_bank(path: str | Path, cfg=None) -> list[str]:
     except BankError as e:
         return [str(e)]
     fails: list[str] = []
-    for key in ("meta", "phases", "parts", "questions"):
-        if key not in bank:
-            fails.append(f"{p.name} 缺顶层键 {key}")
+    missing = [k for k in ("meta", "phases", "parts", "questions") if k not in bank]
+    fails.extend(f"{p.name} 缺顶层键 {k}" for k in missing)
     if fails:
         return fails
     _validate_meta(bank["meta"], p, bank, cfg, fails)
@@ -271,7 +304,9 @@ def dump_questions(bank: dict, part: int | None = None) -> str:
     """把题库（可只取一部分）渲染成可直接粘进主持脚本的 md 片段。"""
     meta = bank["meta"]
     hint_label = meta.get("hint_label")
-    label_of_part = {p["index"]: p["heading"].lstrip("#").strip() for p in bank["parts"]}
+    label_of_part = {
+        p["index"]: p["heading"].lstrip("#").strip() for p in bank["parts"]
+    }
     out: list[str] = []
     current_phase = None
     for q in bank["questions"]:
@@ -337,12 +372,14 @@ def _parse_md_questions(md: str, hint_label: str | None) -> list[dict]:
             elif hints:
                 hints.extend(h.strip() for h in chunk.split("·") if h.strip())
             j += 1
-        items.append({
-            "no": int(numbered.group(1)) if numbered else None,
-            "text": _norm(text),
-            "level": level,
-            "hints": hints,
-        })
+        items.append(
+            {
+                "no": int(numbered.group(1)) if numbered else None,
+                "text": _norm(text),
+                "level": level,
+                "hints": hints,
+            }
+        )
         i = j
     return items
 
@@ -359,14 +396,17 @@ def verify_md(bank: dict, md_path: str | Path) -> list[str]:
     fails: list[str] = []
     if len(items) != len(qs):
         fails.append(
-            f"{p.name} 有 {len(items)} 条题目，题库 {bank['meta']['slug']} 有 {len(qs)} 条"
+            f"{p.name} 有 {len(items)} 条题目，"
+            f"题库 {bank['meta']['slug']} 有 {len(qs)} 条"
             f"（md 的问题必须与题库一致，多出或缺失都不行）"
         )
     for idx, (item, q) in enumerate(zip(items, qs), 1):
         where = f"{p.name} 第 {idx} 条"
         if item["text"] != _norm(q["text"]):
             fails.append(
-                f"{where}题文与题库不符\n    md  : {item['text']}\n    题库: {_norm(q['text'])}"
+                f"{where}题文与题库不符\n"
+                f"    md  : {item['text']}\n"
+                f"    题库: {_norm(q['text'])}"
             )
         if q["level"] and item["level"] != q["level"]:
             fails.append(f"{where}等级标注={item['level']!r}，题库为 {q['level']!r}")
@@ -375,9 +415,9 @@ def verify_md(bank: dict, md_path: str | Path) -> list[str]:
                 f"{where}提示词与题库不符\n    md  : {' · '.join(item['hints'])}\n"
                 f"    题库: {' · '.join(q['hints'])}"
             )
-        if item["no"] is not None and idx > 1 and items[idx - 2]["no"] is not None:
-            if item["no"] != items[idx - 2]["no"] + 1:
-                fails.append(f"{where}编号 {item['no']} 与上一条不连续")
+        prev_no = items[idx - 2]["no"] if idx > 1 else None
+        if item["no"] is not None and prev_no is not None and item["no"] != prev_no + 1:
+            fails.append(f"{where}编号 {item['no']} 与上一条不连续")
     numbers = [it["no"] for it in items if it["no"] is not None]
     if numbers and numbers[0] != 1:
         fails.append(f"{p.name} 题目编号应从 1 起，实际从 {numbers[0]} 起")
@@ -431,9 +471,11 @@ def main(argv: list[str] | None = None) -> int:
         bank = load_bank(rest[0])
         part = None
         if "--part" in rest:
+            idx = rest.index("--part")
+            raw = rest[idx + 1] if idx + 1 < len(rest) else ""
             try:
-                part = int(rest[rest.index("--part") + 1])
-            except (IndexError, ValueError):
+                part = int(raw)
+            except ValueError:
                 return _report(["--part 需要一个整数"], "", code=2)
         sys.stdout.write(dump_questions(bank, part))
         return 0
@@ -443,7 +485,9 @@ def main(argv: list[str] | None = None) -> int:
             return _report(["用法: verify BANK MD"], "", code=2)
         bank = load_bank(rest[0])
         fails = verify_md(bank, rest[1])
-        return _report(fails, f"{Path(rest[1]).name} 与题库 {bank['meta']['slug']} 逐条一致")
+        return _report(
+            fails, f"{Path(rest[1]).name} 与题库 {bank['meta']['slug']} 逐条一致"
+        )
 
     return _report([f"未知子命令: {cmd}"], "", code=2)
 

@@ -102,7 +102,8 @@ def audit_identity(cfg: dict, md: str) -> list[str]:
     found = sorted(p.name for p in assets_dir().glob("*-corner-config.json"))
     if found != [DEFAULT_CONFIG_NAME]:
         fails.append(
-            f"[{SKILL_NAME}] assets/ 应恰好包含 {DEFAULT_CONFIG_NAME}，实际: {found or '（无）'}"
+            f"[{SKILL_NAME}] assets/ 应恰好包含 {DEFAULT_CONFIG_NAME}，"
+            f"实际: {found or '（无）'}"
         )
         if DEFAULT_CONFIG_NAME not in found:
             return fails  # 缺本包配置，后续检查无意义
@@ -111,7 +112,8 @@ def audit_identity(cfg: dict, md: str) -> list[str]:
     fm_name = m.group(1) if m else "<none>"
     if fm_name != SKILL_NAME:
         fails.append(
-            f"[{SKILL_NAME}] {SKILL_MD_NAME} frontmatter name={fm_name!r} != {SKILL_NAME!r}"
+            f"[{SKILL_NAME}] {SKILL_MD_NAME} frontmatter "
+            f"name={fm_name!r} != {SKILL_NAME!r}"
         )
     meta_name = cfg["meta"]["skill_name"]
     if meta_name != SKILL_NAME:
@@ -137,7 +139,8 @@ def _remote_schema_ref(cfg: dict) -> str | None:
 
 
 def audit_schema(cfg: dict) -> list[str]:
-    """编辑器 schema：`$schema` 指向包内真实存在的 JSON Schema，且配置满足其 `required`。
+    """编辑器 schema：`$schema` 指向包内真实存在的 JSON Schema，
+    且配置满足其 `required`。
 
     只做「引用可解析 + 顶层必填键齐备」这一层轻量校验（脚本仅依赖标准库，不引入
     JSON Schema 校验器）；取值域的完整校验交给编辑器的 schema 支持。远端 URL 本包
@@ -220,7 +223,8 @@ def audit(cfg: dict, md: str) -> list[str]:
         )
         if not row:
             fails.append(
-                f"{tag} 「环节时间分配与规模备注」缺行或数值不符: {stem} / {pct_txt} / {slot['minutes']} min"
+                f"{tag} 「环节时间分配与规模备注」缺行或数值不符: "
+                f"{stem} / {pct_txt} / {slot['minutes']} min"
             )
 
     # 5) style
@@ -275,7 +279,8 @@ def audit(cfg: dict, md: str) -> list[str]:
                 )
         if q.get("allow_custom") and "自定义" not in md:
             fails.append(
-                f"{tag} {q['id']} 开启 allow_custom，但 {SKILL_MD_NAME} 未出现「自定义」说明"
+                f"{tag} {q['id']} 开启 allow_custom，"
+                f"但 {SKILL_MD_NAME} 未出现「自定义」说明"
             )
 
     # 10) 内容纯度：包内不得引用其它语言的配置文件名

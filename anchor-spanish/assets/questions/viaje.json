@@ -48,8 +48,6 @@
       "index": 1,
       "label": "Vuestros viajes",
       "heading": "Parte 1 — Vuestros viajes",
-      "note": null,
-      "themes": [],
       "question_ids": [
         2,
         3,
@@ -66,8 +64,6 @@
       "index": 2,
       "label": "El viaje que te marcó",
       "heading": "Parte 2 — El viaje que te marcó",
-      "note": null,
-      "themes": [],
       "question_ids": [
         11,
         12,
@@ -85,8 +81,6 @@
       "index": 3,
       "label": "Viajar y la sociedad",
       "heading": "Parte 3 — Viajar y la sociedad",
-      "note": null,
-      "themes": [],
       "question_ids": [
         21,
         22,
@@ -107,14 +101,10 @@
       "src_no": 1,
       "phase": "rompehielos",
       "part": null,
-      "theme": null,
       "text": "¿A qué ciudad o país viajaste por primera vez? ¿Qué fue lo primero que hiciste al llegar?",
       "level": "DELE B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -124,14 +114,10 @@
       "src_no": 2,
       "phase": "discusion",
       "part": 1,
-      "theme": null,
       "text": "¿Adónde viajaste el año pasado? ¿Con quién fuiste?",
       "level": "DELE B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -141,14 +127,10 @@
       "src_no": 3,
       "phase": "discusion",
       "part": 1,
-      "theme": null,
       "text": "¿Qué visitaste en tu último viaje? ¿Qué lugar te gustó más y por qué?",
       "level": "DELE B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -158,14 +140,10 @@
       "src_no": 4,
       "phase": "discusion",
       "part": 1,
-      "theme": null,
       "text": "Cuenta una anécdota divertida o inesperada que te ocurrió durante un viaje.",
       "level": "DELE B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -175,14 +153,10 @@
       "src_no": 5,
       "phase": "discusion",
       "part": 1,
-      "theme": null,
       "text": "¿Qué plato o comida probaste por primera vez en un viaje? ¿Qué te pareció?",
       "level": "DELE B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -192,14 +166,10 @@
       "src_no": 6,
       "phase": "discusion",
       "part": 1,
-      "theme": null,
       "text": "Describe un viaje en el que algo salió mal: ¿qué sucedió y cómo lo resolviste?",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -209,14 +179,10 @@
       "src_no": 7,
       "phase": "discusion",
       "part": 1,
-      "theme": null,
       "text": "¿Qué lugar te sorprendió más de lo que esperabas? ¿Por qué?",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -226,14 +192,10 @@
       "src_no": 8,
       "phase": "discusion",
       "part": 1,
-      "theme": null,
       "text": "De todos tus viajes, ¿cuál fue el más divertido? Cuéntanos por qué.",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -243,14 +205,10 @@
       "src_no": 9,
       "phase": "discusion",
       "part": 1,
-      "theme": null,
       "text": "¿Qué persona que conociste viajando te dejó una huella especial?",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -260,14 +218,10 @@
       "src_no": 10,
       "phase": "discusion",
       "part": 1,
-      "theme": null,
       "text": "Compara dos viajes que hiciste: ¿cuál fue mejor y por qué?",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -277,14 +231,10 @@
       "src_no": 11,
       "phase": "discusion",
       "part": 2,
-      "theme": null,
       "text": "¿Cuál fue el viaje más importante de tu vida? ¿Por qué?",
       "level": "DELE B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -294,14 +244,10 @@
       "src_no": 12,
       "phase": "discusion",
       "part": 2,
-      "theme": null,
       "text": "¿Qué viaje hiciste de niño o de joven y todavía recuerdas? ¿Qué pasó?",
       "level": "DELE B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -311,14 +257,10 @@
       "src_no": 13,
       "phase": "discusion",
       "part": 2,
-      "theme": null,
       "text": "¿Hubo un viaje que cambió tu manera de ver las cosas? ¿En qué te cambió?",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -328,14 +270,10 @@
       "src_no": 14,
       "phase": "discusion",
       "part": 2,
-      "theme": null,
       "text": "¿Qué dificultad o imprevisto tuviste en un viaje y qué aprendiste de ello?",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -345,14 +283,10 @@
       "src_no": 15,
       "phase": "discusion",
       "part": 2,
-      "theme": null,
       "text": "Describe un momento de un viaje que te emocionó o te conmovió.",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -362,14 +296,10 @@
       "src_no": 16,
       "phase": "discusion",
       "part": 2,
-      "theme": null,
       "text": "¿Qué viaje te hizo conocer a alguien importante en tu vida?",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -379,14 +309,10 @@
       "src_no": 17,
       "phase": "discusion",
       "part": 2,
-      "theme": null,
       "text": "¿Qué lugar dejó una impresión tan fuerte que decidiste volver?",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -396,14 +322,10 @@
       "src_no": 18,
       "phase": "discusion",
       "part": 2,
-      "theme": null,
       "text": "¿Volverías a repetir aquel viaje que te marcó? ¿Qué harías de forma distinta?",
       "level": "DELE C1",
       "difficulty": {
-        "cefr_min": "C1",
-        "cefr_max": "C1",
-        "rank_min": 3,
-        "rank_max": 3,
+        "cefr": "C1",
         "source": "tag"
       },
       "hints": []
@@ -413,14 +335,10 @@
       "src_no": 19,
       "phase": "discusion",
       "part": 2,
-      "theme": null,
       "text": "Si pudieras revivir un solo día de un viaje, ¿cuál elegirías y por qué?",
       "level": "DELE C1",
       "difficulty": {
-        "cefr_min": "C1",
-        "cefr_max": "C1",
-        "rank_min": 3,
-        "rank_max": 3,
+        "cefr": "C1",
         "source": "tag"
       },
       "hints": []
@@ -430,14 +348,10 @@
       "src_no": 20,
       "phase": "discusion",
       "part": 2,
-      "theme": null,
       "text": "¿Qué viaje te hizo comprender algo nuevo sobre ti mismo o sobre el mundo?",
       "level": "DELE C1",
       "difficulty": {
-        "cefr_min": "C1",
-        "cefr_max": "C1",
-        "rank_min": 3,
-        "rank_max": 3,
+        "cefr": "C1",
         "source": "tag"
       },
       "hints": []
@@ -447,14 +361,10 @@
       "src_no": 21,
       "phase": "discusion",
       "part": 3,
-      "theme": null,
       "text": "¿Cómo cambió el turismo en tu ciudad o en tu país en los últimos años?",
       "level": "DELE B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": []
@@ -464,14 +374,10 @@
       "src_no": 22,
       "phase": "discusion",
       "part": 3,
-      "theme": null,
       "text": "¿Qué consecuencias positivas y negativas trajo el turismo de masas?",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -481,14 +387,10 @@
       "src_no": 23,
       "phase": "discusion",
       "part": 3,
-      "theme": null,
       "text": "¿Se viaja hoy de forma diferente a como se viajaba antes? ¿En qué lo notaste?",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -498,14 +400,10 @@
       "src_no": 24,
       "phase": "discusion",
       "part": 3,
-      "theme": null,
       "text": "¿Qué lugar se puso de moda gracias a las redes sociales? ¿Qué opinas de ello?",
       "level": "DELE B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": []
@@ -515,14 +413,10 @@
       "src_no": 25,
       "phase": "discusion",
       "part": 3,
-      "theme": null,
       "text": "¿El turismo protege o destruye los lugares que visita? Defiende tu postura.",
       "level": "DELE C1",
       "difficulty": {
-        "cefr_min": "C1",
-        "cefr_max": "C1",
-        "rank_min": 3,
-        "rank_max": 3,
+        "cefr": "C1",
         "source": "tag"
       },
       "hints": []
@@ -532,14 +426,10 @@
       "src_no": 26,
       "phase": "discusion",
       "part": 3,
-      "theme": null,
       "text": "¿Deberíamos viajar menos para cuidar el planeta? Argumenta tu respuesta.",
       "level": "DELE C1",
       "difficulty": {
-        "cefr_min": "C1",
-        "cefr_max": "C1",
-        "rank_min": 3,
-        "rank_max": 3,
+        "cefr": "C1",
         "source": "tag"
       },
       "hints": []
@@ -549,14 +439,10 @@
       "src_no": 27,
       "phase": "discusion",
       "part": 3,
-      "theme": null,
       "text": "¿Qué pasó con los viajes durante la pandemia? ¿Qué nos enseñó aquella experiencia?",
       "level": "DELE C1",
       "difficulty": {
-        "cefr_min": "C1",
-        "cefr_max": "C1",
-        "rank_min": 3,
-        "rank_max": 3,
+        "cefr": "C1",
         "source": "tag"
       },
       "hints": []
@@ -566,14 +452,10 @@
       "src_no": 28,
       "phase": "discusion",
       "part": 3,
-      "theme": null,
       "text": "¿Cómo influyeron los viajes en la construcción de tu identidad cultural?",
       "level": "DELE C2",
       "difficulty": {
-        "cefr_min": "C2",
-        "cefr_max": "C2",
-        "rank_min": 4,
-        "rank_max": 4,
+        "cefr": "C2",
         "source": "tag"
       },
       "hints": []
@@ -583,14 +465,10 @@
       "src_no": 29,
       "phase": "discusion",
       "part": 3,
-      "theme": null,
       "text": "¿Qué papel jugaron los viajeros y los exploradores en la formación del mundo actual?",
       "level": "DELE C2",
       "difficulty": {
-        "cefr_min": "C2",
-        "cefr_max": "C2",
-        "rank_min": 4,
-        "rank_max": 4,
+        "cefr": "C2",
         "source": "tag"
       },
       "hints": []
@@ -600,14 +478,10 @@
       "src_no": 30,
       "phase": "discusion",
       "part": 3,
-      "theme": null,
       "text": "¿Cuál es, en tu opinión, el verdadero valor de viajar en la sociedad de hoy?",
       "level": "DELE C2",
       "difficulty": {
-        "cefr_min": "C2",
-        "cefr_max": "C2",
-        "rank_min": 4,
-        "rank_max": 4,
+        "cefr": "C2",
         "source": "tag"
       },
       "hints": []

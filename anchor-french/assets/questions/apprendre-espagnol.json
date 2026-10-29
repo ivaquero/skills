@@ -53,8 +53,6 @@
       "index": 1,
       "label": "Mes débuts en autodidacte",
       "heading": "Partie 1 — Mes débuts en autodidacte",
-      "note": null,
-      "themes": [],
       "question_ids": [
         2,
         3,
@@ -71,8 +69,6 @@
       "index": 2,
       "label": "Ce qui m'a fait avancer seul",
       "heading": "Partie 2 — Ce qui m'a fait avancer seul(e)",
-      "note": "e",
-      "themes": [],
       "question_ids": [
         11,
         12,
@@ -90,8 +86,6 @@
       "index": 3,
       "label": "Apprendre seul : jusqu'où ?",
       "heading": "Partie 3 — Apprendre seul : jusqu'où ?",
-      "note": null,
-      "themes": [],
       "question_ids": [
         21,
         22,
@@ -112,14 +106,10 @@
       "src_no": 1,
       "phase": "brise_glace",
       "part": null,
-      "theme": null,
       "text": "Depuis quand apprends-tu l'espagnol tout seul ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -134,14 +124,10 @@
       "src_no": 2,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Comment as-tu eu l'idée d'apprendre l'espagnol ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -157,14 +143,10 @@
       "src_no": 3,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Pourquoi as-tu choisi de l'apprendre seul(e) ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -180,14 +162,10 @@
       "src_no": 4,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Quels outils utilisais-tu au début ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -203,14 +181,10 @@
       "src_no": 5,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Combien de temps y consacrais-tu chaque semaine ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -226,14 +200,10 @@
       "src_no": 6,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Comment mémorisais-tu le vocabulaire ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -249,14 +219,10 @@
       "src_no": 7,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Avais-tu du mal à prononcer certains sons ? Lesquels ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -272,14 +238,10 @@
       "src_no": 8,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Quel mot espagnol as-tu appris en premier ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -295,14 +257,10 @@
       "src_no": 9,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Comment se passait une séance typique chez toi ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -318,14 +276,10 @@
       "src_no": 10,
       "phase": "discussion",
       "part": 1,
-      "theme": null,
       "text": "Quel souvenir gardes-tu de tes débuts ?",
       "level": "DELF B1 → B2",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B2",
-        "rank_min": 1,
-        "rank_max": 2,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -341,14 +295,10 @@
       "src_no": 11,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "As-tu déjà voyagé dans un pays hispanophone ? Raconte.",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -364,14 +314,10 @@
       "src_no": 12,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "As-tu déjà parlé espagnol avec un locuteur natif ? Comment cela s'est-il passé ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -387,14 +333,10 @@
       "src_no": 13,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Quelle série ou quelle chanson t'a aidé(e) à progresser ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -410,14 +352,10 @@
       "src_no": 14,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Qu'est-ce qui t'a le plus aidé(e) : écouter, lire ou parler ?",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -433,14 +371,10 @@
       "src_no": 15,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Quelle difficulté t'a bloqué(e), et comment l'as-tu surmontée ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -456,14 +390,10 @@
       "src_no": 16,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "As-tu déjà arrêté, puis repris ? Raconte.",
       "level": "DELF B1",
       "difficulty": {
-        "cefr_min": "B1",
-        "cefr_max": "B1",
-        "rank_min": 1,
-        "rank_max": 1,
+        "cefr": "B1",
         "source": "tag"
       },
       "hints": [
@@ -479,14 +409,10 @@
       "src_no": 17,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Comment organisais-tu ton apprentissage ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -502,14 +428,10 @@
       "src_no": 18,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Quel progrès as-tu remarqué au fil des mois ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -525,14 +447,10 @@
       "src_no": 19,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "As-tu déjà mélangé l'espagnol avec une autre langue ? Raconte.",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -548,14 +466,10 @@
       "src_no": 20,
       "phase": "discussion",
       "part": 2,
-      "theme": null,
       "text": "Si tu pouvais recommencer, que changerais-tu dans ta méthode ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -571,14 +485,10 @@
       "src_no": 21,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Peut-on vraiment apprendre une langue tout seul ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -594,14 +504,10 @@
       "src_no": 22,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "L'espagnol est-il vraiment facile quand on parle français ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -617,14 +523,10 @@
       "src_no": 23,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Faut-il commencer par la grammaire ou par la conversation ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -640,14 +542,10 @@
       "src_no": 24,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Les applications suffisent-elles pour apprendre une langue ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -663,14 +561,10 @@
       "src_no": 25,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Comment savoir si l'on progresse quand on apprend seul(e) ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -686,14 +580,10 @@
       "src_no": 26,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Une langue étrangère change-t-elle notre façon de penser ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -709,14 +599,10 @@
       "src_no": 27,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Les traducteurs automatiques menacent-ils l'apprentissage des langues ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -732,14 +618,10 @@
       "src_no": 28,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Faut-il se corriger soi-même quand on apprend seul(e) ?",
       "level": "DELF B2",
       "difficulty": {
-        "cefr_min": "B2",
-        "cefr_max": "B2",
-        "rank_min": 2,
-        "rank_max": 2,
+        "cefr": "B2",
         "source": "tag"
       },
       "hints": [
@@ -755,14 +637,10 @@
       "src_no": 29,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "Apprendre une langue, est-ce surtout une question de méthode ou de motivation ?",
       "level": "DALF C1",
       "difficulty": {
-        "cefr_min": "C1",
-        "cefr_max": "C1",
-        "rank_min": 3,
-        "rank_max": 3,
+        "cefr": "C1",
         "source": "tag"
       },
       "hints": [
@@ -778,14 +656,10 @@
       "src_no": 30,
       "phase": "discussion",
       "part": 3,
-      "theme": null,
       "text": "L'apprentissage en autonomie est-il un luxe ou une nécessité aujourd'hui ?",
       "level": "DALF C1",
       "difficulty": {
-        "cefr_min": "C1",
-        "cefr_max": "C1",
-        "rank_min": 3,
-        "rank_max": 3,
+        "cefr": "C1",
         "source": "tag"
       },
       "hints": [

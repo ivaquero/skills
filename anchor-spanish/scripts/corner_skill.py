@@ -36,8 +36,8 @@ class SkillSession:
         nxt = self.config.next_question(self.answers)
         if nxt is None:
             return []
-        # 自动产出节点：以 `ask is False` 触发（与 next_question 同一判据，不依赖 mode），
-        # 由 auto_recommend_choices 依据 source 填值，不向用户提问。
+        # 自动产出节点：以 `ask is False` 触发（与 next_question 同一判据，
+        # 不依赖 mode），由 auto_recommend_choices 依据 source 填值，不向用户提问。
         if nxt.ask is False:
             self.answers[nxt.key] = self.config.auto_recommend_choices(
                 nxt, self.answers
@@ -61,8 +61,9 @@ class SkillSession:
         projected = list(dict.fromkeys(list(existing) + list(choices)))
         if spec.max_choices and len(projected) > spec.max_choices:
             raise ConfigError(
-                f"{spec.title} 累计上限 {spec.max_choices} 个（含已有 {len(existing)} 个 + "
-                f"本次 {len(choices)} 个去重后 {len(projected)} 个）；请减少本次选择。"
+                f"{spec.title} 累计上限 {spec.max_choices} 个"
+                f"（含已有 {len(existing)} 个 + 本次 {len(choices)} 个"
+                f"去重后 {len(projected)} 个）；请减少本次选择。"
             )
         # 支持「随机选一个」的题目：哨兵 -> 题库随机话题，id -> 可读标签
         if spec.allow_random:
@@ -133,7 +134,7 @@ def _check(cond: object, message: str) -> None:
 
 if __name__ == "__main__":
     # 用法：
-    #   python scripts/corner_skill.py            # 演示：初始化 -> 模拟 intake -> 导出简报
+    #   python scripts/corner_skill.py            # 演示：初始化 -> intake -> 简报
     #   python scripts/corner_skill.py selftest   # 自检：auto_recommend 配对 + 公共 API
     import sys
 
