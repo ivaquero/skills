@@ -2,7 +2,7 @@
   "$schema": "./corner-config.schema.v1.json",
   "meta": {
     "skill_name": "anchor-spanish",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "display_name": "西班牙语角主持助手",
     "display_name_en": "Spanish Corner Host",
     "config_owner": "skills/anchor-spanish/SKILL.md",
@@ -35,20 +35,28 @@
       "label": "形容词与副词",
       "children": [
         {
+          "id": "adj_agreement",
+          "label": "性数一致与位置（后置定语；前置义变 un gran hombre / un hombre grande）"
+        },
+        {
           "id": "adj_short_forms",
-          "label": "短尾形式（buen / mal / gran / primer / tercer / algún / ningún / cien）"
+          "label": "短尾形式（buen / mal / primer / tercer / algún / ningún / cien）"
         },
         {
           "id": "adj_comparative",
-          "label": "比较级（más/menos…que、tan…como）与不规则（mejor / peor / mayor / menor）"
+          "label": "比较级（más / menos…que、tan…como；不规则 mejor / peor / mayor / menor）"
         },
         {
           "id": "adj_superlative",
-          "label": "最高级（el/la más；绝对最高级 -ísimo）"
+          "label": "最高级（el / la más…de；绝对最高级 -ísimo）"
         },
         {
           "id": "adj_diminutives",
-          "label": "指小/指大词（-ito/-ita、-ón/-ote）"
+          "label": "指小与指大词（-ito / -illo；-ón / -ote / -azo）"
+        },
+        {
+          "id": "adv_degree",
+          "label": "副词与程度修饰（muy / mucho / tan / tanto；-mente；ya / todavía）"
         }
       ]
     },
@@ -57,24 +65,28 @@
       "label": "直陈式动词系统",
       "children": [
         {
+          "id": "ind_presente",
+          "label": "现在时（e→ie / o→ue / e→i 词干变化；不规则第一人称）"
+        },
+        {
+          "id": "ind_perfecto",
+          "label": "现在完成时（he + participio；ya / todavía no / alguna vez）"
+        },
+        {
           "id": "ind_indefinido",
-          "label": "简单过去时（indefinido；不规则 -uv- / -i- / -j- 组）"
+          "label": "简单过去时（重音规则；-uv- / -i- / -j- 不规则组）"
         },
         {
           "id": "ind_imperfecto",
-          "label": "未完成过去时（imperfecto）"
+          "label": "未完成过去时（描写与习惯；与 indefinido 的叙事分工）"
         },
         {
-          "id": "ind_ir_a",
-          "label": "最近将来时（ir a + infinitivo）"
+          "id": "ind_pluscuamperfecto",
+          "label": "过去完成时（había + participio；叙事中的「更早」）"
         },
         {
           "id": "ind_futuro",
-          "label": "简单将来时（futuro simple 不规则词干）"
-        },
-        {
-          "id": "ind_gerundio",
-          "label": "进行时（estar + gerundio）"
+          "label": "将来时（futuro simple 不规则词干；ir a + infinitivo）"
         }
       ]
     },
@@ -84,35 +96,27 @@
       "children": [
         {
           "id": "pro_sujeto",
-          "label": "主语代词省略（零主语 / voseo / ustedes）"
+          "label": "主语代词与省略（零主语；vosotros / ustedes；voseo）"
         },
         {
-          "id": "pro_le_redundante",
-          "label": "间接宾语冗余（le + a Juan 必须共存）"
+          "id": "pro_od",
+          "label": "直接宾语代词（lo / la / los / las；leísmo / laísmo / loísmo）"
         },
         {
-          "id": "pro_leismo",
-          "label": "leísmo / laísmo / loísmo"
-        },
-        {
-          "id": "pro_se",
-          "label": "se 的多重用法（自复 / 无人称 / 被动 / 意外 / 双宾语）"
+          "id": "pro_oi",
+          "label": "间接宾语与冗余 le（le / les 与 a + 名词必须共现）"
         },
         {
           "id": "pro_double_order",
-          "label": "双宾语代词顺序（le/les → se + lo/la；代词附着规则）"
+          "label": "双代词顺序（le / les → se + lo / la；代词与动词的位次）"
         },
         {
-          "id": "pro_preposicional",
-          "label": "夺格代词（conmigo / contigo / consigo）"
+          "id": "pro_se",
+          "label": "se 的多重用法（自复 / 相互 / 无人称 / 被动 / 意外）"
         },
         {
-          "id": "pro_possessive",
-          "label": "物主形容词与物主代词（su/sus 歧义消解）"
-        },
-        {
-          "id": "pro_imperativo",
-          "label": "命令式（否定命令借用虚拟式）"
+          "id": "pro_posesivos",
+          "label": "物主与夺格（su 歧义；mío / tuyo；conmigo / contigo / consigo）"
         }
       ]
     },
@@ -122,53 +126,57 @@
       "children": [
         {
           "id": "rel_pronouns",
-          "label": "关系代词（que / quien / el cual / cuyo）"
+          "label": "关系代词（que / quien / el que / el cual）"
         },
         {
-          "id": "rel_dont",
-          "label": "法语 dont 的对应表达（del que / de la que / con la que）"
+          "id": "rel_cuyo",
+          "label": "所有格关系词（cuyo / cuya / cuyos / cuyas）"
+        },
+        {
+          "id": "rel_adverb",
+          "label": "关系副词（donde / cuando / como；el que + 介词 对应法语 dont）"
         },
         {
           "id": "conj_coord",
-          "label": "并列连词（y→e / o→u / pero vs sino）"
+          "label": "并列连词（y → e / o → u；pero vs sino；ni…ni）"
         },
         {
           "id": "conj_subord",
-          "label": "从属连词（原因 / 让步 / 时间 / 条件；porque / ya que / aunque / cuando）"
+          "label": "从属连词（porque / ya que / así que / cuando / en cuanto）"
         },
         {
-          "id": "prep_por_para",
-          "label": "por vs para"
-        },
-        {
-          "id": "verb_ser_estar",
-          "label": "ser vs estar"
+          "id": "conj_concesiva",
+          "label": "让步与条件（aunque + 直陈 / 虚拟；a pesar de；si / a menos que / siempre que）"
         }
       ]
     },
     "modos": {
       "id": "modos",
-      "label": "语式系统（虚拟式）",
+      "label": "语式系统（虚拟式 · 条件式 · 命令式）",
       "children": [
         {
-          "id": "subj_presente",
-          "label": "虚拟式现在时变位（-ar→-e 系 / -er·-ir→-a 系）"
+          "id": "mode_condicional",
+          "label": "条件式（礼貌请求 / 假设 / 传闻；不规则词干同 futuro）"
         },
         {
-          "id": "subj_pasado",
-          "label": "虚拟式过去时（-ra / -se 两套等价）"
+          "id": "mode_si",
+          "label": "Si 三搭配（现在 + 将来 / 过去未完成 + 条件式 / 过去完成 + 条件式完成）"
         },
         {
-          "id": "subj_triggers",
-          "label": "虚拟式触发场景（愿望 / 必要 / 情感 / 怀疑 / 目的 / 让步 / 时间将来）"
+          "id": "mode_subj_presente",
+          "label": "虚拟式现在时（-ar → -e 系 / -er·-ir → -a 系；dar / estar / haber / ir / saber / ser）"
         },
         {
-          "id": "subj_trap",
-          "label": "法直陈 ↔ 西虚拟陷阱（时间连词+将来、aunque、ojalá、quizás）"
+          "id": "mode_subj_pasado",
+          "label": "虚拟式过去时与时态配合（-ra / -se 等价；主句过去 → 从句过去虚拟）"
         },
         {
-          "id": "subj_concordancia",
-          "label": "时态配合（主句过去时 → 从句过去虚拟式）"
+          "id": "mode_subj_triggers",
+          "label": "虚拟式触发 7 类 + 直陈 / 虚拟边界（愿望 / 必要 / 情感 / 怀疑 / 目的 / 让步 / 时间将来；aunque / ojalá / quizás）"
+        },
+        {
+          "id": "mode_imperativo",
+          "label": "命令式（肯定式不规则 tú / vosotros；否定式借虚拟式；代词后置）"
         }
       ]
     },
@@ -177,54 +185,58 @@
       "label": "非谓语与被动态",
       "children": [
         {
-          "id": "nf_3_forms",
-          "label": "三种非人称形式（infinitivo / gerundio / participio）"
-        },
-        {
           "id": "nf_infinitivo",
-          "label": "不定式结构（ir a / tener que / hay que / acabar de / volver a / al+inf）"
+          "label": "不定式结构（ir a / tener que / hay que / acabar de / volver a / al + 不定式）"
         },
         {
           "id": "nf_gerundio",
-          "label": "gerundio 进行时与动词 + gerundio 短语（seguir / llevar / quedarse）"
+          "label": "gerundio（estar + gerundio 进行；seguir / llevar / quedarse + gerundio）"
         },
         {
           "id": "nf_participio",
-          "label": "过去分词（规则 -ado/-ido；不规则 hecho / dicho / visto 等）"
+          "label": "过去分词（规则 -ado / -ido；不规则 hecho / dicho / visto；与 haber / ser / estar 配合）"
         },
         {
-          "id": "pasiva_3",
-          "label": "被动态三种（ser + 分词 / se + 动词 / estar + 分词）"
+          "id": "pasiva_ser_estar",
+          "label": "被动与状态（ser + 分词全时态 + por；estar + 分词的结果义）"
         },
         {
-          "id": "ser_estar_se",
-          "label": "ser vs estar vs se 三分对比"
+          "id": "pasiva_se",
+          "label": "se 被动与无人称（se vende / se habla / se dice que；第三人称复数无人称）"
         }
       ]
     },
     "fragmentos": {
       "id": "fragmentos",
-      "label": "常用碎片语法点（可单独勾选，均源自上述章节）",
+      "label": "常用碎片语法点（可单独勾选：跨章节组合 + 零散辨析）",
       "children": [
         {
-          "id": "frag_tiempos",
-          "label": "简单过去时（indefinido）· 未完成过去时（imperfecto）· 将来时 · 条件式"
+          "id": "frag_pasados",
+          "label": "过去时组（indefinido · imperfecto · pluscuamperfecto）"
         },
         {
           "id": "frag_modos",
-          "label": "虚拟式 · 命令式 · 进行时（estar + gerundio）"
+          "label": "语式组（虚拟式 · 命令式 · 条件式）"
         },
         {
-          "id": "frag_a_ser_estar",
-          "label": "人称 a · ser vs estar · por vs para"
+          "id": "frag_objeto",
+          "label": "宾格组（lo / le / se lo · 人称 a）"
         },
         {
-          "id": "frag_obj",
-          "label": "双宾语代词（se lo）· 夺格代词 · 物主（su 歧义）"
+          "id": "frag_ser_estar",
+          "label": "ser vs estar（性质 / 状态 / 位置；形容词义变）"
         },
         {
-          "id": "frag_comp_super",
-          "label": "比较级 / 最高级 · 指小词 · 疑问词"
+          "id": "frag_por_para",
+          "label": "por vs para（原因 / 目的 / 交换 / 期限）"
+        },
+        {
+          "id": "frag_interrog",
+          "label": "疑问词与疑问句（qué / cuál / cómo / dónde；语序与倒问号）"
+        },
+        {
+          "id": "frag_num",
+          "label": "数字与量词（cien / ciento；muy vs mucho；比例与数量）"
         }
       ]
     }

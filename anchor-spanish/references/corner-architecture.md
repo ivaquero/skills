@@ -146,6 +146,15 @@ assets/es-corner-config.json   唯一数据源（可选项 + 提问编排 + 风�
 - 一级 `id` 即 Q1 的答案值；其 `children[].id` 即 Q2 的答案值。
 - `secondary_grammar_options(primary_ids)` 用这些 id 做 O(1) 查找并去重。
 
+#### 二级条目的粒度约定
+
+一条二级条目 = 一张「可单独练」的语法卡：一个能命名的结构，括号里列出它的具体形态、触发词与例外。粒度是否合适，用一句话检验 —— 能否在圆桌讨论里把它单独当作一次练习目标。做不到就该并入相邻条目，做得到而且能再拆就该拆。
+
+- 每组 5–7 条。六张结构组（形容词与副词 / 直陈式动词系统 / 代词系统 / 关系从句与连词 / 语式系统 / 非谓语与被动态）只收结构本身；介词辨析、动词辨析这类零散点不下挂结构组，统一留在 `fragmentos`。
+- **六张结构组之间不重复**：同一个 `id` 只出现一次，同一个点只归一个组。`ser vs estar`、`por vs para` 不再挂进「关系从句与连词」，命令式归「语式系统」而不在「代词系统」。
+- 单组 ≤6 条时 Q2 不拆组；`fragmentos`（7 条）必拆成 `Q2#1` / `Q2#2`。任选两组并集最多 13 条，拆成 3 组，仍在 `questions_max_per_call`（4）之内。
+- `fragmentos` 是速选层：既有跨章节组合（`indefinido · imperfecto · pluscuamperfecto`），也有无结构组归属的零散辨析（`ser vs estar`、`por vs para`、疑问句、数字与量词）。组合类按概念跨组引用，与 `anchor-french` 的碎片组同构。
+
 ### `question_plan`（intake 状态机蓝图）
 
 每个元素字段：
