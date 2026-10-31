@@ -254,72 +254,72 @@
   "topic_pool": [
     {
       "id": "voyage",
-      "label": "旅行 Voyage",
+      "label": "Voyage",
       "desc": "假期、理想目的地、旅途中的意外"
     },
     {
       "id": "gastronomie",
-      "label": "美食 Gastronomie",
+      "label": "Gastronomie",
       "desc": "家乡菜、餐厅体验、饮食习惯"
     },
     {
       "id": "cinema",
-      "label": "电影与剧集 Cinéma",
+      "label": "Cinéma",
       "desc": "最近看的作品、偏好类型、观影习惯"
     },
     {
       "id": "musique",
-      "label": "音乐 Musique",
+      "label": "Musique",
       "desc": "音乐口味、现场演出、音乐与生活"
     },
     {
       "id": "sport",
-      "label": "运动 Sport",
+      "label": "Sport",
       "desc": "日常锻炼、观看比赛、体育精神"
     },
     {
       "id": "environnement",
-      "label": "环保 Environnement",
+      "label": "Environnement",
       "desc": "垃圾分类、低碳生活、气候行动"
     },
     {
       "id": "travail",
-      "label": "工作与职业 Travail",
+      "label": "Travail",
       "desc": "职业选择、远程办公、职场文化"
     },
     {
       "id": "famille",
-      "label": "家庭与朋友 Famille",
+      "label": "Famille",
       "desc": "亲情、友谊、代际差异"
     },
     {
       "id": "fetes",
-      "label": "节日与传统 Fêtes",
+      "label": "Fêtes",
       "desc": "节庆记忆、习俗对比、送礼"
     },
     {
       "id": "technologie",
-      "label": "科技与网络 Technologie",
+      "label": "Technologie",
       "desc": "社交媒体、人工智能、数字生活"
     },
     {
       "id": "lecture",
-      "label": "阅读与艺术 Lecture",
+      "label": "Lecture",
       "desc": "书籍、展览、创作与审美"
     },
     {
       "id": "vie_urbaine",
-      "label": "城市生活 Vie urbaine",
+      "label": "Vie urbaine",
       "desc": "交通、邻里、城市与乡村"
     },
     {
       "id": "apprentissage_francais",
-      "label": "法语学习 Apprentissage du français",
+      "label": "Apprentissage du français",
       "desc": "学习动机、难点、方法与资源"
     },
     {
       "id": "apprentissage_anglais",
-      "label": "英语学习 Apprentissage de l'anglais",
+      "label": "Apprentissage de l'anglais",
       "desc": "学习经历、口语练习、方法交流"
     }
   ],

@@ -92,10 +92,10 @@ md 里出现题库没有的问题、或把题库的题改了字，都算违约�
 1. **定 slug**：入池话题用 topic id（`voyage`）；自定义话题按法文题名取 kebab-case（`projets-5ans`）。
    同一话题再生成时**追加到同一份文件**、沿用 `id` 续号，不要新建第二份。
 2. **写题库**：结构照 `assets/question-bank.schema.v1.json`。`meta` 的 `skill_name` / `lang` / `kind` / `slug` /
-   `topic_id` / `topic_in_pool` / `exam_family` 必须与本包身份和配置一致，`topic_label` 只写法文那一段；
+   `topic_id` / `topic_in_pool` / `exam_family` 必须与本包身份和配置一致，`topic_label` 与配置 `topic_pool` 的 label 逐字一致；
    每题只带 `cefr`（单个 CEFR 档位：源标注 `DELF B2` 就写 `B2`，是区间（`B1 → B2`）时取首档）。
    家族前缀不逐题重复——`meta.levels` 是它唯一的家，`dump` 据此还原 `(DELF B2)` 这样的标注。
-   **题库内不出现中文** —— 中文注记只留在配置的 `topic_pool`。
+   **题库内不出现中文** —— 配置 `topic_pool` 的 label 同样只写目标语言，中文只留在 `desc` 这类说明字段。
 3. **过闸门**：`python scripts/corner_bank.py check assets/questions/<slug>.json` —— 验结构、等级 ⊂ `exam_family`、
    `cefr` 落在 `meta.levels` 的档位里、提示词条数、话题池对齐、整篇无中文。
 4. **取题目块**：`python scripts/corner_bank.py dump assets/questions/<slug>.json`（`--part N` 只取一部分）
@@ -218,8 +218,8 @@ md 里出现题库没有的问题、或把题库的题改了字，都算违约�
   对策：改题库 → 重新 `dump` → 再 `verify`。
 - **题库里带中文会被 check 拦下。**
   现象：报「含 N 个中日韩字符/全角标点」。
-  原因：题库只存法文；中文注记只留在配置 `topic_pool` 的 label 里。
-  对策：`meta.topic_label` 只写 label 里法文那一段。
+  原因：题库只存法文；配置 `topic_pool` 的 label 也只写目标语言，中文只留在 `desc`。
+  对策：`meta.topic_label` 与配置 label 逐字一致。
 - **C 档写 DALF，不是 DELF。**
   现象：`check` 报 `meta.levels` 的某项家族不在 `exam_family` 内。
   原因：`exam_family` 是 `DELF/DALF`，B1 / B2 属DELF、C1 / C2 属DALF。

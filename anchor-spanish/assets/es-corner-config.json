@@ -297,72 +297,72 @@
   "topic_pool": [
     {
       "id": "viajes",
-      "label": "旅行 Los viajes",
+      "label": "Los viajes",
       "desc": "假期、理想目的地、旅途中的意外"
     },
     {
       "id": "gastronomia",
-      "label": "美食 La gastronomía",
+      "label": "La gastronomía",
       "desc": "家乡菜、餐厅体验、饮食习惯"
     },
     {
       "id": "cine",
-      "label": "电影与剧集 El cine",
+      "label": "El cine",
       "desc": "最近看的作品、偏好类型、观影习惯"
     },
     {
       "id": "musica",
-      "label": "音乐 La música",
+      "label": "La música",
       "desc": "音乐口味、现场演出、音乐与生活"
     },
     {
       "id": "deporte",
-      "label": "运动 El deporte",
+      "label": "El deporte",
       "desc": "日常锻炼、观看比赛、体育精神"
     },
     {
       "id": "medio_ambiente",
-      "label": "环保 El medio ambiente",
+      "label": "El medio ambiente",
       "desc": "垃圾分类、低碳生活、气候行动"
     },
     {
       "id": "trabajo",
-      "label": "工作与职业 El trabajo",
+      "label": "El trabajo",
       "desc": "职业选择、远程办公、职场文化"
     },
     {
       "id": "familia",
-      "label": "家庭与朋友 La familia",
+      "label": "La familia",
       "desc": "亲情、友谊、代际差异"
     },
     {
       "id": "fiestas",
-      "label": "节日与传统 Las fiestas",
+      "label": "Las fiestas",
       "desc": "节庆记忆、习俗对比、送礼"
     },
     {
       "id": "tecnologia",
-      "label": "科技与网络 La tecnología",
+      "label": "La tecnología",
       "desc": "社交媒体、人工智能、数字生活"
     },
     {
       "id": "lectura",
-      "label": "阅读与艺术 La lectura",
+      "label": "La lectura",
       "desc": "书籍、展览、创作与审美"
     },
     {
       "id": "vida_urbana",
-      "label": "城市生活 La vida urbana",
+      "label": "La vida urbana",
       "desc": "交通、邻里、城市与乡村"
     },
     {
       "id": "aprendizaje_espanol",
-      "label": "西语学习 El aprendizaje del español",
+      "label": "El aprendizaje del español",
       "desc": "学习动机、难点、方法与资源"
     },
     {
       "id": "aprendizaje_ingles",
-      "label": "英语学习 El aprendizaje del inglés",
+      "label": "El aprendizaje del inglés",
       "desc": "学习经历、口语练习、方法交流"
     }
   ],
