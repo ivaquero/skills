@@ -7,9 +7,6 @@ line-length = 88
 [tool.ruff.format]
 docstring-code-format = true
 
-docstring-code-line-length = 60
-line-ending = "lf"
-skip-magic-trailing-comma = false
 exclude = ["*.md"]
 
 [tool.ruff.lint]

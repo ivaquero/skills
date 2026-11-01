@@ -325,9 +325,7 @@ as soon as a new one shows up — this is where the density is.
 - **`ruff format` reaches into `.md` code fences, and in a CRLF package that
   is a line-ending bug wearing a formatting costume.** Fences marked
   `python` / `py` get formatted; those marked `text` or left bare do not.
-  For a CRLF file the content is already fine, and the only complaint is that
-  the fence body uses `\r\n` -- `ruff format --check` wants `\n`, because
-  this repo sets `line-ending = "lf"`. The diff then reads as a no-op: the
+  The diff then reads as a no-op: the
   `-` and `+` lines are identical to the eye, while the fence's line endings
   really do flip and the package's own line-ending invariant breaks.
   `pyproject.toml` therefore carries `[tool.ruff.format] exclude = ["*.md"]`,
