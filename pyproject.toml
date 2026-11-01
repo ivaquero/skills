@@ -43,4 +43,3 @@ convention = "numpy"
 case-sensitive = true
 combine-as-imports = true
 force-wrap-aliases = true
-order-by-type = true
