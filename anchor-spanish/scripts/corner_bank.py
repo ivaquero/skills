@@ -392,8 +392,28 @@ def _parse_md_questions(md: str, hint_label: str | None) -> list[dict]:
     return items
 
 
+GLOSS_TAIL = re.compile(r"\s*\([^()]*\)\s*$")
+
+
+def _strip_gloss(hint: str) -> str:
+    """剥掉提示词末尾的括号夹注（双语呈现层用），题库只存单语。"""
+    return GLOSS_TAIL.sub("", hint).strip()
+
+
+def _hints_match(md_hints: list[str], bank_hints: list[str]) -> bool:
+    """逐条比对；md 允许在词条后加一层括号夹注，题库原文仍须逐字在场。"""
+    if len(md_hints) != len(bank_hints):
+        return False
+    return all(
+        md == bank or _strip_gloss(md) == bank for md, bank in zip(md_hints, bank_hints)
+    )
+
+
 def verify_md(bank: dict, md_path: str | Path) -> list[str]:
-    """md 的题目必须逐条来自题库：题文、等级、提示词、顺序全对齐。"""
+    """md 的题目必须逐条来自题库：题文、等级、提示词、顺序全对齐。
+
+    提示词允许在末尾带一层括号夹注，比对前剥掉；题库原文仍须逐字在场。
+    """
     p = Path(md_path)
     if not p.exists():
         return [f"md 不存在: {p}"]
@@ -428,7 +448,7 @@ def verify_md(bank: dict, md_path: str | Path) -> list[str]:
             fails.append(
                 f"{where}等级标注={item['level']!r} 的首档与题库 cefr={q['cefr']} 不符"
             )
-        if q["hints"] and item["hints"] != q["hints"]:
+        if q["hints"] and not _hints_match(item["hints"], q["hints"]):
             fails.append(
                 f"{where}提示词与题库不符\n    md  : {' · '.join(item['hints'])}\n"
                 f"    题库: {' · '.join(q['hints'])}"

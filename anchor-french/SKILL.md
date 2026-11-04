@@ -96,6 +96,7 @@ md 里出现题库没有的问题、或把题库的题改了字，都算违约�
    每题只带 `cefr`（单个 CEFR 档位：源标注 `DELF B2` 就写 `B2`，是区间（`B1 → B2`）时取首档）。
    家族前缀不逐题重复——`meta.levels` 是它唯一的家，`dump` 据此还原 `(DELF B2)` 这样的标注。
    **题库内不出现中文** —— 配置 `topic_pool` 的 label 同样只写目标语言，中文只留在 `desc` 这类说明字段。
+   **题库提示词只写目标语言**，第二语言的括号夹注只出现在 md 呈现层——取哪种语言，先问用户再写。
 3. **过闸门**：`python scripts/corner_bank.py check assets/questions/<slug>.json` —— 验结构、等级 ⊂ `exam_family`、
    `cefr` 落在 `meta.levels` 的档位里、提示词条数、话题池对齐、整篇无中文。
 4. **取题目块**：`python scripts/corner_bank.py dump assets/questions/<slug>.json`（`--part N` 只取一部分）
@@ -103,7 +104,8 @@ md 里出现题库没有的问题、或把题库的题改了字，都算违约�
 5. **写主持词**：只在题目行之间写开场 / 过渡 / 结语。**题目行与提示词行一个字都不改** ——
    要改就改题库，再重新 dump。
 6. **回查**：`python scripts/corner_bank.py verify assets/questions/<slug>.json <md 路径>` ——
-   题文、等级、提示词、顺序、题数逐条比对；md 多出或缺失题目一律报错。
+   题文、等级、提示词、顺序、题数逐条比对；md 多出或缺失题目一律报错。提示词允许 md 在词条后
+   带一层括号夹注（双语呈现层），比对前会剥掉，题库原文仍须逐字在场。
 
 ### 生成主持词（纯法文；30 题穿插其中）
 
