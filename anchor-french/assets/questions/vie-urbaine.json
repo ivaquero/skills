@@ -1,0 +1,568 @@
+{
+  "$schema": "../question-bank.schema.v1.json",
+  "meta": {
+    "skill_name": "anchor-french",
+    "lang": "fr",
+    "kind": "corner_script",
+    "slug": "vie-urbaine-technologie",
+    "topic_id": null,
+    "topic_in_pool": false,
+    "topic_label": "Vie urbaine · Technologie",
+    "title": "La ville au quotidien, le numérique en plus",
+    "source_doc": "docs/fr-vie-urbaine-technologie.md",
+    "source_title": "French Corner — La ville au quotidien, le numérique en plus",
+    "extracted_on": "2026-11-04",
+    "exam_family": "DELF/DALF",
+    "levels": [
+      "DELF B1",
+      "DELF B2"
+    ],
+    "level_span": "B1–B2",
+    "cefr_span": "B1–B2",
+    "grammar": [
+      "pronoms doubles",
+      "y et en",
+      "impératif",
+      "démonstratifs -ci / -là"
+    ],
+    "hint_label": "Mots-clés",
+    "hint_count_range": [
+      3,
+      5
+    ],
+    "question_count": 31,
+    "part_count": 3
+  },
+  "phases": [
+    {
+      "id": "brise_glace",
+      "label": "Brise-glace",
+      "order": 1,
+      "question_count": 1
+    },
+    {
+      "id": "discussion",
+      "label": "Discussion",
+      "order": 2,
+      "question_count": 30
+    }
+  ],
+  "parts": [
+    {
+      "index": 1,
+      "label": "Mon quartier, ma ville",
+      "heading": "### Partie 1 — Mon quartier, ma ville",
+      "question_ids": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "index": 2,
+      "label": "Les écrans dans la ville",
+      "heading": "### Partie 2 — Les écrans dans la ville",
+      "question_ids": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+      ]
+    },
+    {
+      "index": 3,
+      "label": "La ville connectée en question",
+      "heading": "### Partie 3 — La ville connectée en question",
+      "question_ids": [
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "src_no": 1,
+      "phase": "brise_glace",
+      "part": null,
+      "text": "Quel est le premier endroit auquel tu penses quand on dit « chez toi » ?",
+      "cefr": "B1",
+      "hints": [
+        "mon immeuble (mi edificio)",
+        "la place du marché (la plaza del mercado)",
+        "la station de métro (la estación de metro)",
+        "le café du coin (el bar de la esquina)"
+      ]
+    },
+    {
+      "id": 2,
+      "src_no": 2,
+      "phase": "discussion",
+      "part": 1,
+      "text": "Tu y habites depuis longtemps ?",
+      "cefr": "B1",
+      "hints": [
+        "depuis cinq ans (desde hace cinco años)",
+        "toute mon enfance (toda mi infancia)",
+        "depuis que je travaille (desde que trabajo)",
+        "juste à côté (aquí al lado)"
+      ]
+    },
+    {
+      "id": 3,
+      "src_no": 3,
+      "phase": "discussion",
+      "part": 1,
+      "text": "Qu'est-ce qu'on peut y trouver à pied, dans ton quartier ?",
+      "cefr": "B1",
+      "hints": [
+        "une boulangerie (una panadería)",
+        "un arrêt de bus (una parada de autobús)",
+        "la poste (la oficina de correos)",
+        "un marché couvert (un mercado cubierto)",
+        "une pharmacie (una farmacia)"
+      ]
+    },
+    {
+      "id": 4,
+      "src_no": 4,
+      "phase": "discussion",
+      "part": 1,
+      "text": "Tu préfères cet appartement-ci ou celui de ton enfance ? Pourquoi ?",
+      "cefr": "B2",
+      "hints": [
+        "celui-ci (este)",
+        "celui-là (ese)",
+        "plus lumineux (más luminoso)",
+        "plus de place (más espacio)",
+        "moins cher (más barato)"
+      ]
+    },
+    {
+      "id": 5,
+      "src_no": 5,
+      "phase": "discussion",
+      "part": 1,
+      "text": "Comment est-ce que tu te déplaces en ville, en général ?",
+      "cefr": "B1",
+      "hints": [
+        "à vélo (en bici)",
+        "en métro (en metro)",
+        "à pied (a pie)",
+        "je prends le bus (cojo el autobús)",
+        "en voiture (en coche)"
+      ]
+    },
+    {
+      "id": 6,
+      "src_no": 6,
+      "phase": "discussion",
+      "part": 1,
+      "text": "Et les transports en commun, tu en profites souvent ?",
+      "cefr": "B1",
+      "hints": [
+        "tous les jours (todos los días)",
+        "rarement (rara vez)",
+        "le week-end (el fin de semana)",
+        "ça dépend des horaires (depende del horario)",
+        "j'en ai besoin (lo necesito)"
+      ]
+    },
+    {
+      "id": 7,
+      "src_no": 7,
+      "phase": "discussion",
+      "part": 1,
+      "text": "Qu'est-ce qui a changé dans ta ville ces dernières années ?",
+      "cefr": "B2",
+      "hints": [
+        "de nouveaux immeubles (edificios nuevos)",
+        "les pistes cyclables (los carriles bici)",
+        "la circulation (el tráfico)",
+        "les loyers (los alquileres)",
+        "les commerces du centre (las tiendas del centro)"
+      ]
+    },
+    {
+      "id": 8,
+      "src_no": 8,
+      "phase": "discussion",
+      "part": 1,
+      "text": "Cette ville-là, est-ce que tu la trouves encore accueillante ?",
+      "cefr": "B2",
+      "hints": [
+        "celle-ci (esta)",
+        "de moins en moins (cada vez menos)",
+        "pour les jeunes (para los jóvenes)",
+        "les nouveaux arrivants (los recién llegados)",
+        "le voisinage (el vecindario)"
+      ]
+    },
+    {
+      "id": 9,
+      "src_no": 9,
+      "phase": "discussion",
+      "part": 1,
+      "text": "Peut-on encore se loger facilement dans les grandes villes ?",
+      "cefr": "B1",
+      "hints": [
+        "les prix (los precios)",
+        "la pénurie (la escasez)",
+        "les banlieues (las afueras)",
+        "les jeunes actifs (los jóvenes activos)",
+        "les petites surfaces (los pisos pequeños)"
+      ]
+    },
+    {
+      "id": 10,
+      "src_no": 10,
+      "phase": "discussion",
+      "part": 1,
+      "text": "Faut-il aider les habitants à rester dans leur quartier d'origine ?",
+      "cefr": "B2",
+      "hints": [
+        "la mixité sociale (la mezcla social)",
+        "les aides au logement (las ayudas a la vivienda)",
+        "la gentrification (la gentrificación)",
+        "le marché immobilier (el mercado inmobiliario)",
+        "les écoles (los colegios)"
+      ]
+    },
+    {
+      "id": 11,
+      "src_no": 11,
+      "phase": "discussion",
+      "part": 1,
+      "text": "À ton avis, qu'est-ce qui fait d'une ville une ville agréable ?",
+      "cefr": "B2",
+      "hints": [
+        "les espaces verts (las zonas verdes)",
+        "la sécurité (la seguridad)",
+        "les commerces de proximité (las tiendas de barrio)",
+        "le lien social (el vínculo social)",
+        "les bancs publics (los bancos públicos)"
+      ]
+    },
+    {
+      "id": 12,
+      "src_no": 12,
+      "phase": "discussion",
+      "part": 2,
+      "text": "Quelle application utilises-tu le plus souvent quand tu es dehors ?",
+      "cefr": "B1",
+      "hints": [
+        "les cartes (los mapas)",
+        "les horaires de transport (los horarios del transporte)",
+        "la météo (el tiempo)",
+        "une appli de vélo (una app de bici)",
+        "les avis (las opiniones)"
+      ]
+    },
+    {
+      "id": 13,
+      "src_no": 13,
+      "phase": "discussion",
+      "part": 2,
+      "text": "Est-ce que tu t'y fies vraiment, à ces applications ?",
+      "cefr": "B1",
+      "hints": [
+        "presque toujours (casi siempre)",
+        "pas trop (no mucho)",
+        "quand j'ai du réseau (cuando tengo cobertura)",
+        "ça m'a déjà perdu (ya me ha perdido)",
+        "je vérifie (lo compruebo)"
+      ]
+    },
+    {
+      "id": 14,
+      "src_no": 14,
+      "phase": "discussion",
+      "part": 2,
+      "text": "Comment est-ce que tu fais quand ton téléphone n'a plus de batterie en ville ?",
+      "cefr": "B2",
+      "hints": [
+        "je demande mon chemin (pregunto el camino)",
+        "une carte papier (un mapa de papel)",
+        "les panneaux (las señales)",
+        "je me perds un peu (me pierdo un poco)",
+        "un commerce (una tienda)"
+      ]
+    },
+    {
+      "id": 15,
+      "src_no": 15,
+      "phase": "discussion",
+      "part": 2,
+      "text": "Tu préfères cette carte-ci ou celle de ton téléphone ?",
+      "cefr": "B1",
+      "hints": [
+        "celle-ci (esta)",
+        "celle-là (esa)",
+        "plus fiable (más fiable)",
+        "plus pratique (más práctico)",
+        "plus lisible (más legible)"
+      ]
+    },
+    {
+      "id": 16,
+      "src_no": 16,
+      "phase": "discussion",
+      "part": 2,
+      "text": "Est-ce que tu en as besoin, de ton téléphone, pour sortir de chez toi ?",
+      "cefr": "B1",
+      "hints": [
+        "indispensable (imprescindible)",
+        "pour payer (para pagar)",
+        "pour le ticket (para el billete)",
+        "pas vraiment (la verdad es que no)",
+        "je l'oublie souvent (lo olvido a menudo)"
+      ]
+    },
+    {
+      "id": 17,
+      "src_no": 17,
+      "phase": "discussion",
+      "part": 2,
+      "text": "Comment les applications ont-elles changé nos habitudes de déplacement ?",
+      "cefr": "B2",
+      "hints": [
+        "l'itinéraire (el itinerario)",
+        "les horaires en direct (los horarios en directo)",
+        "le covoiturage (el viaje compartido)",
+        "la dépendance (la dependencia)",
+        "le trajet le plus court (el trayecto más corto)"
+      ]
+    },
+    {
+      "id": 18,
+      "src_no": 18,
+      "phase": "discussion",
+      "part": 2,
+      "text": "Le numérique rend-il les services publics plus accessibles ?",
+      "cefr": "B2",
+      "hints": [
+        "les démarches en ligne (los trámites en línea)",
+        "les files d'attente (las colas)",
+        "les personnes âgées (las personas mayores)",
+        "la fracture numérique (la brecha digital)",
+        "le guichet (la ventanilla)"
+      ]
+    },
+    {
+      "id": 19,
+      "src_no": 19,
+      "phase": "discussion",
+      "part": 2,
+      "text": "Les applis de transport te font-elles vraiment gagner du temps ?",
+      "cefr": "B1",
+      "hints": [
+        "le matin (por la mañana)",
+        "aux heures de pointe (en hora punta)",
+        "les correspondances (los transbordos)",
+        "les retards (los retrasos)",
+        "pas toujours (no siempre)"
+      ]
+    },
+    {
+      "id": 20,
+      "src_no": 20,
+      "phase": "discussion",
+      "part": 2,
+      "text": "Que faudrait-il faire pour que le numérique profite à tous en ville ?",
+      "cefr": "B2",
+      "hints": [
+        "formez les habitants (formen a los vecinos)",
+        "installez des bornes (instalen puntos de acceso)",
+        "accompagnez les aînés (acompañen a los mayores)",
+        "garantissez l'accès (garanticen el acceso)",
+        "simplifiez les démarches (simplifiquen los trámites)"
+      ]
+    },
+    {
+      "id": 21,
+      "src_no": 21,
+      "phase": "discussion",
+      "part": 2,
+      "text": "Faut-il partager les données de la ville entre tous les habitants ?",
+      "cefr": "B2",
+      "hints": [
+        "les données ouvertes (los datos abiertos)",
+        "la transparence (la transparencia)",
+        "la vie privée (la privacidad)",
+        "les plateformes (las plataformas)",
+        "la confiance (la confianza)"
+      ]
+    },
+    {
+      "id": 22,
+      "src_no": 22,
+      "phase": "discussion",
+      "part": 3,
+      "text": "Accepterais-tu des caméras dans ta rue pour te sentir plus en sécurité ?",
+      "cefr": "B1",
+      "hints": [
+        "la sécurité (la seguridad)",
+        "la vie privée (la privacidad)",
+        "la nuit (por la noche)",
+        "le sentiment d'insécurité (la sensación de inseguridad)",
+        "ça dépend des rues (depende de la calle)"
+      ]
+    },
+    {
+      "id": 23,
+      "src_no": 23,
+      "phase": "discussion",
+      "part": 3,
+      "text": "La technologie peut-elle remplacer les services de proximité ?",
+      "cefr": "B1",
+      "hints": [
+        "le facteur (el cartero)",
+        "la mairie (el ayuntamiento)",
+        "le contact humain (el contacto humano)",
+        "une application (una aplicación)",
+        "les petits commerces (el pequeño comercio)"
+      ]
+    },
+    {
+      "id": 24,
+      "src_no": 24,
+      "phase": "discussion",
+      "part": 3,
+      "text": "Que penses-tu des villes où tout se paie avec le téléphone ?",
+      "cefr": "B2",
+      "hints": [
+        "l'exclusion (la exclusión)",
+        "la rapidité (la rapidez)",
+        "les personnes âgées (las personas mayores)",
+        "le sans-contact (el pago sin contacto)",
+        "les touristes (los turistas)"
+      ]
+    },
+    {
+      "id": 25,
+      "src_no": 25,
+      "phase": "discussion",
+      "part": 3,
+      "text": "Les villes doivent-elles interdire les voitures dans le centre ?",
+      "cefr": "B1",
+      "hints": [
+        "la pollution (la contaminación)",
+        "les commerçants (los comerciantes)",
+        "les livraisons (las entregas)",
+        "les familles (las familias)",
+        "les parkings (los aparcamientos)"
+      ]
+    },
+    {
+      "id": 26,
+      "src_no": 26,
+      "phase": "discussion",
+      "part": 3,
+      "text": "Comment concilier mobilité et respect de l'environnement ?",
+      "cefr": "B2",
+      "hints": [
+        "les transports gratuits (el transporte gratuito)",
+        "la voiture partagée (el coche compartido)",
+        "les pistes cyclables (los carriles bici)",
+        "la marche (caminar)",
+        "la fiscalité (los impuestos)"
+      ]
+    },
+    {
+      "id": 27,
+      "src_no": 27,
+      "phase": "discussion",
+      "part": 3,
+      "text": "Le télétravail va-t-il vider ou sauver les centres-villes ?",
+      "cefr": "B2",
+      "hints": [
+        "les bureaux vides (las oficinas vacías)",
+        "les commerces (las tiendas)",
+        "les cafés (los cafés)",
+        "la vie locale (la vida del barrio)",
+        "les loyers (los alquileres)"
+      ]
+    },
+    {
+      "id": 28,
+      "src_no": 28,
+      "phase": "discussion",
+      "part": 3,
+      "text": "Faut-il s'occuper du logement avant de s'occuper de la technologie ?",
+      "cefr": "B1",
+      "hints": [
+        "les priorités (las prioridades)",
+        "les budgets (los presupuestos)",
+        "les loyers (los alquileres)",
+        "les besoins de base (las necesidades básicas)",
+        "les deux ensemble (las dos cosas a la vez)"
+      ]
+    },
+    {
+      "id": 29,
+      "src_no": 29,
+      "phase": "discussion",
+      "part": 3,
+      "text": "Que dirais-tu à un maire qui veut tout numériser ?",
+      "cefr": "B2",
+      "hints": [
+        "commencez par les usagers (empiecen por los usuarios)",
+        "consultez les habitants (consulten a los vecinos)",
+        "testez avant (prueben antes)",
+        "évaluez les résultats (evalúen los resultados)",
+        "n'oubliez personne (no dejen a nadie fuera)"
+      ]
+    },
+    {
+      "id": 30,
+      "src_no": 30,
+      "phase": "discussion",
+      "part": 3,
+      "text": "La ville de demain sera-t-elle plus humaine ou plus technique ?",
+      "cefr": "B2",
+      "hints": [
+        "les deux (las dos)",
+        "la proximité (la cercanía)",
+        "les algorithmes (los algoritmos)",
+        "le lien social (el vínculo social)",
+        "la lenteur (la lentitud)"
+      ]
+    },
+    {
+      "id": 31,
+      "src_no": 31,
+      "phase": "discussion",
+      "part": 3,
+      "text": "En une phrase, donne-nous ton conseil pour bien vivre en ville aujourd'hui.",
+      "cefr": "B1",
+      "hints": [
+        "choisis ton quartier (elige tu barrio)",
+        "déplace-toi à pied (muévete a pie)",
+        "parle à tes voisins (habla con tus vecinos)",
+        "garde du temps libre (resérvate tiempo libre)",
+        "sors sans ton téléphone (sal sin el móvil)"
+      ]
+    }
+  ]
+}
