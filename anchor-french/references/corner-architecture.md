@@ -416,6 +416,7 @@ session = init_skill()  # 等价：加载 + 构造 SkillSession
 | 复合过去时  | *Qu'est-ce que tu as fait à propos de {S} ?* | *Raconte une anecdote concernant {S}.*       | *En quoi {S} a-t-il changé ta vision des choses ?*   |
 | 条件式      | *Si tu avais…, que ferais-tu pour {S} ?*     | *Que conseillerais-tu à quelqu'un sur {S} ?* | *Et si {S} n'existait plus, comment vivrions-nous ?* |
 | 虚拟式      | *Il faut que tu… pour {S}.*                  | *Je doute que {S} soit facile.*              | *Bien qu'on dise que {S}, …*                         |
+| 命令式      | *Donne-moi trois conseils pour {S}.*         | *Conseille-nous : comment réussir {S} ?*     | *Quel ton adopter pour ordonner {S} ?*               |
 | 比较级      | *Préfères-tu {S} ou {S2} ?*                  | *En quoi {S} est-il meilleur que {S2} ?*     | *Quel modèle de {S} l'emporte ?*                     |
 | 介词 à / de | *De quoi parle-t-on quand on dit {S} ?*      | *C'est à / de {S} que je pense.*             | *À quel point {S} t'appartient-il ?*                 |
 | 疑问句      | *Que penses-tu de {S} ?*                     | *Comment expliques-tu {S} ?*                 | *Jusqu'où irait-on pour {S} ?*                       |

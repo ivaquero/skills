@@ -2,7 +2,7 @@
   "$schema": "./corner-config.schema.v1.json",
   "meta": {
     "skill_name": "anchor-french",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "display_name": "法语角主持助手",
     "display_name_en": "French Corner Host",
     "config_owner": "skills/anchor-french/SKILL.md",
@@ -117,7 +117,7 @@
     },
     "modes": {
       "id": "modes",
-      "label": "语式系统",
+      "label": "语式系统（虚拟式 · 条件式 · 命令式）",
       "children": [
         {
           "id": "mode_conditionnel",
@@ -138,6 +138,10 @@
         {
           "id": "mode_subjonctif_libre",
           "label": "独立虚拟式"
+        },
+        {
+          "id": "mode_imperatif",
+          "label": "命令式（tu / nous / vous 三形；-er 与 aller 的 tu 形去 -s，遇 y / en 复原；être / avoir / aller / faire / savoir 不规则；肯定式代词后置且顺序倒转为 COD + COI，否定式恢复前置）"
         }
       ]
     },
