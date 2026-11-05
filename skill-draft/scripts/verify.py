@@ -262,7 +262,7 @@ def iter_files(targets: Iterable[str]) -> list[Path]:
             raise GateError(f"path does not exist: {raw}")
         candidates = path.rglob("*") if path.is_dir() else [path]
         for item in candidates:
-            if item.is_file() and not SKIP_PARTS & set(item.parts):
+            if item.is_file() and not any(part in SKIP_PARTS for part in item.parts):
                 found.add(item)
     return sorted(found)
 

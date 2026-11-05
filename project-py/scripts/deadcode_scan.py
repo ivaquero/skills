@@ -114,7 +114,7 @@ def _iter_files(root: Path) -> list[Path]:
         for path in sorted(root.rglob("*"))
         if path.is_file()
         and path.suffix.lower() in REF_SUFFIXES
-        and not SKIP_DIRS.intersection(path.parts)
+        and not any(part in SKIP_DIRS for part in path.parts)
     ]
 
 
@@ -175,17 +175,6 @@ def _top_level_defs(path: Path, text: str) -> list[Definition]:
     return defs
 
 
-def _drop_lines(text: str, lines: set[int]) -> str:
-    """``text`` without the given 1-based lines."""
-    if not lines:
-        return text
-    return "".join(
-        row
-        for index, row in enumerate(text.splitlines(keepends=True), start=1)
-        if index not in lines
-    )
-
-
 def _load_corpus(root: Path) -> dict[Path, str]:
     """Read every reference-bearing file under ``root``, keyed by path."""
     texts: dict[Path, str] = {}
@@ -207,16 +196,29 @@ def scan(src_dirs: list[Path], root: Path) -> list[tuple[Definition, bool]]:
             continue
         defs.extend(_top_level_defs(path, text))
 
+    # Tokenize the corpus exactly once, remembering which identifiers sit on
+    # which line. Every round then decrements only the tokens on the lines a
+    # definition actually drops -- no per-round rebuild of the whole corpus and
+    # no re-splitting a file once per dropped definition. Counts only ever
+    # decrease, so the fixed point (a name whose sole textual occurrence is its
+    # own definition) is identical to recounting from scratch, while total work
+    # drops from O(rounds x corpus) to O(corpus + dropped tokens).
+    line_tokens: dict[Path, dict[int, list[str]]] = {}
+    counts: Counter[str] = Counter()
+    for path, text in texts.items():
+        per_line: dict[int, list[str]] = {}
+        for lineno, row in enumerate(text.splitlines(), start=1):
+            tokens = IDENT_RE.findall(row)
+            if tokens:
+                per_line[lineno] = tokens
+                counts.update(tokens)
+        line_tokens[path] = per_line
+
     dropped: dict[Path, set[int]] = {}
     reported: list[tuple[Definition, bool]] = []
     seen: set[str] = set()
 
     for round_index in range(MAX_ROUNDS):
-        reduced = {
-            path: _drop_lines(text, dropped.get(path, set()))
-            for path, text in texts.items()
-        }
-        counts = Counter(IDENT_RE.findall("\n".join(reduced.values())))
         fresh = [
             definition
             for definition in defs
@@ -228,9 +230,14 @@ def scan(src_dirs: list[Path], root: Path) -> list[tuple[Definition, bool]]:
             break
         for definition in fresh:
             seen.add(definition.name)
-            dropped.setdefault(definition.path, set()).update(
-                range(definition.line, definition.end_line + 1)
-            )
+            lines = dropped.setdefault(definition.path, set())
+            per_line = line_tokens[definition.path]
+            for lineno in range(definition.line, definition.end_line + 1):
+                if lineno in lines:
+                    continue  # already dropped on an earlier round
+                lines.add(lineno)
+                for token in per_line.get(lineno, ()):
+                    counts[token] -= 1
             reported.append((definition, round_index > 0))
     return reported
 

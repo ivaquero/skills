@@ -25,6 +25,7 @@ import urllib.error
 import urllib.request
 from collections import OrderedDict
 from collections.abc import Mapping
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -365,7 +366,11 @@ def write_manifest(path: Path, data: dict, preserve_order: bool = False) -> None
 # --------------------------------------------------------------------------
 
 
-def load_recipes() -> dict:
+#: Parsed recipe catalog plus its id index, built once per process.
+_recipes_cache: tuple[dict, dict[str, dict]] | None = None
+
+
+def _load_recipes_catalog() -> tuple[dict, dict[str, dict]]:
     # The .jsonc extension is deliberate, not a typo. A Scoop bucket's CI runs
     # Import-Bucket-Tests.ps1, which validates every *changed* .json in the repo
     # against scoop's own manifest schema (Get-GitChangedFile -Include '*.json'
@@ -373,24 +378,42 @@ def load_recipes() -> dict:
     # manifest, so naming it .json fails CI. The content stays plain JSON; no
     # comments are used, so json.loads() below still parses it. Do not rename it
     # back, and think twice before adding any other .json under this skill.
+    global _recipes_cache
+    if _recipes_cache is not None:
+        return _recipes_cache
     path = assets_dir() / "recipes.jsonc"
     try:
-        return json.loads(
-            path.read_text(encoding="utf-8"), object_pairs_hook=OrderedDict
-        )
+        text = path.read_text(encoding="utf-8")
     except FileNotFoundError as exc:
         raise SmError(f"recipe catalog missing: {path}") from exc
+    try:
+        catalog = json.loads(text, object_pairs_hook=OrderedDict)
     except json.JSONDecodeError as exc:
         raise SmError(f"recipe catalog is invalid JSON: {path} ({exc})") from exc
+    index = {item["id"]: item for item in catalog["recipes"]}
+    _recipes_cache = (catalog, index)
+    return _recipes_cache
+
+
+def load_recipes() -> dict:
+    """A fresh copy of the recipe catalog, parsed from disk only once per run.
+
+    The deep copy preserves the long-standing contract that every call returns
+    an independent, mutable structure, so a builder mutating a recipe can never
+    leak into the next call -- the single cached parse is just a private source.
+    """
+    catalog, _ = _load_recipes_catalog()
+    return deepcopy(catalog)
 
 
 def recipe_by_id(recipe_id: str) -> dict:
-    catalog = load_recipes()
-    for item in catalog["recipes"]:
-        if item["id"] == recipe_id:
-            return item
-    known = ", ".join(r["id"] for r in catalog["recipes"])
-    raise SmError(f"unknown recipe '{recipe_id}'. Available: {known}")
+    """Look up one recipe by id (O(1)) and return an independent copy."""
+    catalog, index = _load_recipes_catalog()
+    item = index.get(recipe_id)
+    if item is None:
+        known = ", ".join(r["id"] for r in catalog["recipes"])
+        raise SmError(f"unknown recipe '{recipe_id}'. Available: {known}")
+    return deepcopy(item)
 
 
 # ---- builder helpers -----------------------------------------------------
@@ -2051,19 +2074,24 @@ REPO_SCAN_EXCLUDE_DIRS = frozenset(
 )
 
 
-def _is_text_file(path: Path) -> bool:
-    """A file counts as text when it decodes as UTF-8 and carries no NUL byte."""
+def _read_text_bytes(path: Path) -> bytes | None:
+    """Bytes of a UTF-8, NUL-free text file; None if unreadable or not text.
+
+    Classifies the file and returns its content in a single read, so callers
+    that need the bytes (the line-ending scan) never pay for a second read the
+    way ``_is_text_file`` + ``read_bytes`` did.
+    """
     try:
         data = path.read_bytes()
     except OSError:
-        return False
+        return None
     if b"\x00" in data:
-        return False
+        return None
     try:
         data.decode("utf-8")
     except UnicodeDecodeError:
-        return False
-    return True
+        return None
+    return data
 
 
 def scan_line_endings(repo_root: Path) -> list[Finding]:
@@ -2081,9 +2109,9 @@ def scan_line_endings(repo_root: Path) -> list[Finding]:
         dirnames[:] = sorted(d for d in dirnames if d not in REPO_SCAN_EXCLUDE_DIRS)
         for filename in sorted(filenames):
             path = Path(current) / filename
-            if not _is_text_file(path):
+            raw = _read_text_bytes(path)
+            if raw is None:
                 continue
-            raw = path.read_bytes()
             crlf = raw.count(b"\r\n")
             bare_lf = raw.count(b"\n") - crlf
             if not bare_lf:
