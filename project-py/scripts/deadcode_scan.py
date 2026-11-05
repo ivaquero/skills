@@ -36,7 +36,9 @@ import argparse
 import ast
 import re
 import sys
+import time
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -185,9 +187,27 @@ def _load_corpus(root: Path) -> dict[Path, str]:
     return texts
 
 
-def scan(src_dirs: list[Path], root: Path) -> list[tuple[Definition, bool]]:
-    """Return ``(definition, is_chain)`` for everything nothing refers to."""
+def scan(
+    src_dirs: list[Path],
+    root: Path,
+    on_phase: Callable[[str, float], None] | None = None,
+) -> list[tuple[Definition, bool]]:
+    """Return ``(definition, is_chain)`` for everything nothing refers to.
+
+    ``on_phase`` is an optional ``(label, seconds)`` callback used solely by
+    ``--profile``. When it is ``None`` (the default) no timing code runs and the
+    result is identical to the plain scan.
+    """
+
+    def _phase(label: str, started: float) -> None:
+        if on_phase is not None:
+            on_phase(label, time.perf_counter() - started)
+
+    started = time.perf_counter() if on_phase is not None else 0.0
     texts = _load_corpus(root)
+    _phase("load corpus", started)
+
+    started = time.perf_counter() if on_phase is not None else 0.0
     defs: list[Definition] = []
     for path, text in texts.items():
         if path.suffix.lower() not in SRC_SUFFIXES:
@@ -195,6 +215,7 @@ def scan(src_dirs: list[Path], root: Path) -> list[tuple[Definition, bool]]:
         if not any(path.is_relative_to(directory) for directory in src_dirs):
             continue
         defs.extend(_top_level_defs(path, text))
+    _phase("collect definitions", started)
 
     # Tokenize the corpus exactly once, remembering which identifiers sit on
     # which line. Every round then decrements only the tokens on the lines a
@@ -203,6 +224,7 @@ def scan(src_dirs: list[Path], root: Path) -> list[tuple[Definition, bool]]:
     # decrease, so the fixed point (a name whose sole textual occurrence is its
     # own definition) is identical to recounting from scratch, while total work
     # drops from O(rounds x corpus) to O(corpus + dropped tokens).
+    started = time.perf_counter() if on_phase is not None else 0.0
     line_tokens: dict[Path, dict[int, list[str]]] = {}
     counts: Counter[str] = Counter()
     for path, text in texts.items():
@@ -213,7 +235,9 @@ def scan(src_dirs: list[Path], root: Path) -> list[tuple[Definition, bool]]:
                 per_line[lineno] = tokens
                 counts.update(tokens)
         line_tokens[path] = per_line
+    _phase("tokenize corpus", started)
 
+    started = time.perf_counter() if on_phase is not None else 0.0
     dropped: dict[Path, set[int]] = {}
     reported: list[tuple[Definition, bool]] = []
     seen: set[str] = set()
@@ -239,6 +263,7 @@ def scan(src_dirs: list[Path], root: Path) -> list[tuple[Definition, bool]]:
                 for token in per_line.get(lineno, ()):
                     counts[token] -= 1
             reported.append((definition, round_index > 0))
+    _phase("resolve fixed point", started)
     return reported
 
 
@@ -258,6 +283,11 @@ def main(argv: list[str] | None = None) -> int:
         default=".",
         help="project root used as the reference corpus (default: cwd)",
     )
+    parser.add_argument(
+        "--profile",
+        action="store_true",
+        help="print per-phase wall-clock timings to stderr",
+    )
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
     root = Path(args.root).resolve()
@@ -273,7 +303,19 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 2
 
-    reported = scan(src_dirs, root)
+    if args.profile:
+        timings: list[tuple[str, float]] = []
+
+        def _record(label: str, seconds: float) -> None:
+            timings.append((label, seconds))
+
+        reported = scan(src_dirs, root, on_phase=_record)
+        for label, seconds in timings:
+            print(f"[profile] {label}: {seconds * 1000:.1f} ms", file=sys.stderr)
+        total = sum(secs for _, secs in timings)
+        print(f"[profile] total: {total * 1000:.1f} ms", file=sys.stderr)
+    else:
+        reported = scan(src_dirs, root)
     if not reported:
         print("no unreferenced top-level definition found")
         return 0

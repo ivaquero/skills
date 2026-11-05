@@ -16,6 +16,7 @@ import copy
 import json
 import re
 import sys
+import time
 from collections import OrderedDict
 from pathlib import Path
 
@@ -649,6 +650,19 @@ def cmd_lint(args: argparse.Namespace) -> int:
             print(f"  {rule}  [{tag}]  {title}")
         return 0
 
+    timings: list[tuple[str, float]] = []
+
+    def _phase(label: str, started: float) -> float:
+        """Record one lint phase's wall-clock and return the next start stamp.
+
+        Mirrors deadcode_scan's profile hook: the clock is only read when
+        --profile is set, so an ordinary run pays nothing for the instrumentation.
+        """
+        if args.profile:
+            timings.append((label, time.perf_counter() - started))
+            return time.perf_counter()
+        return 0.0
+
     root = repo_root_from(args)
     bucket = L.bucket_dir(root)
     if args.path:
@@ -662,7 +676,9 @@ def cmd_lint(args: argparse.Namespace) -> int:
     for path in missing:
         print(f"  [ERROR] not found: {path}", file=sys.stderr)
 
+    started = time.perf_counter() if args.profile else 0.0
     readme = readme_text_of(root)
+    started = _phase("readme", started)
     results: list[tuple[str, list[L.Finding]]] = []
     fixed = 0
     for path in targets:
@@ -679,6 +695,7 @@ def cmd_lint(args: argparse.Namespace) -> int:
                     write_text_keep_eol(path, new_text)
         findings = L.lint_manifest_text(raw, path.stem, readme_text=readme)
         results.append((path.stem, findings))
+    started = _phase("manifests", started)
 
     # W112 describes the working tree as a whole, so it only runs on a full pass;
     # a --path / --name run stays focused on what was actually asked for.
@@ -689,6 +706,14 @@ def cmd_lint(args: argparse.Namespace) -> int:
             repo_findings = _fix_repo_line_endings(root, args.dry_run)
         else:
             repo_findings = L.scan_line_endings(root)
+    _phase("repo scan", started)
+    if args.profile:
+        for label, seconds in timings:
+            print(f"[profile] lint {label}: {seconds * 1000:.1f} ms", file=sys.stderr)
+        print(
+            f"[profile] lint total: {sum(s for _, s in timings) * 1000:.1f} ms",
+            file=sys.stderr,
+        )
 
     total_errors = sum(1 for _, f in results for x in f if x.severity == "error")
     total_warnings = sum(1 for _, f in results for x in f if x.severity == "warning")
@@ -1094,6 +1119,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     lint.add_argument(
         "--rules", action="store_true", help="print the rule catalog and exit"
+    )
+    lint.add_argument(
+        "--profile",
+        action="store_true",
+        help="print per-phase lint wall-clock timings to stderr",
     )
     lint.set_defaults(func=cmd_lint)
 

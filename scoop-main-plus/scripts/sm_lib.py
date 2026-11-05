@@ -2233,13 +2233,35 @@ def readme_app_names(readme_text: str) -> list[str]:
     return names
 
 
+_parse_summary_memo: OrderedDict[str, list[SummaryTable]] = OrderedDict()
+_PARSE_SUMMARY_MEMO_MAX = 8
+
+
 def parse_summary(readme_text: str) -> list[SummaryTable]:
     """Every app table in the README, with the heading it sits under.
 
     A table counts when its first header cell reads "App". The heading may be at
     any level: Extras-Plus nests one `###` table per section inside a `##` block,
     Main-Plus puts a single table straight under `## ⭐️ Summary`.
+
+    The parse is pure but O(README lines), and `cmd_lint` hands the same README text
+    to every manifest, so the result is memoized by that string. Each call still
+    returns a deepcopy, keeping the fresh, independently mutable objects an uncached
+    parse would hand out; the memo keeps its own copy and never leaks it.
     """
+    cached = _parse_summary_memo.get(readme_text)
+    if cached is not None:
+        _parse_summary_memo.move_to_end(readme_text)
+        return deepcopy(cached)
+    tables = _build_summary_tables(readme_text)
+    _parse_summary_memo[readme_text] = tables
+    if len(_parse_summary_memo) > _PARSE_SUMMARY_MEMO_MAX:
+        _parse_summary_memo.popitem(last=False)
+    return deepcopy(tables)
+
+
+def _build_summary_tables(readme_text: str) -> list[SummaryTable]:
+    """The uncached parse behind ``parse_summary``."""
     lines = readme_text.splitlines()
     tables: list[SummaryTable] = []
     section = ""

@@ -2120,6 +2120,10 @@ def readme_app_names(readme_text: str) -> list[str]:
     return names
 
 
+_parse_summary_memo: OrderedDict[str, list[SummaryTable]] = OrderedDict()
+_PARSE_SUMMARY_MEMO_MAX = 8
+
+
 def parse_summary(readme_text: str) -> list[SummaryTable]:
     """Every summary table under any heading, at any heading level.
 
@@ -2127,7 +2131,25 @@ def parse_summary(readme_text: str) -> list[SummaryTable]:
     `###` heading, while Extras-CN groups its tables under `####` sub-headings
     (with `### 跨平台` as the umbrella). The section label is therefore the
     nearest heading of any level above the table.
+
+    The parse is pure but O(README lines), and cmd_lint hands the same README text to
+    every manifest, so the result is memoized by that string. Each call returns a
+    deepcopy, so callers still get fresh, independently mutable tables; the memo keeps
+    its own copy and never leaks it.
     """
+    cached = _parse_summary_memo.get(readme_text)
+    if cached is not None:
+        _parse_summary_memo.move_to_end(readme_text)
+        return deepcopy(cached)
+    tables = _build_summary_tables(readme_text)
+    _parse_summary_memo[readme_text] = tables
+    if len(_parse_summary_memo) > _PARSE_SUMMARY_MEMO_MAX:
+        _parse_summary_memo.popitem(last=False)
+    return deepcopy(tables)
+
+
+def _build_summary_tables(readme_text: str) -> list[SummaryTable]:
+    """The uncached parse behind ``parse_summary``."""
     lines = readme_text.splitlines()
     tables: list[SummaryTable] = []
     section = ""

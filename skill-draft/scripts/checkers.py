@@ -15,6 +15,7 @@ import re
 import struct
 import zlib
 from collections.abc import Callable
+from functools import cache
 from pathlib import Path
 
 FRONTMATTER_END = "\n---"
@@ -170,6 +171,7 @@ def png_integrity(path: Path) -> list[str]:
     return found
 
 
+@cache
 def _home_needles() -> tuple[str, ...]:
     """The spellings of this machine's home directory, used to spot hard-coded local paths.
 
@@ -177,6 +179,10 @@ def _home_needles() -> tuple[str, ...]:
     illustrative `C:/Users/someone` in documentation never triggers a false positive.
     Anything shorter than 4 characters (such as `C:/`) is dropped, so a whole drive
     never becomes a match pattern.
+
+    The result is cached: it depends only on the environment and the home directory,
+    which are fixed for the life of the process, yet before this it was rebuilt for
+    every `.py` file the gate scanned.
     """
     candidates = {str(Path.home())}
     for var in ("USERPROFILE", "HOME"):
@@ -189,6 +195,16 @@ def _home_needles() -> tuple[str, ...]:
             if len(form) > 3 and form not in needles:
                 needles.append(form)
     return tuple(needles)
+
+
+@cache
+def _home_needles_lowered() -> tuple[tuple[str, str], ...]:
+    """Pair each home-path needle with its lowercase form, computed once.
+
+    Matching lowercases both sides, but the error message quotes the original
+    spelling, so the pairs carry both and the scan loop does no per-file lowering.
+    """
+    return tuple((needle, needle.lower()) for needle in _home_needles())
 
 
 def no_local_paths(path: Path) -> list[str]:
@@ -213,8 +229,8 @@ def no_local_paths(path: Path) -> list[str]:
     except OSError:
         return []
     lowered = source.lower()
-    for needle in _home_needles():
-        if needle.lower() in lowered:
+    for needle, needle_lower in _home_needles_lowered():
+        if needle_lower in lowered:
             return [
                 (
                     f"found this machine's absolute path {needle}; a skill package gets "

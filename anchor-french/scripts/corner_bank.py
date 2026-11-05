@@ -219,6 +219,11 @@ def _validate_questions(bank: dict, path: Path, fails: list[str]) -> None:
     hint_label = meta.get("hint_label")
     rng = meta.get("hint_count_range")
     levels = meta.get("levels") or []
+    # 等级标签只由 meta.levels 决定（与逐题内容无关），档位集合也一样：提到循环外一次
+    # 算好，省掉「题数 × 档位数」次 LEVEL_BANDS 扫描和每轮重建的比对列表。下面的 elif
+    # 分支仅在 cefr ∈ RANK 时到达，故按 RANK 键预建映射即覆盖循环里查到的全部取值。
+    level_set = {str(lv) for lv in levels}
+    tag_of_cefr = {c: _level_tag(meta, c) for c in RANK}
     for i, q in enumerate(qs, 1):
         if not isinstance(q, dict):
             fails.append(f"{tag} 第 {i} 题不是对象")
@@ -241,7 +246,7 @@ def _validate_questions(bank: dict, path: Path, fails: list[str]) -> None:
         cefr = q["cefr"]
         if cefr not in RANK:
             fails.append(f"{tag} 第 {i} 题 cefr 非法: {cefr!r}")
-        elif _level_tag(meta, cefr) not in [str(lv) for lv in levels]:
+        elif tag_of_cefr[cefr] not in level_set:
             fails.append(
                 f"{tag} 第 {i} 题 cefr={cefr} 在 meta.levels 里没有同档的等级标签"
             )

@@ -1940,7 +1940,29 @@ def readme_app_names(readme_text: str) -> list[str]:
     return names
 
 
+_parse_summary_memo: OrderedDict[str, list[SummaryTable]] = OrderedDict()
+_PARSE_SUMMARY_MEMO_MAX = 8
+
+
 def parse_summary(readme_text: str) -> list[SummaryTable]:
+    """Every app table in the README.
+
+    Pure but O(README lines), and cmd_lint hands the same README text to every
+    manifest, so the parse is memoized by that string. Each call returns a deepcopy,
+    so callers still get fresh, independently mutable tables; the memo keeps its own.
+    """
+    cached = _parse_summary_memo.get(readme_text)
+    if cached is not None:
+        _parse_summary_memo.move_to_end(readme_text)
+        return deepcopy(cached)
+    tables = _build_summary_tables(readme_text)
+    _parse_summary_memo[readme_text] = tables
+    if len(_parse_summary_memo) > _PARSE_SUMMARY_MEMO_MAX:
+        _parse_summary_memo.popitem(last=False)
+    return deepcopy(tables)
+
+
+def _build_summary_tables(readme_text: str) -> list[SummaryTable]:
     lines = readme_text.splitlines()
     tables: list[SummaryTable] = []
     section = ""

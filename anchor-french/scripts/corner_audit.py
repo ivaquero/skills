@@ -44,6 +44,28 @@ from corner_config import (
 # 有序元组：成员判定用它，报错文案里的顺序也用它
 FRONTMATTER_KEYS = ("name", "description", "agent_created", "disable-model-invocation")
 
+# 内容纯度扫描跳过的目录：缓存 / 版本控制 / 虚拟环境，都不是本包作者的源文件。
+# 原先只排除 `.rumdl_cache`，可开发时 `.ruff_cache` / `.pytest_cache` / `.ty_cache`
+# 里满是 `.json`，会被逐个读一遍（纯浪费），而 `.venv` / `node_modules` 里 vendored
+# 的同名引用还会假报成「他语言配置」。按 relative_to(root) 的路径**分段**判定，
+# 只看包内结构——仓库恰好装在 venv/.git 之类的目录下也不会误伤整包。
+PURITY_SKIP_DIRS = frozenset(
+    {
+        ".git",
+        ".hg",
+        ".svn",
+        ".venv",
+        "venv",
+        "node_modules",
+        "__pycache__",
+        ".ruff_cache",
+        ".ty_cache",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".rumdl_cache",
+    }
+)
+
 
 def frontmatter_keys(md: str) -> list[str]:
     """frontmatter 块的顶层键；没有 frontmatter 时返回空表。
@@ -285,18 +307,19 @@ def audit(cfg: dict, md: str) -> list[str]:
 
     # 10) 内容纯度：包内不得引用其它语言的配置文件名
     aliens: list[tuple[str, str]] = []
-    for f in sorted(skill_root().rglob("*")):
+    root = skill_root()
+    for f in sorted(root.rglob("*")):
         if not f.is_file() or f.suffix not in {".md", ".py", ".json"}:
             continue
-        if ".rumdl_cache" in f.as_posix():
+        rel = f.relative_to(root)
+        if any(part in PURITY_SKIP_DIRS for part in rel.parts):
             continue
         text, err = _read(f, "包内文件")
         if err:
             fails.append(f"{tag} {err}")
             continue
-        rel = f.relative_to(skill_root()).as_posix()
         aliens.extend(
-            (rel, name)
+            (rel.as_posix(), name)
             for name in sorted(set(re.findall(r"[\w-]+-corner-config\.json", text)))
             if name != DEFAULT_CONFIG_NAME
         )
