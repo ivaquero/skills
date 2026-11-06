@@ -75,7 +75,7 @@ The third one is the extension path: adding a file type normally means editing `
 
 ### media-merge
 
-Triggers: *merge video, merge audio, join, concatenate, append a clip, merge music, ffmpeg merge, concat, extract and merge audio tracks, mismatched frame rate, mismatched resolution, mismatched sample rate, plus the Chinese terms for merging and stitching media.*
+Triggers: *merge video, merge audio, join, concatenate, append a clip, merge music, merge in groups, merge by range, ffmpeg merge, concat, extract and merge audio tracks, mismatched frame rate, mismatched resolution, mismatched sample rate, plus the Chinese terms for merging and stitching media.*
 
 ```text
 Merge conquer-1 and conquer-2 into one video.
@@ -86,6 +86,10 @@ Check the frame rate and resolution first, then stitch mil-01 through mil-11.
 ```
 
 ```text
+Show me the parameters for these 34 clips; I'll decide whether to split them into three groups.
+```
+
+```text
 Merge these m4a files into a single mp3 without dropping the bitrate.
 ```
 
@@ -93,7 +97,7 @@ Merge these m4a files into a single mp3 without dropping the bitrate.
 Append family.mp4 to the end of ygdj-family-merged.mp4.
 ```
 
-The fourth one lands in the cheapest tier: same geometry, different codecs, so only the 4.5-minute newcomer is re-encoded and the 24.5-minute main part keeps its original bitstream. The third works the same way — four m4a files share a sample rate and only one is 48 kHz, so just that one gets re-encoded.
+The third one is the interactive path: table first, then the grouping question, and nothing runs until the user agrees. The fifth lands in the cheapest tier: same geometry, different codecs, so only the 4.5-minute newcomer is re-encoded and the 24.5-minute main part keeps its original bitstream. The fourth works the same way — four m4a files share a sample rate and only one is 48 kHz, so just that one gets re-encoded.
 
 ### project-py
 
@@ -306,9 +310,11 @@ flowchart TD
 
 ### media-merge
 
-Stitch several videos or audio files into one with ffmpeg, and make "should this be re-encoded, and which parts" a decidable question.
+Stitch several videos or audio files into one or several groups with ffmpeg, and make "should this be re-encoded, and which parts" a decidable question.
 
-Probe first, decide second, act last. The probe starts by type: all-video goes down the video lane, all-audio down the audio lane, and a mix is rejected outright. The two lanes are judged on different dimensions:
+The first pass only probes and prints a table; nothing is written. Whether to merge at all, and how to split, is the user's call — dozens of clips and several gigabytes are common, and defaulting to one big merge means finding out it was cut in the wrong place an hour later. The table carries only the columns a decision needs (video: codec, resolution, fps, frames, duration, audio; audio: codec, sample rate, channels, bitrate, duration), and the index it prints is what later selects a group.
+
+The probe starts by type: all-video goes down the video lane, all-audio down the audio lane, and a mix is rejected outright. The two lanes are judged on different dimensions:
 
 | Type  | What it compares                                    | `copy`          | `encode-minor`               | `normalize`                    |
 | :---- | --------------------------------------------------- | --------------- | ---------------------------- | ------------------------------ |
@@ -317,13 +323,16 @@ Probe first, decide second, act last. The probe starts by type: all-video goes d
 
 The key is to read "geometry" and "codec" separately: geometry decides whether scaling and padding are needed, codec decides whether anything must be re-encoded. Judged together, "only the codec differs" collapses into a full normalize pass and re-encodes the main part for nothing. Audio is the exception to that rule — `-c copy` needs one codec per track, so letting the video parts pass through while their audio codecs differ yields a mixed-codec track; any audio mismatch is promoted to `normalize`.
 
-One command produces every parameter, and by default it only prints:
+One command produces the table, and `-f md` makes it paste-ready; `--groups` splits the ordered inputs by index into independent jobs:
 
 ```bash
-python <this skill dir>/scripts/mmerge.py a.mp4 b.mp4                 # preview
-python <this skill dir>/scripts/mmerge.py --run a.mp4 b.mp4           # execute
+python <this skill dir>/scripts/mmerge.py -f md a.mp4 b.mp4                    # table + whole-set plan
+python <this skill dir>/scripts/mmerge.py --groups 1-11,12-25,26-34 a.mp4 ...  # grouped preview
+python <this skill dir>/scripts/mmerge.py --groups 1-11,12-25,26-34 --run a.mp4 ...
 python <this skill dir>/scripts/mmerge.py --audio-only --run a.mp4 b.mp4
 ```
+
+Groups are computed **independently** by default: an all-1080p group stays 1080p while an all-720p group stays 720p, which minimises what each group loses. The catch is that the groups may end up with different parameters and can no longer be joined directly. `--uniform` makes every group share one target instead, and the trade is asymmetric — pulling a 1080p group down to 720p loses real detail, while pushing 720p up only costs bytes. That trade belongs to the user, not to a default.
 
 The audio target codec follows the source rather than "bigger file, better": all-lossless stays `flac`, an mp3 majority goes back to mp3, everything else becomes `aac`. Sample rate and channel count take the maximum across sources (upsampling loses nothing, downsampling does), and the bitrate tracks the lossy sources clamped to 128–320 kbps. Squeezing lossless into lossy is the easiest mistake to make, so the script does not offer it.
 
@@ -333,7 +342,11 @@ Long material always goes in two stages — normalize each clip into `segs/`, th
 
 ```mermaid
 flowchart TD
-    A["1 Probe: codec, resolution, fps, sample rate, channels"] --> T{"Input type"}
+    A["1 Probe: codec, resolution, fps, sample rate, channels"] --> P["2 Print the table; user decides: merge, and how to split"]
+    P -->|Analysis only| Z["Stop, nothing written"]
+    P -->|Merge whole set| T{"Input type"}
+    P -->|Merge in groups| S["3 Slice by range, judge each group alone"]
+    S --> T
     T -->|All audio| B1{"Codec, sample rate, channels"}
     B1 -->|All match| E
     B1 -->|Only codec differs| F
@@ -346,11 +359,11 @@ flowchart TD
     C["normalize: scale to fit + centre-pad"] --> G["Write each clip into segs/"]
     F --> G
     G --> H["Join: demuxer copy, filter for flac"]
-    E --> I["2 Check duration and decode"]
+    E --> I["4 Check duration and decode"]
     H --> I
     I --> J{"Drift or decode errors?"}
     J -->|Yes| C
-    J -->|No| K["3 Check the seam, then deliver"]
+    J -->|No| K["5 Check the seam, then deliver"]
 ```
 
 ## Project conventions

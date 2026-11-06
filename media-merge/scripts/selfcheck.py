@@ -41,13 +41,14 @@ def check(ok: bool, label: str, detail: str = "") -> None:
     print(line)
 
 
-def run_entry(*args: str) -> subprocess.CompletedProcess[str]:
+def run_entry(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
     """跑一次入口脚本，返回完整结果。"""
     return subprocess.run(
         [sys.executable, str(ENTRY), *args],
         capture_output=True,
         text=True,
         check=False,
+        cwd=cwd,
     )
 
 
@@ -237,6 +238,75 @@ def check_video_roundtrip(work: Path) -> None:
 
 
 # --------------------------------------------------------------------------- #
+# 2. 真实数据往返：分组与表格
+# --------------------------------------------------------------------------- #
+def check_groups(work: Path) -> None:
+    """分组出片：两组各自成片，且组内模式可以不同。"""
+    home = work / "groups"
+    home.mkdir(parents=True, exist_ok=True)
+    files = [home / f"g{index}.mp4" for index in range(1, 5)]
+    ok = (
+        make_video(files[0], "640x360", 30, 2, "libx264")
+        and make_video(files[1], "640x360", 30, 2, "libx264")
+        and make_video(files[2], "320x240", 25, 2, "libx264")
+        and make_video(files[3], "320x240", 25, 2, "libx264")
+    )
+    if not ok:
+        check(False, "分组样本生成", "ffmpeg 造样本失败")
+        return
+    check(True, "分组样本生成（2 段 640x360 + 2 段 320x240）")
+
+    proc = run_entry("--groups", "1-2,3-4", "--run", *[str(f) for f in files], cwd=home)
+    first = home / "merged-01-02.mp4"
+    second = home / "merged-03-04.mp4"
+    if proc.returncode != 0 or not (first.is_file() and second.is_file()):
+        check(False, "分组出片（01-02 / 03-04）", proc.stderr.strip()[-300:])
+    else:
+        frames = [
+            int(stream_of(probe_json(path), "video").get("nb_frames", 0))
+            for path in (first, second)
+        ]
+        check(
+            frames == [120, 100],
+            "分组出片（640 组 120 帧 / 320 组 100 帧）",
+            f"frames={frames}",
+        )
+
+    # --uniform 让两组共用一套目标参数，后续才能再把两组接起来
+    proc = run_entry(
+        "--uniform", "--groups", "1-2,3-4", *[str(f) for f in files], cwd=home
+    )
+    rows = [line for line in proc.stdout.splitlines() if line.startswith("0")]
+    check(
+        len(rows) == 2 and all("640x360" in row for row in rows),
+        "--uniform 使组间目标一致",
+        f"rows={rows}",
+    )
+
+    # 分组区间必须拦截重叠，否则同一段会被写进两个成品
+    proc = run_entry("--groups", "1-3,3-4", *[str(f) for f in files], cwd=home)
+    check(
+        proc.returncode == 1 and "不重叠" in proc.stderr,
+        "拒绝重叠分组（退出码 1）",
+        f"code={proc.returncode} err={proc.stderr.strip()[:120]}",
+    )
+
+
+def check_markdown_table(work: Path) -> None:
+    """md 表格每行的竖线数必须一致，否则贴进对话里就是坏表。"""
+    sample = work / "one.mp4"
+    proc = run_entry("-f", "md", str(sample), str(sample), cwd=work)
+    rows = [line for line in proc.stdout.splitlines() if line.startswith("|")]
+    widths = {line.count("|") for line in rows}
+    aligned = bool(rows) and len(widths) == 1 and "---:" in rows[1]
+    check(
+        aligned,
+        "md 表格列数一致且带对齐行",
+        f"pipes={widths} head={rows[0][:40] if rows else ''}",
+    )
+
+
+# --------------------------------------------------------------------------- #
 # 2. 真实数据往返：音频
 # --------------------------------------------------------------------------- #
 def make_audio(
@@ -305,7 +375,7 @@ def check_audio_roundtrip(work: Path) -> None:
     else:
         audio = stream_of(probe_json(out_norm), "audio")
         ok = (
-            "方案判定（音频）" in proc.stdout
+            "方案判定（音频" in proc.stdout
             and "normalize" in proc.stdout
             and abs(seconds(out_norm) - 4.0) < 0.3
             and audio.get("channels") == 2
@@ -399,6 +469,8 @@ def main() -> int:
         work = Path(tmp)
         check_video_roundtrip(work)
         check_audio_roundtrip(work)
+        check_groups(work)
+        check_markdown_table(work)
     check_levels()
 
     failed = [label for ok, label in results if not ok]
