@@ -614,20 +614,6 @@ def _update_one(name: str, args: argparse.Namespace, root: Path, bucket: Path) -
             f"version {old} -> {args.version} ({replaced} URL replacement(s))"
         )
 
-    # recompute hash
-    if args.rehash:
-        count = _rehash(manifest, name)
-        changed.append(f"rehash ({count} hash value(s) updated)")
-    if args.hash_from_file:
-        digest = L.sha256_file(Path(args.hash_from_file))
-        if "architecture" in manifest:
-            for entry in manifest["architecture"].values():
-                if isinstance(entry, dict):
-                    entry["hash"] = digest
-        else:
-            manifest["hash"] = digest
-        changed.append(f"hash (from {Path(args.hash_from_file).name})")
-
     # probe the upstream version
     if args.checkver:
         latest, note = L.detect_latest(manifest, name)
@@ -644,14 +630,28 @@ def _update_one(name: str, args: argparse.Namespace, root: Path, bucket: Path) -
                 changed.append(
                     f"version {old} -> {latest} ({replaced} URL replacement(s))"
                 )
-                if args.rehash:
-                    pass
                 if not args.rehash:
                     print(
                         "  hint: version bumped, hash must be recomputed -- run again with --rehash."
                     )
             elif not same:
                 print("  (not written; add --apply to bump the version)")
+
+    # Recompute hash only after every version/URL change above, so each hash is
+    # paired with the URL it will actually be checked against. Doing this earlier
+    # (or leaving the checkver bump branch a no-op) wrote the pre-bump URL's hash.
+    if args.rehash:
+        count = _rehash(manifest, name)
+        changed.append(f"rehash ({count} hash value(s) updated)")
+    if args.hash_from_file:
+        digest = L.sha256_file(Path(args.hash_from_file))
+        if "architecture" in manifest:
+            for entry in manifest["architecture"].values():
+                if isinstance(entry, dict):
+                    entry["hash"] = digest
+        else:
+            manifest["hash"] = digest
+        changed.append(f"hash (from {Path(args.hash_from_file).name})")
 
     # --readme is a request in its own right: a manifest whose upstream is
     # unchanged still needs its README row re-synced when the *homepage* moved,

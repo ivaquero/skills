@@ -160,22 +160,31 @@ def _int(source: object, default: int = 0) -> int:
 
 def probe(path: Path) -> Info:
     """用 ffprobe 读一个文件的视频、音频与容器信息。"""
-    result = subprocess.run(
-        [
-            FFPROBE,
-            "-v",
-            "error",
-            "-print_format",
-            "json",
-            "-show_streams",
-            "-show_format",
-            str(path),
-        ],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    data = json.loads(result.stdout)
+    try:
+        result = subprocess.run(
+            [
+                FFPROBE,
+                "-v",
+                "error",
+                "-print_format",
+                "json",
+                "-show_streams",
+                "-show_format",
+                str(path),
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        # capture_output=True 会把 ffprobe 的真正报错吞进 exc.stderr，不接住就只剩
+        # 一坨 CalledProcessError traceback，用户看不到「到底是哪个文件、为什么读不了」。
+        detail = (exc.stderr or "").strip() or f"ffprobe 退出码 {exc.returncode}"
+        raise SystemExit(f"错误：ffprobe 无法读取 {path}\n{detail}") from None
+    try:
+        data = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        raise SystemExit(f"错误：ffprobe 对 {path} 返回了无法解析的输出") from None
     streams = data.get("streams", [])
 
     # 封面图会以 mjpeg/png 视频流的形式挂在音频文件上，不能当真视频
@@ -320,6 +329,44 @@ def even(value: int) -> int:
 def _p(path: Path) -> str:
     """绝对路径的统一写法：正斜杠，Windows 与 POSIX 下都能直接喂给 ffmpeg。"""
     return path.resolve().as_posix()
+
+
+def _parse_canvas(canvas: str) -> tuple[int, int]:
+    """把 --canvas 的「宽x高」解析成两个正整数。
+
+    原来直接 `(int(part) for part in canvas.lower().split("x"))`，遇到 "1080"、
+    "1x2x3"、"a x b" 之类会抛未捕获的 ValueError 或解包数量错误——用户输入写错是
+    最常见的失败路径，应该干净报错而不是甩 traceback。分词口径与原内联写法保持一致。
+    """
+    parts = canvas.lower().split("x")
+    if len(parts) != 2:
+        raise SystemExit(
+            f"错误：--canvas 需要「宽x高」两个数，比如 1080x1920，收到的是 {canvas!r}"
+        )
+    try:
+        width, height = int(parts[0]), int(parts[1])
+    except ValueError:
+        raise SystemExit(
+            f"错误：--canvas 的宽高必须是整数，收到的是 {canvas!r}"
+        ) from None
+    if width <= 0 or height <= 0:
+        raise SystemExit(
+            f"错误：--canvas 的宽高必须是正整数，收到的是 {canvas!r}"
+        )
+    return width, height
+
+
+def _concat_line(entry: str) -> str:
+    """拼出 concat 清单里的一行。
+
+    普通路径（不含单引号）与旧写法逐字节一致；只有路径本身带 `'` 时才按 ffmpeg
+    concat demuxer 的规则转义（`'` → `'\\''`），否则 `it's a clip.mp4` 这种合法
+    文件名会把清单解析截断，产出静默错误的合并结果。
+    """
+    if "'" not in entry:
+        return f"file '{entry}'"
+    escaped = entry.replace("'", "'\\''")
+    return f"file '{escaped}'"
 
 
 # --------------------------------------------------------------------------- #
@@ -481,7 +528,7 @@ def build_video_plan(
 
     width, height = main.width, main.height
     if canvas:
-        width, height = (int(part) for part in canvas.lower().split("x"))
+        width, height = _parse_canvas(canvas)
     width, height = even(width), even(height)
 
     # 目标画布与素材对不上时，copy 与 encode-minor 都不成立（后者不过滤镜），
@@ -948,7 +995,7 @@ def _print_commands(plan: Plan, verbose: bool) -> None:
         print()
         print(f"  # concat 清单 -> {plan.list_file}")
         for entry in plan.entries:
-            print(f"  file '{entry}'")
+            print(f"  {_concat_line(entry)}")
         print()
     print("  " + shlex.join(plan.concat))
 
@@ -1039,7 +1086,8 @@ def execute(plan: Plan) -> int:
     seg_dir.mkdir(parents=True, exist_ok=True)
     if plan.list_file is not None:
         plan.list_file.write_text(
-            "".join(f"file '{entry}'\n" for entry in plan.entries), encoding="utf-8"
+            "".join(f"{_concat_line(entry)}\n" for entry in plan.entries),
+            encoding="utf-8",
         )
     for cmd in [*plan.encodes, plan.concat]:
         shown = Path(cmd[-1]).name
