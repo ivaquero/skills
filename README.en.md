@@ -73,6 +73,28 @@ Add .toml to the gate's rules table, for taplo.
 
 The third one is the extension path: adding a file type normally means editing `scripts/file-types.json` alone, with no code change, and the skill knows that.
 
+### media-merge
+
+Triggers: *merge video, merge audio, join, concatenate, append a clip, merge music, ffmpeg merge, concat, extract and merge audio tracks, mismatched frame rate, mismatched resolution, mismatched sample rate, plus the Chinese terms for merging and stitching media.*
+
+```text
+Merge conquer-1 and conquer-2 into one video.
+```
+
+```text
+Check the frame rate and resolution first, then stitch mil-01 through mil-11.
+```
+
+```text
+Merge these m4a files into a single mp3 without dropping the bitrate.
+```
+
+```text
+Append family.mp4 to the end of ygdj-family-merged.mp4.
+```
+
+The fourth one lands in the cheapest tier: same geometry, different codecs, so only the 4.5-minute newcomer is re-encoded and the 24.5-minute main part keeps its original bitstream. The third works the same way — four m4a files share a sample rate and only one is 48 kHz, so just that one gets re-encoded.
+
 ### project-py
 
 Triggers: *Python, py, ruff, ty, lint, micromamba, mamba, conda, uv, matplotlib, subplots, dead code, plus the Chinese terms for type checking, package management, running a script, virtual environments and dead code.*
@@ -226,6 +248,7 @@ It shares the architecture with `anchor-french` and differs mainly in the exam l
 | Group               | Skill                                     | One line                                        |
 | :------------------ | :---------------------------------------- | :---------------------------------------------- |
 | Tooling             | [`skill-draft`](#skill-draft)             | Build a skill package and gate every file in it |
+| Tooling             | [`media-merge`](#media-merge)             | Audio/video stitching: probe, then pick the cheapest plan |
 | Project conventions | [`project-py`](#project-py)               | Python: environment, packages, style, ruff + ty |
 | Project conventions | [`project-tex`](#project-tex)             | LaTeX math: environments, brackets, notation    |
 | Project conventions | [`project-typ`](#project-typ)             | Typst lecture slides: assets, layout, compile   |
@@ -279,6 +302,55 @@ flowchart TD
     G --> D
     H --> D
     F --> I["6 Report: file / residual problems / exit code"]
+```
+
+### media-merge
+
+Stitch several videos or audio files into one with ffmpeg, and make "should this be re-encoded, and which parts" a decidable question.
+
+Probe first, decide second, act last. The probe starts by type: all-video goes down the video lane, all-audio down the audio lane, and a mix is rejected outright. The two lanes are judged on different dimensions:
+
+| Type  | What it compares                                    | `copy`          | `encode-minor`               | `normalize`                    |
+| :---- | --------------------------------------------------- | --------------- | ---------------------------- | ------------------------------ |
+| Video | Resolution, fps, pix_fmt, SAR, colour, codec, audio | all match       | only the video codec differs | geometry or audio differs      |
+| Audio | Codec, sample rate, channels                        | all three match | only the codec differs       | sample rate or channels differ |
+
+The key is to read "geometry" and "codec" separately: geometry decides whether scaling and padding are needed, codec decides whether anything must be re-encoded. Judged together, "only the codec differs" collapses into a full normalize pass and re-encodes the main part for nothing. Audio is the exception to that rule — `-c copy` needs one codec per track, so letting the video parts pass through while their audio codecs differ yields a mixed-codec track; any audio mismatch is promoted to `normalize`.
+
+One command produces every parameter, and by default it only prints:
+
+```bash
+python <this skill dir>/scripts/mmerge.py a.mp4 b.mp4                 # preview
+python <this skill dir>/scripts/mmerge.py --run a.mp4 b.mp4           # execute
+python <this skill dir>/scripts/mmerge.py --audio-only --run a.mp4 b.mp4
+```
+
+The audio target codec follows the source rather than "bigger file, better": all-lossless stays `flac`, an mp3 majority goes back to mp3, everything else becomes `aac`. Sample rate and channel count take the maximum across sources (upsampling loses nothing, downsampling does), and the bitrate tracks the lossy sources clamped to 128–320 kbps. Squeezing lossless into lossy is the easiest mistake to make, so the script does not offer it.
+
+Long material always goes in two stages — normalize each clip into `segs/`, then concatenate. A single `concat` filter is one big N-input pipeline that dies with everything on it when interrupted; per-clip segments can be resumed, which is the only way the 34-clip, 2h21m batch ever finished. The one exception is flac: raw `.flac` cannot be joined with `-c copy` (the block size in the header goes wrong and the result plays only the first segment), so the final step switches to a concat filter — flac to flac is lossless.
+
+`references/params.md` holds the measured preset/CRF speed and bitrate tables, the canvas and padding trade-offs, the audio bitrate rules, and which containers survive a `-c copy` join. `references/casebook.md` holds six real cases and the pitfall list, including ffprobe's CRLF output silently breaking comparisons on Windows, float frame rates fed to integer comparisons, `-c copy` stamping the first segment's `avcC` onto the whole file, embedded cover art read as a video stream, and flac joins that only produce half the audio — problems that only surface on a real machine.
+
+```mermaid
+flowchart TD
+    A["1 Probe: codec, resolution, fps, sample rate, channels"] --> T{"Input type"}
+    T -->|All audio| B1{"Codec, sample rate, channels"}
+    B1 -->|All match| E
+    B1 -->|Only codec differs| F
+    B1 -->|Rate or channels differ| C
+    T -->|All video| B{"Geometry matches?"}
+    B -->|No| C
+    B -->|Yes| D{"Codec and audio match?"}
+    D -->|Yes| E["copy: -c copy, no re-encode"]
+    D -->|No| F["encode-minor: re-encode the minority"]
+    C["normalize: scale to fit + centre-pad"] --> G["Write each clip into segs/"]
+    F --> G
+    G --> H["Join: demuxer copy, filter for flac"]
+    E --> I["2 Check duration and decode"]
+    H --> I
+    I --> J{"Drift or decode errors?"}
+    J -->|Yes| C
+    J -->|No| K["3 Check the seam, then deliver"]
 ```
 
 ## Project conventions
