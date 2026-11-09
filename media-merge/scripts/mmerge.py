@@ -52,6 +52,17 @@ ENCODER = {"mp3": "libmp3lame", "aac": "aac", "flac": "flac"}
 
 MP4_SUFFIX = frozenset({".mp4", ".m4a", ".m4v", ".mov"})
 
+#: 档位缩写，只为在差异行里省宽度
+_PROFILE_SHORT = {
+    "Constrained Baseline": "C.Baseline",
+    "Baseline": "Baseline",
+    "Main": "Main",
+    "High": "High",
+    "High 10": "High10",
+    "High 4:2:2": "High422",
+    "High 4:4:4 Predictive": "High444",
+}
+
 WORK_DIR = ".mmerge-tmp"
 
 #: 命令条数超过这个数就折叠，避免 34 段的方案刷屏
@@ -125,6 +136,13 @@ def _fps_text(frac: Fraction) -> str:
     if frac.denominator == 1:
         return str(frac.numerator)
     return f"{frac.numerator}/{frac.denominator}"
+
+
+def _profile_text(profile: str) -> str:
+    """档位缩写。判档不看它，但混档时要一眼看见。"""
+    if not profile or profile == "-":
+        return "-"
+    return _PROFILE_SHORT.get(profile, profile)
 
 
 def _split_den(text: str, default: int = 1) -> int:
@@ -877,6 +895,10 @@ def _diff_rows(infos: list[Info], kind: str) -> list[tuple[str, list, bool]]:
     if kind == "video":
         return [
             ("视频编码", [i.vcodec for i in infos], True),
+            # 档位不参与定档：实测 h264 混 High / C.Baseline 走 copy
+            # 仍逐帧像素一致（SPS 在流内随 IDR 重复）。但成品头里只有
+            # 首段的档位，必须让人看见分歧，而不是替人判断能不能拼。
+            ("档位", [_profile_text(i.profile) for i in infos], False),
             ("分辨率", [i.res for i in infos], True),
             ("帧率", [i.fps_text for i in infos], True),
             ("像素格式", [i.pix_fmt for i in infos], True),
@@ -901,7 +923,7 @@ def _diff_lines(infos: list[Info], kind: str) -> list[str]:
     for name, values, decisive in rows:
         unique = _uniq(values)
         flag = ("OK  " if len(unique) == 1 else "DIFF") if decisive else "info"
-        shown = " ".join(str(value) for value in unique)
+        shown = " | ".join(str(value) for value in unique)
         lines.append(f"  [{flag}] {_fit(name, width, False)}  {shown}")
     return lines
 

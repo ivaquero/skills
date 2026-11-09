@@ -153,8 +153,20 @@ def check_entry() -> None:
 # --------------------------------------------------------------------------- #
 # 2. 真实数据往返：视频
 # --------------------------------------------------------------------------- #
-def make_video(target: Path, size: str, rate: int, seconds: int, vcodec: str) -> bool:
-    """造一段带音轨的小样本。"""
+def make_video(
+    target: Path,
+    size: str,
+    rate: int,
+    seconds: int,
+    vcodec: str,
+    profile: str = "",
+    preset: str = "ultrafast",
+) -> bool:
+    """造一段带音轨的小样本。
+
+    ``preset`` 会限制档位：ultrafast 关掉 CABAC 与 8x8dct，x264 即使被指定
+    ``high`` 也只写 Constrained Baseline。要造 High 样本必须用 veryfast 以上。
+    """
     cmd = [
         FFMPEG,
         "-hide_banner",
@@ -172,9 +184,13 @@ def make_video(target: Path, size: str, rate: int, seconds: int, vcodec: str) ->
         "-c:v",
         vcodec,
         "-preset",
-        "ultrafast",
+        preset,
         "-crf",
         "35",
+    ]
+    if profile:
+        cmd += ["-profile:v", profile]
+    cmd += [
         "-pix_fmt",
         "yuv420p",
         "-c:a",
@@ -300,6 +316,29 @@ def check_groups(work: Path) -> None:
         "-o 缺扩展名时补 .mp4 且保留 faststart",
         f"code={proc.returncode} exists={fixed.is_file()} "
         f"err={proc.stderr.strip()[:120]}",
+    )
+
+
+def check_profile_row(work: Path) -> None:
+    """同编码混档位：差异行要列全，但不该升级成 DIFF 去逼出全量重编。"""
+    home = work / "profile"
+    home.mkdir(parents=True, exist_ok=True)
+    low = home / "lo.mp4"
+    high = home / "hi.mp4"
+    ok = make_video(
+        low, "320x240", 30, 1, "libx264", profile="baseline"
+    ) and make_video(
+        high, "320x240", 30, 1, "libx264", profile="high", preset="veryfast"
+    )
+    if not ok:
+        check(False, "档位样本生成", "ffmpeg 造样本失败")
+        return
+    proc = run_entry(str(low), str(high), cwd=home)
+    line = next((ln for ln in proc.stdout.splitlines() if "档位" in ln), "")
+    check(
+        "[info]" in line and "Baseline" in line and "High" in line,
+        "档位分歧列入 info 而非 DIFF",
+        f"line={line.strip()[:90]}",
     )
 
 
@@ -481,6 +520,7 @@ def main() -> int:
         check_video_roundtrip(work)
         check_audio_roundtrip(work)
         check_groups(work)
+        check_profile_row(work)
         check_markdown_table(work)
     check_levels()
 
