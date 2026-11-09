@@ -291,6 +291,17 @@ def check_groups(work: Path) -> None:
         f"code={proc.returncode} err={proc.stderr.strip()[:120]}",
     )
 
+    # -o 不带扩展名：视频档必须补 .mp4，否则 ffmpeg 猜不出封装直接失败，
+    # 而且 suffix 为空会让 +faststart 与 video_track_timescale 一起被跳过。
+    proc = run_entry("-o", "noext", "--run", str(files[0]), str(files[1]), cwd=home)
+    fixed = home / "noext.mp4"
+    check(
+        proc.returncode == 0 and fixed.is_file() and "-movflags" in proc.stdout,
+        "-o 缺扩展名时补 .mp4 且保留 faststart",
+        f"code={proc.returncode} exists={fixed.is_file()} "
+        f"err={proc.stderr.strip()[:120]}",
+    )
+
 
 def check_markdown_table(work: Path) -> None:
     """md 表格每行的竖线数必须一致，否则贴进对话里就是坏表。"""

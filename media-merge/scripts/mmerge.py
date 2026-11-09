@@ -350,9 +350,7 @@ def _parse_canvas(canvas: str) -> tuple[int, int]:
             f"错误：--canvas 的宽高必须是整数，收到的是 {canvas!r}"
         ) from None
     if width <= 0 or height <= 0:
-        raise SystemExit(
-            f"错误：--canvas 的宽高必须是正整数，收到的是 {canvas!r}"
-        )
+        raise SystemExit(f"错误：--canvas 的宽高必须是正整数，收到的是 {canvas!r}")
     return width, height
 
 
@@ -1236,6 +1234,16 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     kind = "audio" if args.audio_only else str(kinds[0])
+
+    # -o 不带扩展名时 ffmpeg 猜不出封装，报 Unable to choose an output format；
+    # 而且 suffix 为空会让 +faststart 与 video_track_timescale 一起被跳过。
+    # 视频档没有可推导的目标编码（copy 档原样保留），只能补默认值；
+    # 音频档后面会按自然容器改写，这里给的只是占位。
+    if args.out and not Path(args.out).suffix:
+        args.out = str(
+            Path(args.out).with_suffix(".mp4" if kind == "video" else ".mka")
+        )
+
     basis = infos if args.uniform else None
 
     jobs: list[tuple[list[Info], Plan]] = []
