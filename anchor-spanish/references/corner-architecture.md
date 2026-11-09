@@ -21,12 +21,15 @@ anchor-spanish/
 ├── scripts/                           确定性代码（仅 stdlib，不调用 LLM）
 │   ├── corner_config.py               本包解析层：JSON → SkillConfig + 查询 API + 身份常量
 │   ├── corner_skill.py                skill 主体：intake 状态机 + 简报导出
+│   ├── corner_bank.py                 题库守卫：check / dump / verify
+│   ├── corner_pdf.py                  排版层：md → 朗读版 PDF（调用外部 typst）
 │   └── corner_audit.py                一致性守卫：schema / 身份 / 文档 ↔ 配置 / 纯度
 ├── references/
 │   └── corner-architecture.md         字段 schema 与接口契约（本文件）
 └── assets/
     ├── es-corner-config.json          唯一数据源（可选项 + 提问编排 + 风格 + i18n）
-    └── corner-config.schema.v1.json   配置的 JSON Schema（编辑器补全 / 校验，跨包一致）
+    ├── corner-config.schema.v1.json   配置的 JSON Schema（编辑器补全 / 校验，跨包一致）
+    └── questions/<slug>.json          每次西语角的题库（题文 / 等级 / 提示词）
 ```
 
 解析层用 `skill_root()` / `assets_dir()` 定位文件。脚本**必须**位于 `<skill>/scripts/`、与 `SKILL.md` 同级，
@@ -38,6 +41,8 @@ anchor-spanish/
 python scripts/corner_config.py      # 加载并校验 assets/es-corner-config.json
 python scripts/corner_skill.py       # intake 状态机 + 简报导出
 python scripts/corner_skill.py selftest   # 自检：auto_recommend 配对 + 公共 API
+python scripts/corner_bank.py check  # 题库结构 / 等级 / 提示词 / 纯度
+python scripts/corner_pdf.py docs/es-x.md   # 可选：md → 朗读版 PDF（需 typst）
 python scripts/corner_audit.py       # 文档 ↔ 配置 + 包身份 / 纯度审计
 ```
 
@@ -82,6 +87,7 @@ assets/es-corner-config.json   唯一数据源（可选项 + 提问编排 + 风�
 | `scripts/corner_skill.py`      | 按 `question_plan` 逐题收集、导出简报              | 不生成内容                         |
 | `assets/questions/<slug>.json` | 存本题全部问题（题文 / 等级 / 难度 / 提示词）      | 不含西文以外的文字；不改 md        |
 | `scripts/corner_bank.py`       | 校验题库、按 md 语法导出题目块、回查 md 与题库一致 | 不生成内容、不改 md                |
+| `scripts/corner_pdf.py`        | 把定稿 md 排成朗读版 PDF（Typst → A4）             | 不改 md 一个字、不生成内容         |
 | `scripts/corner_audit.py`      | 校验 schema 引用、包身份、配置取值与题库           | 不改任何文件                       |
 | 本 skill（`SKILL.md`）         | 读简报 → 写题库 → 产出西文主持脚本                 | 不重新询问已收集的参数；不手改题目 |
 

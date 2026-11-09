@@ -25,6 +25,7 @@ agent_created: true
 - **水平范围**：B1–C2（含「混合（B1–C2）」），不出现 A1 / A2。
 - **产出物**：单页 Markdown 主持脚本，路径模板见 `style.output_path_template`（`docs/es-{topic}.md`）；
   外加本次问题的题库 `assets/questions/<slug>.json` —— 问题先入库，md 里的问题全部由它取出并回查。
+  可选再导出同名朗读版 PDF（`scripts/corner_pdf.py`，见「导出朗读版 PDF」）。
 
 ## 技能包结构与运行
 
@@ -39,6 +40,7 @@ agent_created: true
 python scripts/corner_config.py          # 加载并校验 assets/es-corner-config.json
 python scripts/corner_skill.py           # 驱动 intake 并导出简报
 python scripts/corner_bank.py check      # 校验 assets/questions/ 下全部题库
+python scripts/corner_pdf.py docs/es-x.md # 可选：md → 朗读版 PDF（需 typst）
 python scripts/corner_audit.py           # schema / 身份 / 文档 ↔ 配置 / 纯度审计
 ```
 
@@ -164,6 +166,21 @@ Preposiciones·Conjunciones / Pronombres / Otros。
 - 写入后**尝试执行 `rumdl fmt <文件路径>`** 格式化；若 `rumdl` 不可用或报错，跳过并在交付说明里
   提一句「未格式化」（不阻断产出）。
 - 用 **present_files** 打开预览，并附一句简要说明。
+
+### 导出朗读版 PDF（可选）
+
+md 定稿并通过 `corner_bank.py verify` 后，可用包内 `scripts/corner_pdf.py` 排成 A4 朗读版 PDF：
+
+```bash
+python scripts/corner_pdf.py docs/es-viaje.md          # 输出同名 .pdf
+python scripts/corner_pdf.py docs/es-viaje.md --keep-typ
+```
+
+- **只排版不改字**：题目、等级、提示词一律取自 md，故 PDF 与题库始终一致；要改内容先改题库。
+- 需要 `typst`（0.13+）在 PATH 上。缺 typst 时脚本直接报错退出，md 产出不受影响，交付说明里提一句「未生成 PDF」。
+- 版式为现场朗读优化：题号悬挂缩进 + 等级标签右置 + 斜体提示词行；生词表按词性分组、词头加粗、例句斜体；
+  问题总览单独起页双栏，供主持人打勾。
+- 中间 `.typ` 默认与 PDF 同名、编译后删除（`--keep-typ` 保留，便于微调版式）。
 
 ## 风格约定
 
