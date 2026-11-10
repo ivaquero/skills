@@ -1,0 +1,10 @@
+﻿# Glyph table for assets/outline-sample.svg.
+# Format: glyph-id <tab> character [<tab> font family]
+# The fifth row maps a deliberately blank glyph to "." — the converter must
+# override it to a space, because a blank outline matches almost any character.
+glyph-0-0	A
+glyph-0-1	b
+glyph-0-2	C
+glyph-0-3	d
+glyph-0-4	.
+glyph-1-0	x

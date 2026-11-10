@@ -253,6 +253,7 @@ It shares the architecture with `anchor-french` and differs mainly in the exam l
 | :------------------ | :---------------------------------------- | :---------------------------------------------- |
 | Tooling             | [`skill-draft`](#skill-draft)             | Build a skill package and gate every file in it |
 | Tooling             | [`media-merge`](#media-merge)             | Audio/video stitching: probe, then pick the cheapest plan |
+| Tooling             | [`svg2drawio`](#svg2drawio)               | SVG to draw.io: embed, or rebuild |
 | Project conventions | [`project-py`](#project-py)               | Python: environment, packages, style, ruff + ty |
 | Project conventions | [`project-tex`](#project-tex)             | LaTeX math: environments, brackets, notation    |
 | Project conventions | [`project-typ`](#project-typ)             | Typst lecture slides: assets, layout, compile   |
@@ -364,6 +365,45 @@ flowchart TD
     I --> J{"Drift or decode errors?"}
     J -->|Yes| C
     J -->|No| K["5 Check the seam, then deliver"]
+```
+
+### svg2drawio
+
+Converts SVG to draw.io along two pipelines, and decides which one applies before discussing fidelity or editability.
+
+`--probe` reports the page box, text-element count, glyph-reference count, glyph definitions, font subsets, path classes and multi-subpath strokes. The decision rests on one question: **is the text real `<text>`?** If yes, the graphics are embedded per unit as SVG image cells, the text is pulled out into editable cells, and both are wrapped in a group. If not, everything is rebuilt semantically — glyph outlines are first decoded into a character table, then boxes, connectors and labels are reconstructed as native objects.
+
+One route cannot serve both: `mxGraphModel` has no Bezier primitive, so graphics can only be embedded or approximated; and a cairo/Pango export from a PDF has **no `<text>` at all** — 13994 `<use>` elements, each pointing at a glyph in a font subset. Treating it as an embed looks like a success and leaves not one editable character. So the second pipeline starts with glyph decoding, not with conversion.
+
+Decoding needs rasterisation and a distance transform, which means numpy / Pillow / scipy, and therefore stays **out of the package scripts** (those are standard library only, or they break on the next machine). The algorithm and its parameters live in `references/outline-pipeline.md`: 64×64 cells with the glyph **centred** (off-centre turns `r` into `P`, and it fails in a regular, hard-to-see way), an IoU prefilter down to 40 candidates before chamfer scoring, advance widths recovered from the `x` gaps between adjacent `<use>` elements, serif plus Cyrillic and Greek coverage, and homoglyph normalisation keyed on the word's script.
+
+```bash
+python <this skill dir>/scripts/rebuild.py page.svg --probe          # which pipeline
+python <this skill dir>/scripts/svg2drawio.py a.svg -o out/          # embed
+python <this skill dir>/scripts/rebuild.py page.svg --glyphs g.tsv   # rebuild
+python <this skill dir>/scripts/selfcheck.py                         # 14 checks
+```
+
+The rebuild thresholds are all measured: a filled path under 12×12 is an arrowhead, `fill-opacity < 0.3` is a shadow, four `C` plus one `Z` is a card border, everything else stroked is a connector. Corner radii come from where the straight top edge starts, not from "first point minus left edge".
+
+The three most expensive traps: one `d` often holds several unrelated lines (leave them joined and the page fills with diagonals); a "bus" that runs to a box and doubles back is walked twice if you merge by stroke, which is invisible on solid lines and turns every dashed bus solid as the two phases interleave; and an edge missing `edge="1"` draws nothing at all, while the XML stays perfectly valid.
+
+`references/drawio-quirks.md` lists thirteen hard constraints (including `dashPattern` being measured in stroke widths, a single-waypoint `<Array>` being dropped, and document order being z-order); `references/verification.md` covers 1:1 alignment, IoU and residual connected components for large charts — the 2526×4167 build with 1210 connectors lands at IoU 0.74, with residues above 4px reduced to thin 5×50 strips.
+
+```mermaid
+flowchart TD
+    A["1 probe: page box, text elements, glyph refs, path classes"] --> Q{"text is real elements"}
+    Q -->|yes| S["2 embed: unit to inline SVG + text cell + group"]
+    Q -->|no, thousands of glyphs| R["3 rebuild: glyph table to boxes / connectors / labels"]
+    Q -->|neither| I["whole page as one image"]
+    S --> C["4 selfcheck: 14 structural checks"]
+    R --> C
+    C -->|FAIL| Q2["locate it from the quirk table, never by eye"]
+    Q2 --> C
+    C -->|all green| V["5 export at 1:1, compare with the SVG render"]
+    V -->|RMSE 0.02-0.07 or IoU 0.74| D["zoom on line ends, arrow tips, rotated text"]
+    V -->|solid bright blocks| B["structural defect, back to the stage that owns it"]
+    D --> E["6 report: cells, unit counts, what stays editable"]
 ```
 
 ## Project conventions

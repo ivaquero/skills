@@ -1,0 +1,19 @@
+{
+  "sample.svg": {
+    "cells": 10,
+    "units": 5,
+    "images": 4,
+    "texts": 3,
+    "groups": 2,
+    "baked_text": 1
+  },
+  "outline-sample.svg": {
+    "cells": 9,
+    "boxes": 2,
+    "edges": 6,
+    "lines": 3,
+    "free": 1,
+    "arrows": 1,
+    "unmapped": 0
+  }
+}

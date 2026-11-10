@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 260 145" width="260" height="145">
+  <!-- Minimal cairo/Pango-style export: no <text>, six glyph outlines, one of
+       them blank.  Every shape here exists to pin one rule in rebuild.py:
+       filled box, outline card + faint halo, 4-cubic closed outline, one- and
+       two-subpath connectors, a dashed connector, a filled arrowhead, a free
+       text run, and a glyph that must be read as a space. -->
+  <style type="text/css">.card{fill:none;stroke:#666666;stroke-width:0.8}</style>
+  <defs>
+    <g id="glyph-0-0"><path d="M0 0 L3.2 -10 L6.4 0 L4.9 0 L4.4 -1.8 L2 -1.8 L1.5 0 Z"/></g>
+    <g id="glyph-0-1"><path d="M0 0 L0 -10 L1.4 -10 L1.4 -6.2 L4.6 -6.2 L5.6 -4 L5.6 -2.2 L4.6 0 Z"/></g>
+    <g id="glyph-0-2"><path d="M5 0 L1.2 0 L0 -1.2 L0 -8.8 L1.2 -10 L5 -10 L5 -8.6 L1.6 -8.6 L1.4 -8.2 L1.4 -1.8 L1.6 -1.4 L5 -1.4 Z"/></g>
+    <g id="glyph-0-3"><path d="M4.2 -10 L5.6 -10 L5.6 0 L1.2 0 L0 -1.2 L0 -6 L1.2 -7.2 L4.2 -7.2 Z"/></g>
+    <g id="glyph-0-4"><path d="M0 0 L0.01 -0.01 Z"/></g>
+    <g id="glyph-1-0"><path d="M0 0 L4 -10 M4 0 L0 -10"/></g>
+  </defs>
+
+  <!-- filled rounded box, 4 cubics + close -->
+  <path fill="#cfe2f3" stroke="#6fa8dc" stroke-width="0.8"
+        d="M16 15 H84 C87.3 15 90 17.7 90 21 V49 C90 52.3 87.3 55 84 55 H16 C12.7 55 10 52.3 10 49 V21 C10 17.7 12.7 15 16 15 Z"/>
+
+  <!-- the same card twice: a faint halo, then the real border -->
+  <path class="card" stroke-opacity="0.25"
+        d="M125 10 H195 C197.8 10 200 12.2 200 15 V45 C200 47.8 197.8 50 195 50 H125 C122.2 50 120 47.8 120 45 V15 C120 12.2 122.2 10 125 10 Z"/>
+  <path class="card" stroke-opacity="0.9"
+        d="M125 10 H195 C197.8 10 200 12.2 200 15 V45 C200 47.8 197.8 50 195 50 H125 C122.2 50 120 47.8 120 45 V15 C120 12.2 122.2 10 125 10 Z"/>
+
+  <!-- box edge -> card edge, two bends -->
+  <path fill="none" stroke="#000000" stroke-width="0.8" d="M90 35 H105 V30 H120"/>
+  <!-- free-standing connector, arrowhead is its own filled path -->
+  <path fill="none" stroke="#000000" stroke-width="0.8" d="M40 70 H90"/>
+  <path fill="#000000" d="M90 70 L84 67 L84 73 Z"/>
+  <!-- dashed -->
+  <path fill="none" stroke="#999999" stroke-width="0.8" stroke-dasharray="4 2" d="M40 80 H90"/>
+  <!-- two unrelated lines in one d -->
+  <path fill="none" stroke="#000000" stroke-width="0.8" d="M120 70 H160 M120 80 H160"/>
+  <!-- runs out and doubles back: the retrace must collapse, not replay -->
+  <path fill="none" stroke="#000000" stroke-width="0.8" d="M120 100 H150 V110 V100"/>
+
+  <g fill="#000000"><use xlink:href="#glyph-0-0" x="20" y="40"/><use xlink:href="#glyph-0-1" x="27" y="40"/></g>
+  <g fill="#000000"><use xlink:href="#glyph-0-2" x="130" y="35"/><use xlink:href="#glyph-0-4" x="135.4" y="35"/><use xlink:href="#glyph-0-3" x="140" y="35"/></g>
+  <g fill="#cc0000"><use xlink:href="#glyph-1-0" x="10" y="130"/><use xlink:href="#glyph-1-0" x="16" y="130"/></g>
+</svg>

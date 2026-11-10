@@ -253,6 +253,7 @@ extras-plus 里哪些包的版本和 URL 已经对不上了？
 | :----------- | :---------------------------------------- | :------------------------------------ |
 | 工具         | [`skill-draft`](#skill-draft)             | 构建 skill 包，并为其中每个文件设门禁 |
 | 工具         | [`media-merge`](#media-merge)             | 音视频拼接：先出表再问，按组最省地合并 |
+| 工具         | [`svg2drawio`](#svg2drawio)               | SVG 转 draw.io：内嵌与重建两条工序     |
 | 项目规范     | [`project-py`](#project-py)               | Python：环境、包管理、风格、ruff + ty |
 | 项目规范     | [`project-tex`](#project-tex)             | LaTeX 数学公式：环境、括号、记号      |
 | 项目规范     | [`project-typ`](#project-typ)             | Typst 课件：资源、版式、编译          |
@@ -366,6 +367,47 @@ flowchart TD
     I --> J{"有偏差或解码错误"}
     J -->|有| C
     J -->|无| K["5 接缝确认后交付"]
+```
+
+### svg2drawio
+
+把 SVG 转成 draw.io，分两条工序；先判该走哪条，再谈保真与可编辑。
+
+`--probe` 一次给出页尺寸、文字元素数、字形引用数、字形定义数、字体子集数、path 分类和多子路径描边数。判据只有一条：**文字是不是真 `<text>`**。是，走图形内嵌——按单元裁成 SVG 图像单元，文字剥离成可编辑 cell，两者包成一个组；不是，走全可编辑重建——先把字形反推成字符表，再按语义重建框、连线、标签。
+
+为什么不能一条路通吃：draw.io 的 `mxGraphModel` 没有贝塞尔图元，图形只能内嵌或近似；而 cairo/Pango 从 PDF 导出的图**一个 `<text>` 都没有**，13994 个 `<use>` 各自引用字体子集里的字形。按内嵌处理，转完看着成功，一个字都留不下——批量跑完才发现，代价是整批重来。所以第二条工序的第一步不是转换，是反推字形。
+
+反推这一步要栅格化与距离变换，只能用 numpy / Pillow / scipy，**刻意不进包内脚本**（包内一律标准库，否则换机器就跑不起来）。算法与参数写进 `references/outline-pipeline.md`：64×64 单元、**居中放置**（不居中会把 `r` 判成 `P`，且错得很有规律）、IoU 粗筛 40 个候选再算 chamfer、用相邻 `<use>` 的 `x` 差反推 advance、衬线/西里尔/希腊三套字库、以及西里尔同形字按词判语言再归一。
+
+```bash
+python <this skill dir>/scripts/rebuild.py page.svg --probe          # 判工序
+python <this skill dir>/scripts/svg2drawio.py a.svg -o out/          # 内嵌
+python <this skill dir>/scripts/rebuild.py page.svg --glyphs g.tsv   # 重建
+python <this skill dir>/scripts/selfcheck.py                         # 14 项自检
+```
+
+重建的判定阈值全是实测校准的：填充路径小于 12×12 是箭头、`fill-opacity < 0.3` 是阴影、四个 `C` 加一个 `Z` 是卡片边框、其余描边是连线；圆角按顶边直线段的起点量，不是「路径起点到左边界的距离」。
+
+踩过的坑里最贵的三个：一个 `d` 里常有多条不相连的线（不按子路径拆，就是满页斜线）；画到框边又折返的「总线」按「一条描边 = 一条连线」合并会走两遍，实线看不出来、虚线相位交错后糊成实线；边少了 `edge="1"` 属性，draw.io 一条线都不画，而 XML 完全合法。
+
+`references/drawio-quirks.md` 是十三条硬约束（含 `dashPattern` 以线宽为单位、单点 `<Array>` 会被丢弃、文档顺序即图层顺序）；`references/verification.md` 给出大图的 1:1 对齐、IoU 与残差连通域判定——2526×4167、1210 条连线的成图，最佳 IoU 0.74，距离变换 > 4px 的残差只剩 5×50 的细条。
+
+流程如下：
+
+```mermaid
+flowchart TD
+    A["1 probe：页尺寸、文字元素、字形引用、path 分类"] --> Q{"文字是真 text 元素"}
+    Q -->|是| S["2 图形内嵌：单元→内嵌 SVG + 文字 cell + 组"]
+    Q -->|否，字形上千| R["3 重建：字形表 → 框 / 连线 / 标签"]
+    Q -->|两者都不是| I["整图内嵌成一张图片"]
+    S --> C["4 selfcheck：14 项结构自检"]
+    R --> C
+    C -->|有 FAIL| Q2["按 quirk 成因表定位，不靠肉眼猜"]
+    Q2 --> C
+    C -->|全绿| V["5 draw.io 1:1 导出，与原 SVG 渲染比对"]
+    V -->|RMSE 0.02–0.07 或 IoU 0.74| D["定点放大：线端、箭头尖、旋转文字"]
+    V -->|出现实心亮块| B["结构性缺陷，退回对应阶段"]
+    D --> E["6 报告：cells、单元数、文字可编辑性"]
 ```
 
 ## 项目规范
