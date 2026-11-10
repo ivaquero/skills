@@ -82,7 +82,7 @@ npx skills add <owner>/<repo> -y                 # 项目级（默认行为）
 ```
 
 ```text
-先分析帧率和分辨率，再按区间把 mil-01 到 mil-11 拼起来。
+先分析帧率和分辨率，再按区间把 video-01 到 video-11 拼起来。
 ```
 
 ```text
@@ -94,7 +94,7 @@ npx skills add <owner>/<repo> -y                 # 项目级（默认行为）
 ```
 
 ```text
-把 family.mp4 追加到 ygdj-family-merged.mp4 后面。
+把 family.mp4 追加到 family-merged.mp4 后面。
 ```
 
 第三条是交互那条路：先出表、再问分组，用户点头才执行。第五条落在最省的那一档：两段几何参数相同、只有编码不同，于是只重编 4 分半的新片段，24 分半的主段原样保留。第四条同理——四段 m4a 采样率一致，只有一段是 48 kHz，重编那一段即可，其余三段原样拷贝。
@@ -249,19 +249,19 @@ extras-plus 里哪些包的版本和 URL 已经对不上了？
 
 ## 目录
 
-| 分组         | Skill                                     | 一句话                                |
-| :----------- | :---------------------------------------- | :------------------------------------ |
-| 工具         | [`skill-draft`](#skill-draft)             | 构建 skill 包，并为其中每个文件设门禁 |
+| 分组         | Skill                                     | 一句话                                 |
+| :----------- | :---------------------------------------- | :------------------------------------- |
+| 工具         | [`skill-draft`](#skill-draft)             | 构建 skill 包，并为其中每个文件设门禁  |
 | 工具         | [`media-merge`](#media-merge)             | 音视频拼接：先出表再问，按组最省地合并 |
 | 工具         | [`svg2drawio`](#svg2drawio)               | SVG 转 draw.io：内嵌与重建两条工序     |
-| 项目规范     | [`project-py`](#project-py)               | Python：环境、包管理、风格、ruff + ty |
-| 项目规范     | [`project-tex`](#project-tex)             | LaTeX 数学公式：环境、括号、记号      |
-| 项目规范     | [`project-typ`](#project-typ)             | Typst 课件：资源、版式、编译          |
-| 语言角       | [`anchor-french`](#anchor-french)         | 法语角主持资料包                      |
-| 语言角       | [`anchor-spanish`](#anchor-spanish)       | 西班牙语角主持资料包                  |
-| Scoop bucket | [`scoop-main-plus`](#scoop-main-plus)     | Main-Plus bucket 的 manifest          |
-| Scoop bucket | [`scoop-extras-plus`](#scoop-extras-plus) | Extras-Plus bucket 的 manifest        |
-| Scoop bucket | [`scoop-extras-cn`](#scoop-extras-cn)     | Extras-CN bucket 的 manifest          |
+| 项目规范     | [`project-py`](#project-py)               | Python：环境、包管理、风格、ruff + ty  |
+| 项目规范     | [`project-tex`](#project-tex)             | LaTeX 数学公式：环境、括号、记号       |
+| 项目规范     | [`project-typ`](#project-typ)             | Typst 课件：资源、版式、编译           |
+| 语言角       | [`anchor-french`](#anchor-french)         | 法语角主持资料包                       |
+| 语言角       | [`anchor-spanish`](#anchor-spanish)       | 西班牙语角主持资料包                   |
+| Scoop bucket | [`scoop-main-plus`](#scoop-main-plus)     | Main-Plus bucket 的 manifest           |
+| Scoop bucket | [`scoop-extras-plus`](#scoop-extras-plus) | Extras-Plus bucket 的 manifest         |
+| Scoop bucket | [`scoop-extras-cn`](#scoop-extras-cn)     | Extras-CN bucket 的 manifest           |
 
 下面每个 skill 小节都配一张 mermaid 流程图，画的是模型实际走的那条路。若某个分组本身是同一套架构的多次移植，共有部分只画一次，各成员的图只画它自己多出来的那一段。
 

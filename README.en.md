@@ -82,7 +82,7 @@ Merge conquer-1 and conquer-2 into one video.
 ```
 
 ```text
-Check the frame rate and resolution first, then stitch mil-01 through mil-11.
+Check the frame rate and resolution first, then stitch video-01 through video-11.
 ```
 
 ```text
@@ -94,7 +94,7 @@ Merge these m4a files into a single mp3 without dropping the bitrate.
 ```
 
 ```text
-Append family.mp4 to the end of ygdj-family-merged.mp4.
+Append family.mp4 to the end of family-merged.mp4.
 ```
 
 The third one is the interactive path: table first, then the grouping question, and nothing runs until the user agrees. The fifth lands in the cheapest tier: same geometry, different codecs, so only the 4.5-minute newcomer is re-encoded and the 24.5-minute main part keeps its original bitstream. The fourth works the same way — four m4a files share a sample rate and only one is 48 kHz, so just that one gets re-encoded.
@@ -249,19 +249,19 @@ It shares the architecture with `anchor-french` and differs mainly in the exam l
 
 ## Contents
 
-| Group               | Skill                                     | One line                                        |
-| :------------------ | :---------------------------------------- | :---------------------------------------------- |
-| Tooling             | [`skill-draft`](#skill-draft)             | Build a skill package and gate every file in it |
+| Group               | Skill                                     | One line                                                  |
+| :------------------ | :---------------------------------------- | :-------------------------------------------------------- |
+| Tooling             | [`skill-draft`](#skill-draft)             | Build a skill package and gate every file in it           |
 | Tooling             | [`media-merge`](#media-merge)             | Audio/video stitching: probe, then pick the cheapest plan |
-| Tooling             | [`svg2drawio`](#svg2drawio)               | SVG to draw.io: embed, or rebuild |
-| Project conventions | [`project-py`](#project-py)               | Python: environment, packages, style, ruff + ty |
-| Project conventions | [`project-tex`](#project-tex)             | LaTeX math: environments, brackets, notation    |
-| Project conventions | [`project-typ`](#project-typ)             | Typst lecture slides: assets, layout, compile   |
-| Language corners    | [`anchor-french`](#anchor-french)         | French conversation-circle host kit             |
-| Language corners    | [`anchor-spanish`](#anchor-spanish)       | Spanish conversation-circle host kit            |
-| Scoop buckets       | [`scoop-main-plus`](#scoop-main-plus)     | Manifests for the Main-Plus bucket              |
-| Scoop buckets       | [`scoop-extras-plus`](#scoop-extras-plus) | Manifests for the Extras-Plus bucket            |
-| Scoop buckets       | [`scoop-extras-cn`](#scoop-extras-cn)     | Manifests for the Extras-CN bucket              |
+| Tooling             | [`svg2drawio`](#svg2drawio)               | SVG to draw.io: embed, or rebuild                         |
+| Project conventions | [`project-py`](#project-py)               | Python: environment, packages, style, ruff + ty           |
+| Project conventions | [`project-tex`](#project-tex)             | LaTeX math: environments, brackets, notation              |
+| Project conventions | [`project-typ`](#project-typ)             | Typst lecture slides: assets, layout, compile             |
+| Language corners    | [`anchor-french`](#anchor-french)         | French conversation-circle host kit                       |
+| Language corners    | [`anchor-spanish`](#anchor-spanish)       | Spanish conversation-circle host kit                      |
+| Scoop buckets       | [`scoop-main-plus`](#scoop-main-plus)     | Manifests for the Main-Plus bucket                        |
+| Scoop buckets       | [`scoop-extras-plus`](#scoop-extras-plus) | Manifests for the Extras-Plus bucket                      |
+| Scoop buckets       | [`scoop-extras-cn`](#scoop-extras-cn)     | Manifests for the Extras-CN bucket                        |
 
 Each skill section below carries a mermaid flowchart of the path the model actually walks. Where a group is one architecture ported more than once, the shared part is drawn once for the group and a member's diagram shows only what that member adds.
 
