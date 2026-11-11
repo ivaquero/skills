@@ -1,0 +1,532 @@
+# Design notes
+
+[中文](design.md) · [Back to README](../README.md)
+
+This file holds the design principles, implementation trade-offs, algorithms and architecture notes for each skill, plus the repo's gate, self-check and editing conventions. Installation, trigger words and invocation examples stay in the [README](../README.md).
+
+Where a group is one architecture ported more than once, the shared part is drawn once for the group and a member's diagram shows only what that member adds.
+
+Sections: [Tooling](#tooling) · [Project conventions](#project-conventions) · [Language corners](#language-corners) · [Scoop buckets](#scoop-buckets) · [Working on a skill](#working-on-a-skill)
+
+## Tooling
+
+### skill-draft
+
+Turn a workflow or a piece of domain knowledge into a Skill package, and make every file in it pass a quality gate **before it lands on disk**.
+
+The iron rule is that a file is not done until the gate passes, and the gate is re-run immediately after every write. One command drives everything:
+
+```bash
+python <this skill dir>/scripts/verify.py <file-or-dir>...
+```
+
+Every file type gets a three-stage pipeline — builtin check, repair, verify — and the verify stage must exit zero. Coverage today:
+
+| Type                       | Tools                                         |
+| :------------------------- | :-------------------------------------------- |
+| `.py`                      | ruff + ty, plus in-process syntax compilation |
+| `.md`                      | rumdl                                         |
+| `.json` / `.jsonc`         | parse validation                              |
+| `.ts` / `.js` family       | oxlint + oxfmt                                |
+| `.css` / `.scss` / `.less` | oxfmt                                         |
+| `.png`                     | oxipng + a chunk/CRC integrity recheck        |
+
+Adding a file type normally means editing `scripts/file-types.json` only, with no code change; in-process checks go into `scripts/checkers.py`. The package uses the Python standard library and nothing else, so it runs on any machine.
+
+There is also a package-level `package` rule: `no-local-paths` plus `package-selfcheck`. The latter discovers the self-check entry points under a package's `scripts/`, runs them as child processes on the current interpreter, and pulls the package's round-trip checks into the gate — the gate runs ruff / ty / rumdl, while the self-checks enforce recipe, question-bank and docs ↔ code consistency, and until now neither covered the other. It fires only when the gate is aimed at a whole package or the whole repo, not at a single file. `python <this skill dir>/scripts/verify.py --list` prints the rules table read-only; **a full gate writes to disk during its repair stage**, so do not read its output as a read-only verdict.
+
+`SKILL.md` also carries a long `Gotchas` section recording the traps that cost real debugging time — why `oxlint` needs `--deny-warnings`, why `oxipng`'s exit code cannot be trusted, why a `.jsonc` name is sometimes deliberate rather than a typo.
+
+The flow, with the loop back into the gate drawn where it really happens:
+
+```mermaid
+flowchart TD
+    A["1 Fix the identity: name, description, invocation"] --> B["2 Fix the skeleton: SKILL.md, scripts, references, assets"]
+    B --> C["3 Write the files"]
+    C --> D["4 Gate each file"]
+    D --> S1["builtin check"] --> S2["repair, exit code ignored"] --> S3["verify, must be all zero"]
+    S3 --> E{"gate exit code"}
+    E -->|0| F["5 Run the entry script once, on a real sample"]
+    E -->|1| G["Residual problem: fix by hand, or the tool already rewrote the file"]
+    E -->|2| H["The gate or the rules table itself is broken"]
+    G --> D
+    H --> D
+    F --> I["6 Report: file / residual problems / exit code"]
+```
+
+### media-merge
+
+Stitch several videos or audio files into one or several groups with ffmpeg, and make "should this be re-encoded, and which parts" a decidable question.
+
+The first pass only probes and prints a table; nothing is written. Whether to merge at all, and how to split, is the user's call — dozens of clips and several gigabytes are common, and defaulting to one big merge means finding out it was cut in the wrong place an hour later. The table carries only the columns a decision needs (video: codec, resolution, fps, frames, duration, audio; audio: codec, sample rate, channels, bitrate, duration), and the index it prints is what later selects a group.
+
+The probe starts by type: all-video goes down the video lane, all-audio down the audio lane, and a mix is rejected outright. The two lanes are judged on different dimensions:
+
+| Type  | What it compares                                    | `copy`          | `encode-minor`               | `normalize`                    |
+| :---- | --------------------------------------------------- | --------------- | ---------------------------- | ------------------------------ |
+| Video | Resolution, fps, pix_fmt, SAR, colour, codec, audio | all match       | only the video codec differs | geometry or audio differs      |
+| Audio | Codec, sample rate, channels                        | all three match | only the codec differs       | sample rate or channels differ |
+
+The key is to read "geometry" and "codec" separately: geometry decides whether scaling and padding are needed, codec decides whether anything must be re-encoded. Judged together, "only the codec differs" collapses into a full normalize pass and re-encodes the main part for nothing. Audio is the exception to that rule — `-c copy` needs one codec per track, so letting the video parts pass through while their audio codecs differ yields a mixed-codec track; any audio mismatch is promoted to `normalize`.
+
+One command produces the table, and `-f md` makes it paste-ready; `--groups` splits the ordered inputs by index into independent jobs:
+
+```bash
+python <this skill dir>/scripts/mmerge.py -f md a.mp4 b.mp4                    # table + whole-set plan
+python <this skill dir>/scripts/mmerge.py --groups 1-11,12-25,26-34 a.mp4 ...  # grouped preview
+python <this skill dir>/scripts/mmerge.py --groups 1-11,12-25,26-34 --run a.mp4 ...
+python <this skill dir>/scripts/mmerge.py --audio-only --run a.mp4 b.mp4
+```
+
+Groups are computed **independently** by default: an all-1080p group stays 1080p while an all-720p group stays 720p, which minimises what each group loses. The catch is that the groups may end up with different parameters and can no longer be joined directly. `--uniform` makes every group share one target instead, and the trade is asymmetric — pulling a 1080p group down to 720p loses real detail, while pushing 720p up only costs bytes. That trade belongs to the user, not to a default.
+
+The audio target codec follows the source rather than "bigger file, better": all-lossless stays `flac`, an mp3 majority goes back to mp3, everything else becomes `aac`. Sample rate and channel count take the maximum across sources (upsampling loses nothing, downsampling does), and the bitrate tracks the lossy sources clamped to 128–320 kbps. Squeezing lossless into lossy is the easiest mistake to make, so the script does not offer it.
+
+Long material always goes in two stages — normalize each clip into `segs/`, then concatenate. A single `concat` filter is one big N-input pipeline that dies with everything on it when interrupted; per-clip segments can be resumed, which is the only way the 34-clip, 2h21m batch ever finished. The one exception is flac: raw `.flac` cannot be joined with `-c copy` (the block size in the header goes wrong and the result plays only the first segment), so the final step switches to a concat filter — flac to flac is lossless.
+
+`references/params.md` holds the measured preset/CRF speed and bitrate tables, the canvas and padding trade-offs, the audio bitrate rules, and which containers survive a `-c copy` join. `references/casebook.md` holds six real cases and the pitfall list, including ffprobe's CRLF output silently breaking comparisons on Windows, float frame rates fed to integer comparisons, `-c copy` stamping the first segment's `avcC` onto the whole file, embedded cover art read as a video stream, and flac joins that only produce half the audio — problems that only surface on a real machine.
+
+```mermaid
+flowchart TD
+    A["1 Probe: codec, resolution, fps, sample rate, channels"] --> P["2 Print the table; user decides: merge, and how to split"]
+    P -->|Analysis only| Z["Stop, nothing written"]
+    P -->|Merge whole set| T{"Input type"}
+    P -->|Merge in groups| S["3 Slice by range, judge each group alone"]
+    S --> T
+    T -->|All audio| B1{"Codec, sample rate, channels"}
+    B1 -->|All match| E
+    B1 -->|Only codec differs| F
+    B1 -->|Rate or channels differ| C
+    T -->|All video| B{"Geometry matches?"}
+    B -->|No| C
+    B -->|Yes| D{"Codec and audio match?"}
+    D -->|Yes| E["copy: -c copy, no re-encode"]
+    D -->|No| F["encode-minor: re-encode the minority"]
+    C["normalize: scale to fit + centre-pad"] --> G["Write each clip into segs/"]
+    F --> G
+    G --> H["Join: demuxer copy, filter for flac"]
+    E --> I["4 Check duration and decode"]
+    H --> I
+    I --> J{"Drift or decode errors?"}
+    J -->|Yes| C
+    J -->|No| K["5 Check the seam, then deliver"]
+```
+
+### svg2drawio
+
+Converts SVG to draw.io along two pipelines, and decides which one applies before discussing fidelity or editability.
+
+`--probe` reports the page box, text-element count, glyph-reference count, glyph definitions, font subsets, path classes and multi-subpath strokes. The decision rests on one question: **is the text real `<text>`?** If yes, the graphics are embedded per unit as SVG image cells, the text is pulled out into editable cells, and both are wrapped in a group. If not, everything is rebuilt semantically — glyph outlines are first decoded into a character table, then boxes, connectors and labels are reconstructed as native objects.
+
+One route cannot serve both: `mxGraphModel` has no Bezier primitive, so graphics can only be embedded or approximated; and a cairo/Pango export from a PDF has **no `<text>` at all** — 13994 `<use>` elements, each pointing at a glyph in a font subset. Treating it as an embed looks like a success and leaves not one editable character. So the second pipeline starts with glyph decoding, not with conversion.
+
+Decoding needs rasterisation and a distance transform, which means numpy / Pillow / scipy, and therefore stays **out of the package scripts** (those are standard library only, or they break on the next machine). The algorithm and its parameters live in `references/outline-pipeline.md`: 64×64 cells with the glyph **centred** (off-centre turns `r` into `P`, and it fails in a regular, hard-to-see way), an IoU prefilter down to 40 candidates before chamfer scoring, advance widths recovered from the `x` gaps between adjacent `<use>` elements, serif plus Cyrillic and Greek coverage, and homoglyph normalisation keyed on the word's script.
+
+```bash
+python <this skill dir>/scripts/rebuild.py page.svg --probe          # which pipeline
+python <this skill dir>/scripts/svg2drawio.py a.svg -o out/          # embed
+python <this skill dir>/scripts/rebuild.py page.svg --glyphs g.tsv   # rebuild
+python <this skill dir>/scripts/selfcheck.py                         # 14 checks
+```
+
+The rebuild thresholds are all measured: a filled path under 12×12 is an arrowhead, `fill-opacity < 0.3` is a shadow, four `C` plus one `Z` is a card border, everything else stroked is a connector. Corner radii come from where the straight top edge starts, not from "first point minus left edge".
+
+The three most expensive traps: one `d` often holds several unrelated lines (leave them joined and the page fills with diagonals); a "bus" that runs to a box and doubles back is walked twice if you merge by stroke, which is invisible on solid lines and turns every dashed bus solid as the two phases interleave; and an edge missing `edge="1"` draws nothing at all, while the XML stays perfectly valid.
+
+`references/drawio-quirks.md` lists thirteen hard constraints (including `dashPattern` being measured in stroke widths, a single-waypoint `<Array>` being dropped, and document order being z-order); `references/verification.md` covers 1:1 alignment, IoU and residual connected components for large charts — the 2526×4167 build with 1210 connectors lands at IoU 0.74, with residues above 4px reduced to thin 5×50 strips.
+
+```mermaid
+flowchart TD
+    A["1 probe: page box, text elements, glyph refs, path classes"] --> Q{"text is real elements"}
+    Q -->|yes| S["2 embed: unit to inline SVG + text cell + group"]
+    Q -->|no, thousands of glyphs| R["3 rebuild: glyph table to boxes / connectors / labels"]
+    Q -->|neither| I["whole page as one image"]
+    S --> C["4 selfcheck: 14 structural checks"]
+    R --> C
+    C -->|FAIL| Q2["locate it from the quirk table, never by eye"]
+    Q2 --> C
+    C -->|all green| V["5 export at 1:1, compare with the SVG render"]
+    V -->|RMSE 0.02-0.07 or IoU 0.74| D["zoom on line ends, arrow tips, rotated text"]
+    V -->|solid bright blocks| B["structural defect, back to the stage that owns it"]
+    D --> E["6 report: cells, unit counts, what stays editable"]
+```
+
+### typ2drawio
+
+Turns a batch of `vNN-*.typ` lecture notes into editable `mxGraphModel` .drawio files with a fixed layout: the centre carries only the chapter name, the four sectors follow the geometry and palette in `references/layout.md`, and prerequisite topics come solely from the lesson docx. With a docx directory the output numbers come from docx filenames; otherwise they come from the lecture `NN`.
+
+```bash
+python <this skill dir>/scripts/typ2drawio.py --typ-dir LECTURES --docx-dir LESSONS --out-dir OUT --preview OUT/preview.html
+python <this skill dir>/scripts/verify_drawio.py --out-dir OUT --docx-dir LESSONS
+python <this skill dir>/scripts/selfcheck.py
+```
+
+Generation and verification are separate: the read-only verifier rejects formula and example-identifier noise, overlapping node rectangles, edges crossing unrelated nodes, labels buried under nodes, reversed containment arrows and numbering mismatches. `selfcheck.py` then cross-checks package consistency, a sample round trip and the external rules table.
+
+```mermaid
+flowchart TD
+    A["1 List lectures and docx, fix the numbering source"] --> B["2 Parse headings, formula lines, noise words"]
+    B --> C["3 Four-way radial layout, editable mxCells"]
+    C --> D["4 Write .drawio and the preview page"]
+    D --> E{"5 verify_drawio"}
+    E -->|rejected| B
+    E -->|passed| F["Deliver"]
+```
+
+### drawio2vsdx
+
+Converts draw.io `mxCell` diagrams to Visio .vsdx with fidelity: the OPC package is generated in pure Python, so Visio is not required. `<br>` becomes a real line break and page sizes are converted at 96 PPI. Shape geometry, colour syntax and endpoint rules live in an external rules table, and any change goes through the reverse test first.
+
+```bash
+python <this skill dir>/scripts/drawio2vsdx.py --in-dir OUT --out-dir VSDX
+python <this skill dir>/scripts/verify_vsdx.py --drawio-dir OUT --vsdx-dir VSDX
+python <this skill dir>/scripts/selfcheck.py
+```
+
+Static verification and reverse rendering always come as a pair: the former catches a flattened document bottom edge or a shape set that no longer matches the rules table; the latter reads the VSDX back and renders it again. `selfcheck.py` also uses a negative sample to confirm the verifier really fails when it should.
+
+```mermaid
+flowchart TD
+    A["1 Read mxCells from .drawio"] --> B["2 Convert geometry and style via the rules table"]
+    B --> C["3 Generate the OPC package, write .vsdx"]
+    C --> D{"4 verify_vsdx static check"}
+    D -->|rejected| B
+    D -->|passed| E["5 Reverse-render spot check"]
+    E --> F["Deliver"]
+```
+
+## Project conventions
+
+These three encode house rules for a separate lectures repository. The first two only describe conventions: they ask before acting, but never inspect the files you write. `project-tex` is the exception among them — it ships a checker, so it has a mechanical half as well.
+
+### project-py
+
+Rules for writing `.py` source. Notebooks are explicitly out of scope.
+
+- **Package manager is a hard gate.** `pip install` is forbidden — including when the package is missing from every environment on the machine. Dependencies change only through `micromamba` or `uv`, and the choice is settled with the user first — with `micromamba`, the specific environment name is asked for before anything runs. If neither route is available, the task stops and reports what was probed and what is missing; `pip` is not the fallback.
+- **Running is gated too.** A script whose imports reach past the standard library is not executed until the machine's `micromamba` / `mamba` environments have been probed and the environment has been picked by the user in an interactive prompt. That prompt always carries a "pause, I will install it myself" exit, which ends the task instead of installing anything silently — and picking it hands the install back to the user rather than unlocking `pip`.
+- **Style.** Iterate with `enumerate()` / `zip()`, never `range(len())`; Matplotlib through the object-oriented interface with `constrained_layout=True`; batch decorations through `ax.set(...)` and pass spines as one list.
+- **Static checking order is fixed: format → check → ty.** Formatting is not optional, because `ruff check` passing says nothing about formatting. `ty` must be pointed at an interpreter that actually has the dependencies, or it floods the output with false `unresolved-import` alarms.
+- **What the dead-code scan reports is a lead, not a verdict.** `scripts/deadcode_scan.py` counts references to find unused top-level definitions, but **a decorated function is always treated as live** — `@app.get("/path")` registers through a path string, so the name never appears a second time, which is the one real blind spot of reference counting. Run the linter right after deleting: a dead function is often the only consumer of some import, and F401 will find the rest.
+- **No absolute paths and no pinned version numbers** anywhere in docs, scripts or config — including `ty.toml`. Both are resolved at run time, since a hard-coded path turns into wrong information the moment the machine changes.
+
+`references/toolchain.md` holds the command cookbook and the isolation notes, and `references/deadcode.md` holds the dead-code workflow along with its blind spots.
+
+Three paths into the same skill: a dependency change, an ordinary edit, and a script to run:
+
+```mermaid
+flowchart TD
+    A["A dependency has to change"] --> B{"Ask first: micromamba or uv"}
+    B -->|pip| X["Refused outright, never an option, not even as a last resort"]
+    B -->|micromamba| C["Then ask for the environment name"]
+    B -->|uv| D["The repo .venv, nothing else to ask"]
+    C --> E["Install through that manager"]
+    D --> E
+    E --> W["Write or edit the .py source"]
+    W --> G["1 ruff format, always first"]
+    G --> H["2 ruff check with no-fix, notebooks excluded"]
+    H --> I["3 ty check, pointed at the environment holding the dependencies"]
+    I --> J{"all three clean"}
+    J -->|no| K["Fix, then rerun from step 1"]
+    K --> G
+    J -->|yes| L["Walk the checklist, then report"]
+
+    R["A script has to run"] --> S{"Do the imports stay inside the standard library"}
+    S -->|yes| T["Run it, nothing to ask"]
+    S -->|no| U["Probe the micromamba and mamba environments, test the imports"]
+    U --> M{"Does any environment already have every import"}
+    M -->|no| N["Say what is missing and stop, pip is never the fallback"]
+    M -->|yes| V{"Offer the candidates, the user picks one"}
+    V -->|an environment| Y["Run inside it, never through pip"]
+    V -->|pause and install it myself| Z["Report what was probed and stop"]
+```
+
+### project-tex
+
+House style for LaTeX math. Every rule is a "don't write X, write Y" pair, so the skill exists to stop the same handful of habits from creeping back into lecture notes:
+
+- **Pick the environment by meaning.** A multi-line formula, matrix or case split gets the environment that says what it is — `gathered`, `gather`, `aligned`, `cases`, `vmatrix`, `bmatrix` — never the semantically empty `array`. If you cannot say why a formula uses its environment, it is the wrong one.
+- **Size brackets explicitly.** `\left…\right` is replaced by a fixed `\big` / `\Big` / `\bigg` / `\Bigg` chosen to fit the content, which keeps delimiters stable between edits instead of silently resizing.
+- **One spelling per notation.** `^{\top}` for transpose, `\to` for limits, `\underset{}{}` rather than `\limits_`, and `\mathrm` / `\mathbf` / `\mathit` in place of the legacy `{\rm }` / `{\bf }` / `{\it }`. Every `\underset` writes both argument slots, using empty braces when one is unused.
+- **Run the checker after writing.** `scripts/check_style.py` is the mechanical twin of the rule table, sharing the same nine ids, and reports rather than rewrites; exit code 0 is the completion criterion.
+
+`references/examples.md` holds copy-ready blocks for each environment, which is the part hard to infer from the rule table alone.
+
+Four steps, and the checker is the completion criterion:
+
+```mermaid
+flowchart TD
+    A["Write or edit a formula"] --> B["1 Pick the outer environment by meaning"]
+    B --> C["2 Fix bracket sizes and notation"]
+    C --> D["3 Fix the font commands"]
+    D --> E["4 Run check_style.py on the changed file"]
+    E --> F{"findings"}
+    F -->|some| G["Apply the hint, then rerun"]
+    G --> E
+    F -->|none, exit code 0| H["Done; --selfcheck proves script and rule table still agree"]
+```
+
+The checker is worth a note on its own: it reads Markdown as well as `.tex`, extracting math from `$…$`, `$$…$$`, `\(…\)`, `\[…\]` and `latex`-fenced code blocks, and blanking the rest without disturbing character offsets so a finding still maps to the right line and column. `--selfcheck` (older name `--list-rules`) doubles as a consistency audit, failing if an id exists in the script but is undocumented in `SKILL.md`.
+
+### project-typ
+
+Rules for writing and editing Typst lecture decks.
+
+- **Check the packages before writing a helper.** Before defining any custom function, search `qooklet`, `touying-quick` and `theorion` for an existing implementation — most layout needs (tables, code blocks, callouts, equation numbering, figure references) are already solved, and re-implementing them produces inconsistent typography.
+- **All external content lives in files, never inlined.** Code goes to `python/`, `blender/` or `cv40examples/` and comes back through `read()`; images go to `images/` and are wrapped in `figure(image(...), caption: none)`; data goes to `data/`, preferably as CSV, and feeds `tableq(data, k)`. Paths are always relative to the repository root.
+- **Layout.** Fixed-height two-column blocks use `columns()` with an explicit `#colbreak()` between the panes, each pane wrapped in its own `#[ … ]` — dropping the `#colbreak()` silently changes the layout, because `columns()` is flowing rather than positioned.
+- **Prose is not to be chopped up.** Long Chinese sentences stay intact; clause breaks use commas and semicolons, not periods.
+- **Don't show the PDF.** Compiling is for verification only. Report the conclusion — whether it built, which line failed, which pages `slide_qa.py` flagged — instead of pushing a PDF into the user's editor.
+
+`references/packages.md` documents the exported symbols of the three packages; `references/syntax.md` collects high-frequency Typst patterns and pitfalls.
+
+The deck is the last thing touched, everything external is a file first:
+
+```mermaid
+flowchart TD
+    A["Change a .typ deck"] --> B{"A new helper is needed"}
+    B -->|yes| C["Search lib/lib.typ, then packages/local, then packages/preview"]
+    C --> D{"Already solved"}
+    D -->|yes| E["Use the package version"]
+    D -->|no| F["Write it into the repo lib/, never inline"]
+    B -->|no| G
+    E --> G["Everything external lands in a file"]
+    F --> G
+    G --> H["Code to python/ blender/ cv40examples/, pulled back with read()"]
+    G --> I["Images to images/, wrapped in figure(image(...), caption: none)"]
+    G --> J["Data to data/, CSV first, feeding tableq(data, n)"]
+    H --> K["typstyle; restore CRLF when the file was CRLF"]
+    I --> K
+    J --> K
+    K --> L["Compile with the font path, then slide_qa.py"]
+    L --> M["Report the conclusion: did it build, which line failed, which pages were flagged"]
+```
+
+## Language corners
+
+Two sibling skills that generate the host kit for a weekly conversation circle: one page of immersive foreign-language host script, with thirty discussion questions woven into the host's lines rather than listed as a block, three to five hint words on their own line under each question, plus a vocabulary table grouped by part of speech. Both target the same fixed format — an egalitarian round table of ten people or fewer, ninety minutes, with no tutoring, no grouping and no homework.
+
+They are the same package ported to two languages, so they share a file layout (`scripts/corner_config.py`, `corner_skill.py`, `corner_audit.py`), the same three commands, and the same intake shape. What differs is the language itself, the exam ladder each one tags against, and the topic pool.
+
+|             | `anchor-french`                | `anchor-spanish`               |
+| :---------- | :----------------------------- | :----------------------------- |
+| Language    | French only                    | Spanish only                   |
+| Exam ladder | DELF / DALF                    | DELE                           |
+| Level range | B1–C2, plus mixed              | B1–C2, plus mixed              |
+| Output      | `docs/fr-<topic>.md`           | `docs/es-<topic>.md`           |
+| Config      | `assets/fr-corner-config.json` | `assets/es-corner-config.json` |
+
+**The config file is the only data source.** Grammar points, levels, scales, topic pool and dimensions, time allocation, vocabulary targets, the per-question hint-word count, the exam ladder and the output path template all live in the package's single JSON asset; `SKILL.md` describes the process, the style and the method and carries no option data of its own. Adding or removing an option means editing the JSON and nothing else.
+
+**Each package serves one language, deliberately.** Neither one branches on language at run time. The only permitted differences between the two builds are the three identity constants at the top of `corner_config.py` — the package name, the language key and the config filename — and the audit fails if a package references the other one's config.
+
+**Three commands, all offline and standard-library only.** Run them from the package root:
+
+| Command                           | Job                                                              |
+| :-------------------------------- | :--------------------------------------------------------------- |
+| `python scripts/corner_config.py` | Load and validate the JSON, then print what it resolved          |
+| `python scripts/corner_skill.py`  | Drive the intake state machine and export the brief              |
+| `python scripts/corner_audit.py`  | Audit schema, identity, docs ↔ config, and cross-language purity |
+
+`corner_skill.py selftest` checks the recommendation pairings instead of starting an intake.
+
+**The intake asks before it writes.** The question plan — order, type, dependency, per-question cap and the split into sub-questions past six options — comes from the config, not from the model's judgement. Every option is clickable, the second-level grammar question is only expanded once the first level is answered, and if you already stated a parameter in your message that question is skipped rather than asked again.
+
+### anchor-french
+
+Host kit for a French conversation circle, tagged against DELF / DALF (B1–C2). The question plan runs five questions — first-level grammar (up to two), second-level grammar derived from it, participant level, topic, and group size — and the topic question offers three routes: pick from the pool, take a random one, or type your own.
+
+The intake is a state machine driven by the config, not by the model's judgement:
+
+```mermaid
+flowchart TD
+    A["Host a French corner"] --> Q1["Q1 first-level grammar point, up to two"]
+    Q1 --> Q2["Q2 second-level point, options derived from Q1"]
+    Q2 --> Q3["Q3 participant level"]
+    Q3 --> Q4{"Q4 topic"}
+    Q4 -->|from the pool| Q5
+    Q4 -->|a random one| Q5
+    Q4 -->|your own| Q5
+    Q5["Q5 group size"] --> B["corner_skill.py exports fr-corner-brief.md"]
+    B --> C["Read the brief, never re-ask what it already fixes"]
+    C --> D["One page of host script, 30 questions woven into 3 parts"]
+    D --> E["3–5 hint words on their own line under each question"]
+    E --> F["Vocabulary table grouped by part of speech"]
+    F --> G["Write docs/fr-voyage.md"]
+    G --> H["rumdl fmt, skipped silently when rumdl is unavailable"]
+    H --> I["Open the preview"]
+```
+
+### anchor-spanish
+
+Host kit for a Spanish conversation circle, the same pipeline tagged against DELE instead. The topic pool is its own rather than a translation of the French one, and so are the grammar tree, the POS group names and the vocabulary targets; the intake itself runs the identical five-question plan.
+
+The same state machine, tagged against DELE:
+
+```mermaid
+flowchart TD
+    A["Host a Spanish corner"] --> Q1["Q1 first-level grammar point, up to two"]
+    Q1 --> Q2["Q2 second-level point, options derived from Q1"]
+    Q2 --> Q3["Q3 participant level"]
+    Q3 --> Q4{"Q4 topic"}
+    Q4 -->|from the pool| Q5
+    Q4 -->|a random one| Q5
+    Q4 -->|your own| Q5
+    Q5["Q5 group size"] --> B["corner_skill.py exports es-corner-brief.md"]
+    B --> C["Read the brief, never re-ask what it already fixes"]
+    C --> D["One page of host script, 30 questions woven into 3 parts"]
+    D --> E["3–5 hint words on their own line under each question"]
+    E --> F["Vocabulary table grouped by part of speech"]
+    F --> G["Write docs/es-viajes.md"]
+    G --> H["rumdl fmt, skipped silently when rumdl is unavailable"]
+    H --> I["Open the preview"]
+```
+
+## Scoop buckets
+
+Three sibling skills that turn "upstream shipped something new" or "upstream shipped a new version" into a single command. They share an architecture: a recipe catalog, a shared library, a three-command CLI, a self-check, and a rule engine that validates the result before it is written.
+
+They differ only where their target repositories force them to. The extras builds are the same skill ported to two buckets with different README conventions and different dominant package shapes; `scoop-extras-cn` additionally documents its divergence from `scoop-extras-plus` in the divergence section of its own `references/lint-rules.md` and at the top of its `references/coverage.md`.
+
+|                 | `scoop-main-plus`          | `scoop-extras-plus`          | `scoop-extras-cn`          |
+| :-------------- | :------------------------- | :--------------------------- | :------------------------- |
+| Target bucket   | `$Scoop/buckets/main-plus` | `$Scoop/buckets/extras-plus` | `$Scoop/buckets/extras-cn` |
+| Recipes         | 18                         | 16                           | 16                         |
+| Lint rules      | 23                         | 23                           | 23                         |
+| README language | English                    | English                      | Chinese                    |
+
+**Common shape of each.** All three expose the same three trigger commands:
+
+| Command    | Alias   | Job                                                             |
+| :--------- | :------ | :-------------------------------------------------------------- |
+| `generate` | `gen`   | Build a manifest from a recipe and fill it in                   |
+| `update`   | `upd`   | Edit fields, bump the version, recompute hashes, probe upstream |
+| `lint`     | `check` | Run the rule catalog and repair formatting                      |
+
+Everything runs offline except `--checkver`, `--fetch-hash` and `--rehash`. Python standard library only, and the repo's Python target is 3.14; the scripts use no version-gated syntax, so an older 3.x still parses them. The scripts derive the package root themselves and run from any working directory.
+
+One pipeline behind all three commands:
+
+```mermaid
+flowchart TD
+    S["Resolve the bucket root: --repo, else a walk up from the cwd, else $Scoop/buckets/name"] --> G
+    G["Upstream shipped a new package"] --> GEN["generate, alias gen"]
+    U["Upstream shipped a new version"] --> UPD["update, alias upd"]
+    A["Audit what is already there"] --> LIN["lint, alias check"]
+    GEN --> RC["Recipe catalog, assets/recipes.jsonc"]
+    RC --> RE["Rule engine, 23 rules"]
+    UPD --> RE
+    LIN --> RE
+    RE --> D{"Error-level findings"}
+    D -->|yes| X["The write is blocked, force overrides"]
+    D -->|no| W["Write bucket/app.json plus the README summary row"]
+```
+
+### Shared guarantees
+
+- **The bucket root is resolved at run time**, never baked in. The expansion order is `--repo <path>`, then a walk up from the current directory, then the bucket's own installed copy under `$Scoop`. No file in any package stores an expanded Scoop path, and the self-check fails if a literal reappears.
+- **The rule engine runs before the write.** Error-level findings block it; `--force` overrides. `--dry-run` previews, `--print-json` dumps the result.
+- **Existing key order is preserved.** `update` only slots *new* fields into their canonical position; a full reorder needs an explicit `--reorder`.
+- **Hashes are never invented.** Either `--fetch-hash` streams the download and computes it, `--hash-from-file` uses a package already on disk, or the run prints the hint to follow up with `bin/checkhashes.ps1`.
+- **The README is controlled.** Syncing touches only the summary tables it recognises and leaves every other column byte-identical. A missing section skips the sync with an explanation rather than mangling the file.
+- **Line endings are CRLF repo-wide.** `.editorconfig` sets `end_of_line = crlf` for `[*]`, and `.gitattributes` makes the working tree match. A full `lint` walks the tree and reports every text file that is not CRLF (`W112`); that pass is read-only, and `--fix-format` rewrites only the two things the skill owns, `bucket/*.json` and `README.md`.
+- **32bit is not supported.** `arch` accepts `64bit` and `arm64` only, so `url32` / `hash32` are neither accepted nor emitted.
+
+The write target is always `<repo>/bucket/<app>.json` plus the README row; `bin/`, `scripts/` and `.github/` belong to Scoop and to each repo's CI and are never written to — the `W112` pass reads them, reports them, and leaves them alone.
+
+### scoop-main-plus
+
+Manifests for the **Main-Plus** bucket, which is bin-first: 39 of its 40 packages install through `bin` and it declares no `shortcuts` at all. A shortcut is the exception and signals that the package is not really a CLI tool. The bucket resolves to `$Scoop/buckets/main-plus` from any working directory when no `--repo` is given.
+
+`generate` settles six questions up front — upstream, what ships, version, what goes on PATH, whether a shortcut is genuinely wanted, and the implementation language for the README — and asks rather than guesses. This bucket emits canonical key order, uses `--flat-url` to collapse a single-architecture `architecture` block, and documents the population evidence behind each of its 18 recipes in `references/coverage.md`.
+
+`generate` asks before it builds, and the hash has three sanctioned sources:
+
+```mermaid
+flowchart TD
+    A["generate: upstream shipped a new package"] --> Q["Settle six questions by asking, never guessing"]
+    Q --> Q1["Upstream, what ships, version"]
+    Q1 --> Q2["What goes on PATH, whether a shortcut is really wanted, README language"]
+    Q2 --> R["List the recipes, cross-checked against references/recipes.md"]
+    R --> AR["arch takes 64bit and arm64 only, or flat-url to collapse the single-architecture block"]
+    AR --> HS{"Where does the hash come from"}
+    HS -->|fetch-hash| B["Build, write bucket/app.json, sync the README row"]
+    HS -->|hash-from-file| B
+    HS -->|neither given| HINT["The command prints the bin/checkhashes.ps1 hint"]
+    HINT --> B
+    B --> L["lint the app to confirm"]
+```
+
+### scoop-extras-plus
+
+Manifests for the **Extras-Plus** bucket (56 manifests, English-facing). Sixteen recipes; the README carries one `## ⭐️ Summary` table across five `###` sections with the three columns `App / Auto-Update ? / Note`.
+
+`lint` aims at a baseline of **0 error-level findings** anywhere in the bucket, but the package self-check does not treat that as a hard assertion: the external bucket can acquire error-level findings from any upstream commit, so the self-check still prints the details, records only a warning, and reserves failure for issues the package itself can fix. `lint` prints live counts rather than a frozen number, because the bucket grows with every autoupdate commit. `SKILL.md` lists the real issues found so far, each tagged with the rule that caught it — a version pinned in the URL that no longer matches `version`, an `md5:` hash prefix Scoop does not accept, and a few README spellings that drifted from the manifest name.
+
+Most questions about this bucket are answered by `lint` alone:
+
+```mermaid
+flowchart TD
+    A["A question about extras-plus"] --> Q{"What is being asked"}
+    Q -->|which packages have drifted| L["lint, read-only, W104 answers it without a bump"]
+    Q -->|add a package| G["gen, 16 recipes, the README row goes into the one Summary table"]
+    Q -->|bump a version| U["upd, checkver, apply, rehash"]
+    L --> R["Rule engine, 23 rules"]
+    G --> R
+    U --> R
+    R --> C["Report; the baseline is zero errors, so counts print live"]
+```
+
+### scoop-extras-cn
+
+Manifests for the **Extras-CN** bucket (88 manifests, Chinese-facing). Same recipe catalog, same builders, same canonical key order as the Extras-Plus build; the differences are the ones this bucket actually forces, and the divergence section of `references/lint-rules.md` tabulates all of them; the flags and invocations live in `references/cli.md`.
+
+What makes this one distinct:
+
+- **Bilingual descriptions.** 57 of 88 manifests use Chinese, so rules that enforce English phrasing stand down for any string containing CJK — and the trailing-period check with them, since a Chinese sentence legitimately ends with a full-width full stop.
+- **A four-column README** (a Chinese display-name column before `App`) with CJK cells padded to display width, split across a cross-platform group, a Windows-only group and an open-source-mirror group, plus a two-column plain-text mirror table.
+- **A rule that was dead code elsewhere.** The README check was gated on the literal English heading `## ⭐️ Summary`, which this repo spells with a Chinese heading, so it never fired. Re-gated on "the README has summary tables", it surfaced 35 findings that split cleanly into 17 stable-convention entries and 18 genuine README gaps — a good illustration of why a check nobody can pass is worse than no check.
+
+Two upstream rule fixes were carried into this build because they are latent bugs rather than repo-specific choices: the `jsonpath` / `xpath` regex requirement, and a recursive-delete pattern that was over-escaped and could never match.
+
+The README path is where this build differs most:
+
+```mermaid
+flowchart TD
+    A["Add or sync a package in extras-cn"] --> B{"Is the description Chinese"}
+    B -->|yes, 57 of 88 are| C["English-phrasing rules stand down, the trailing-period check with them"]
+    B -->|no| D["The English rules apply as written"]
+    C --> E["Sync the README summary row"]
+    D --> E
+    E --> F["Four columns, Chinese display name before App, CJK cells padded by display width"]
+    F --> G{"Does the spelling match the manifest name"}
+    G -->|no| H["W105 fires and names the spelling it found"]
+    G -->|yes| I["Row written, every other column byte-identical"]
+```
+
+## Working on a skill
+
+Each skill validates itself offline:
+
+```bash
+python scripts/selfcheck.py                # most packages: identity, doc pointers, round trip
+python scripts/sm_selftest.py              # Scoop skills: full self-check
+python scripts/check_style.py --selfcheck  # project-tex: script ↔ rule table, both ways
+python scripts/corner_audit.py             # anchor-*: identity, schema, docs ↔ config, purity
+python scripts/corner_bank.py check        # anchor-*: the bank is the source of truth
+python scripts/verify.py .                 # skill-draft: gate every file + package self-checks
+```
+
+The self-checks are not decoration. They enforce recipe ↔ builder coverage both ways, docs ↔ code consistency (`project-tex`'s rule table must match the code word for word, and `project-py` / `project-typ` reconcile their own checklists against the rules), round-trip serialization against the real bucket, README sync idempotence, and, in every package, the rules that `SKILL.md`'s `name` equals the directory name and that every file it references really exists.
+
+When the gate is aimed at a whole package or the whole repo, `package-selfcheck` runs the checks above along with it; a single-file gate does not. Column widths in `docs/*.md` are the only hard rule for tables; those in a package's `references/` are diagnosed but never reflowed — the three Scoop self-checks require byte-identical README round trips, and a blanket reformat would break them.
+
+For a read-only check: `python skill-draft/scripts/verify.py --list` prints the gate's rules table, and `python tools/parity_check.py` checks that the shared scripts in the Scoop and anchor forks have not drifted. A full gate writes to disk during repair, so it is not a read-only check.
+
+### Three conventions worth knowing before you edit
+
+**Never add a `.json` data file to a Scoop skill.** The bucket CI validates every *changed* `.json` in the repository against Scoop's manifest schema — repo-wide, because the changed-file listing ignores its path filter. A non-manifest `.json` inside a skill turns CI red. That is why the recipe catalog ships as `assets/recipes.jsonc`: the `.jsonc` name is a deliberate dodge, and its content stays strict JSON rather than using comments.
+
+**Never write a machine-local absolute path into a skill.** Packages get copied and ported, and a hard-coded path becomes wrong the moment it is copied. Refer to the skill itself with the `<this skill dir>` placeholder and to the home directory with `~`, and resolve tool and environment locations at run time. `skill-draft`'s `no-local-paths` check backstops this.
+
+**Do not leave a multi-exception clause for `ruff format` to rewrite.** On Python 3.14 it turns `except (A, B):` into the PEP 758 bare form `except A, B:`, which only 3.14+ can parse. `except (A, B) as e:` is no escape either: it trips F841, the autofix drops `as`, and formatting rewrites it back to the bare form. Split the exceptions into separate `except` clauses and verify the repo with `ast.parse(src, feature_version=(3, 13))`. The gate's repair stage writes to disk, so this is not a theoretical risk.
