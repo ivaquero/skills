@@ -29,7 +29,7 @@ DOC_CONST = re.compile(r"^\| `([A-Z_0-9]+)` \| ([0-9.]+) \|", re.MULTILINE)
 DOC_REF = re.compile(r"(?:references|scripts)/[\w.-]+\.(?:md|py|json)")
 NAME_FIELD = re.compile(r"^name:\s*(\S+)\s*$", re.MULTILINE)
 
-MUST_APPEAR = ("欧氏距离", "通道索引", "内容包含", "支持")
+MUST_APPEAR = ("通道索引", "欧氏距离", "内容包含", "支持")
 MUST_NOT_APPEAR = (
     "教学目标",
     "本讲小结",
@@ -110,17 +110,17 @@ def check_roundtrip(tmp: Path) -> tuple[list[str], Path | None]:
         problems.append("固定时间戳后两次生成结果不一致（往返不确定）")
 
     text = path.read_text(encoding="utf-8")
-    values = [
-        cell.get("value") or ""
-        for cell in ET.fromstring(text).iter("mxCell")  # noqa: S314 - 本包自产 XML，非外部输入
-    ]
-    joined = " ".join(values)
+    cells = list(ET.fromstring(text).iter("mxCell"))  # noqa: S314 - 本包自产 XML，非外部输入
+    joined = " ".join(cell.get("value") or "" for cell in cells)
     problems.extend(
         f"知识点往返丢失: {word}" for word in MUST_APPEAR if word not in joined
     )
     problems.extend(f"噪声未过滤: {word}" for word in MUST_NOT_APPEAR if word in joined)
-    if "<br>" not in joined:
-        problems.append("中心节点的两行文字没有转成 <br>")
+    centre = next((cell for cell in cells if cell.get("id") == "center"), None)
+    if centre is None:
+        problems.append("缺少 id=center 的中心节点")
+    elif centre.get("value") != "示例讲次":
+        problems.append(f"中心节点应只写章名，实际 {centre.get('value')!r}")
 
     docx_dir = tmp / "docx"
     docx_dir.mkdir()

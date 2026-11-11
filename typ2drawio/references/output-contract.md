@@ -16,7 +16,7 @@
           <mxGeometry x="..." y="..." width="..." height="..." as="geometry"/>
         </mxCell>
         <mxCell id="e..." value="..." style="..." edge="1" parent="1" source="..." target="...">
-          <mxGeometry relative="1" as="geometry"/>
+          <mxGeometry x="0.58" relative="1" as="geometry"/>
         </mxCell>
       </root>
     </mxGraphModel>
@@ -27,14 +27,17 @@
 - `id="0"` 是根层，`id="1"` 是默认父层，二者缺一不可。
 - 每个节点带 `vertex="1" parent="1"` 与 `mxGeometry` 的绝对坐标；每条连线带 `edge="1" parent="1"` 与 `source` / `target`。
 - `value` 里的换行写成 `<br>` 并在 XML 属性中转义为 `&lt;br&gt;`；`&`、`<`、`>`、引号一律转义。节点样式带 `html=1`，draw.io 才会渲染换行。
-- 关系标签的位置用 `<mxGeometry x="0.2" relative="1" as="geometry"/>`，见 `layout.md`。
+- 关系标签的位置用 `<mxGeometry x="0.58" relative="1" as="geometry"/>`，比例见 `layout.md`。
+- `pageWidth` / `pageHeight` 由内容包围盒加 `PAD` 算出，不是固定值。
 - `modified` 时间戳默认取当前 UTC 时间；传 `--modified` 可固定它，让同一输入两次生成字节完全一致。
 
-机器可读的基线规则在 `references/mxgraph-rules.json`，自检脚本会拿自检样例的产物逐项对照它，改 XML 结构时必须同步更新该文件。注意 `baseline_style_fragments` 是**自检样例必须展示出来的样式集合**，不是每份产物的必需样式：红色胶囊 `arcSize=50` 只在槽数含正下方角度（6 槽 / 4 槽）时出现，5 槽布局没有它，不能把它写成全局必需项。样例因此固定为 6 槽布局，覆盖最密排布与条件性形状。
+机器可读的基线规则在 `references/mxgraph-rules.json`，自检脚本会拿自检样例的产物逐项对照它，改 XML 结构时必须同步更新该文件。注意 `baseline_style_fragments` 是**自检样例必须展示出来的样式集合**，不是每份产物的必需样式：胶囊 `arcSize=50`、蓝底 `fillColor=#DAE8FC`、蓝字主干 `fontColor=#0000FF` 都依赖样例里恰好有对应的内容，所以样例固定为 5 个主干、含做法类知识点与 API 类知识点。
 
 ## 命名
 
-`<编号>-<讲名>.drawio`。编号来自 docx 文件名（给了 `--docx-dir` 时）或讲义的 `NN`；讲名取 `vNN-` 之后、`.typ` 之前的部分。每个 `.drawio` 的 `<diagram name>` 为 `<编号> <讲名>`。
+`<编号>-<讲名>.drawio`。编号来自 docx 文件名（给了 `--docx-dir` 时）或讲义的 `NN`；讲名取 `vNN-` 之后、`.typ` 之前的部分。
+
+`<diagram name>` 与中心节点文字都只写章名（讲名），**不带编号、课次或讲义号**——编号只出现在文件名里，这一点与「教案-图」目录里同名的 `.vsdx` 保持一致。
 
 ## 校验项
 

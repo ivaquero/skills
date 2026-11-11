@@ -255,7 +255,9 @@ def kid_kind(text: str) -> str:
     return "kid"
 
 
-def ring(zone: str, lateral: float, dist_h: float, dist_v: float) -> tuple[float, float]:
+def ring(
+    zone: str, lateral: float, dist_h: float, dist_v: float
+) -> tuple[float, float]:
     """把扇区与切向偏移换算成中心相对坐标。"""
     if zone == "R":
         return dist_h, lateral
@@ -365,7 +367,9 @@ class Diagram:
         return "".join(parts)
 
 
-def build_diagram(key: str, title: str, branches: list[Branch], labels: Labels) -> Diagram:
+def build_diagram(
+    key: str, title: str, branches: list[Branch], labels: Labels
+) -> Diagram:
     d = Diagram(name=title)
     root = d.vertex("root", title, 0, 0, ROOT_W, ROOT_H, "center")
 
@@ -465,7 +469,9 @@ def place_item(
     if not branch.ex:
         return ids
     doc_step = DOC_H + 22 if horizontal else DOC_W + 22
-    for doc, off in zip(branch.ex[:2], offsets(len(branch.ex[:2]), doc_step), strict=False):
+    for doc, off in zip(
+        branch.ex[:2], offsets(len(branch.ex[:2]), doc_step), strict=False
+    ):
         dx, dy = ring(zone, lat + off, D3H, D3V)
         did = d.vertex("doc", doc, dx, dy, DOC_W, DOC_H)
         ids.append(did)
@@ -732,7 +738,9 @@ def main(argv: list[str] | None = None) -> int:
         name = f"{key}-{title}.drawio"
         (out_dir / name).write_text(d.xml(modified), encoding="utf-8")
         n_kids = sum(len(b.kids[:MAX_KIDS]) for b in branches)
-        rows.append((key, path.name, name, len(branches), n_kids, len(d.verts), len(d.edges)))
+        rows.append(
+            (key, path.name, name, len(branches), n_kids, len(d.verts), len(d.edges))
+        )
         if args.preview:
             cards.append(
                 f'<section class="card"><h3>{html.escape(name)}</h3>'
