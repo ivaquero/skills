@@ -460,7 +460,9 @@ def node_polygon(node: dict) -> tuple[str, list[tuple[float, float]]]:
         """draw.io 的 size 既可能是 0.16，也可能是百分数 22。"""
         try:
             v = float(st.get(key, default))
-        except TypeError, ValueError:
+        except TypeError:
+            return default
+        except ValueError:
             return default
         if v > 1.0:
             v /= 100.0

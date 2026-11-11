@@ -35,6 +35,7 @@ DESIGN
 
 Exit-code contract (mirrors the skills themselves): 0 = parity holds, 1 = drift.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -51,7 +52,9 @@ def _read(rel: str) -> str:
     path = ROOT / rel
     try:
         return path.read_text(encoding="utf-8")
-    except (FileNotFoundError, IsADirectoryError):
+    except FileNotFoundError:
+        return ""
+    except IsADirectoryError:
         return ""
 
 
@@ -124,7 +127,7 @@ REQUIRED_SYMBOLS = {
         ],
         "scripts/scoop_manifest.py": [
             r"def cmd_lint\(",
-            r'--profile',
+            r"--profile",
             r"# Recompute hash",  # pins the rehash-after-bump ordering fix
         ],
     },
@@ -165,7 +168,11 @@ def _extract_signature(text: str, name: str) -> str:
     m = re.search(rf"def {name}\((.*?)\)", text, re.DOTALL)
     if not m:
         return "<missing>"
-    params = [p.strip() for p in m.group(1).split(",") if p.strip() and not p.strip().startswith("#")]
+    params = [
+        p.strip()
+        for p in m.group(1).split(",")
+        if p.strip() and not p.strip().startswith("#")
+    ]
     return f"{name}({', '.join(params)})"
 
 
@@ -286,7 +293,10 @@ def main() -> int:
         f"divergence(s), {len(info)} note(s) across {len(forks)} forks"
     )
     if failures:
-        print("RESULT: drift detected — reconcile or record the divergence.", file=sys.stderr)
+        print(
+            "RESULT: drift detected — reconcile or record the divergence.",
+            file=sys.stderr,
+        )
         return 1
     print("RESULT: parity holds (baseline locked).")
     return 0

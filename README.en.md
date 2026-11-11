@@ -247,6 +247,34 @@ The Spanish corner topic is family and friends, B2, eight people.
 
 It shares the architecture with `anchor-french` and differs mainly in the exam ladder — DELE here, DELF/DALF there — and in its own topic pool. The third prompt answers every question in one line, which is the case the intake is documented to skip.
 
+### typ2drawio
+
+Triggers: *typ 转 drawio、typ2drawio、讲义生成思维导图、按讲义生成 .drawio、知识建模图、思维导图批量生成、vNN 讲义导图、drawio 批量生成。*
+
+```text
+Turn this batch of vNN lecture notes into four-way radial .drawio mind maps.
+```
+
+```text
+Align the outputs with the lesson docx numbers, then verify them.
+```
+
+The four-way radial layout, geometry and palette all come from `references/layout.md`; verification is read-only and rejects formula noise, overlapping nodes and mismatched numbering.
+
+### drawio2vsdx
+
+Triggers: *drawio 转 vsdx、drawio2vsdx、批量转 vsdx、思维导图转 Visio、vsdx 形状不对、document 节点形状不对、vsdx 校验、形状保真回归、vsdx 产物过期。*
+
+```text
+Convert this batch of .drawio files to Visio .vsdx without installing Visio.
+```
+
+```text
+One shape in the vsdx is wrong; find the rule, then fix it.
+```
+
+The OPC package is generated in pure Python. Static verification and reverse-render spot checks always come as a pair, and the shape-geometry regression stops a one-line fix from breaking the rest of the batch.
+
 ## Contents
 
 | Group               | Skill                                     | One line                                                  |
@@ -254,6 +282,8 @@ It shares the architecture with `anchor-french` and differs mainly in the exam l
 | Tooling             | [`skill-draft`](#skill-draft)             | Build a skill package and gate every file in it           |
 | Tooling             | [`media-merge`](#media-merge)             | Audio/video stitching: probe, then pick the cheapest plan |
 | Tooling             | [`svg2drawio`](#svg2drawio)               | SVG to draw.io: embed, or rebuild                         |
+| Tooling             | [`typ2drawio`](#typ2drawio)               | Typst lectures to draw.io mind maps                       |
+| Tooling             | [`drawio2vsdx`](#drawio2vsdx)             | draw.io to Visio .vsdx, with fidelity checks              |
 | Project conventions | [`project-py`](#project-py)               | Python: environment, packages, style, ruff + ty           |
 | Project conventions | [`project-tex`](#project-tex)             | LaTeX math: environments, brackets, notation              |
 | Project conventions | [`project-typ`](#project-typ)             | Typst lecture slides: assets, layout, compile             |
@@ -404,6 +434,50 @@ flowchart TD
     V -->|RMSE 0.02-0.07 or IoU 0.74| D["zoom on line ends, arrow tips, rotated text"]
     V -->|solid bright blocks| B["structural defect, back to the stage that owns it"]
     D --> E["6 report: cells, unit counts, what stays editable"]
+```
+
+### typ2drawio
+
+Turns a batch of `vNN-*.typ` lecture notes into editable `mxGraphModel` .drawio files with a fixed layout: the centre carries only the chapter name, the four sectors follow the geometry and palette in `references/layout.md`, and prerequisite topics come solely from the lesson docx. With a docx directory the output numbers come from docx filenames; otherwise they come from the lecture `NN`.
+
+```bash
+python <this skill dir>/scripts/typ2drawio.py --typ-dir LECTURES --docx-dir LESSONS --out-dir OUT --preview OUT/preview.html
+python <this skill dir>/scripts/verify_drawio.py --out-dir OUT --docx-dir LESSONS
+python <this skill dir>/scripts/selfcheck.py
+```
+
+Generation and verification are separate: the read-only verifier rejects formula and example-identifier noise, overlapping node rectangles, edges crossing unrelated nodes, labels buried under nodes, reversed containment arrows and numbering mismatches. `selfcheck.py` then cross-checks package consistency, a sample round trip and the external rules table.
+
+```mermaid
+flowchart TD
+    A["1 List lectures and docx, fix the numbering source"] --> B["2 Parse headings, formula lines, noise words"]
+    B --> C["3 Four-way radial layout, editable mxCells"]
+    C --> D["4 Write .drawio and the preview page"]
+    D --> E{"5 verify_drawio"}
+    E -->|rejected| B
+    E -->|passed| F["Deliver"]
+```
+
+### drawio2vsdx
+
+Converts draw.io `mxCell` diagrams to Visio .vsdx with fidelity: the OPC package is generated in pure Python, so Visio is not required. `<br>` becomes a real line break and page sizes are converted at 96 PPI. Shape geometry, colour syntax and endpoint rules live in an external rules table, and any change goes through the reverse test first.
+
+```bash
+python <this skill dir>/scripts/drawio2vsdx.py --in-dir OUT --out-dir VSDX
+python <this skill dir>/scripts/verify_vsdx.py --drawio-dir OUT --vsdx-dir VSDX
+python <this skill dir>/scripts/selfcheck.py
+```
+
+Static verification and reverse rendering always come as a pair: the former catches a flattened document bottom edge or a shape set that no longer matches the rules table; the latter reads the VSDX back and renders it again. `selfcheck.py` also uses a negative sample to confirm the verifier really fails when it should.
+
+```mermaid
+flowchart TD
+    A["1 Read mxCells from .drawio"] --> B["2 Convert geometry and style via the rules table"]
+    B --> C["3 Generate the OPC package, write .vsdx"]
+    C --> D{"4 verify_vsdx static check"}
+    D -->|rejected| B
+    D -->|passed| E["5 Reverse-render spot check"]
+    E --> F["Deliver"]
 ```
 
 ## Project conventions

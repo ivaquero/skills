@@ -175,9 +175,11 @@ def check_prereq(cells: list[ET.Element], edges: list[ET.Element]) -> list[str]:
     value = node.get("value") or ""
     if not value.strip():
         problems.append("先修节点文字为空")
-    for banned in ("前置知识", "《", "》"):
-        if banned in value:
-            problems.append(f"先修节点文字不该含「{banned}」，只写知识点本身")
+    problems.extend(
+        f"先修节点文字不该含「{banned}」，只写知识点本身"
+        for banned in ("前置知识", "《", "》")
+        if banned in value
+    )
     linked = [
         edge
         for edge in edges

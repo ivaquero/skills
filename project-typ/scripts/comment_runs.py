@@ -148,7 +148,7 @@ def display_width(s: str) -> int:
 
 def cmd_scan(paths: list[str]) -> int:
     files = resolve(paths)
-    skeleton: dict[str, dict[str, list[str]]] = {}
+    skeleton: dict[str, list[str]] = {}
     total = 0
     for rel in files:
         bs = blocks(Path(rel))

@@ -59,7 +59,9 @@ def svg_of(vsdx: Path) -> tuple[str, float, float, int]:
         def num(key: str, default: float = 0.0) -> float:
             try:
                 return float(c.get(key, default))
-            except TypeError, ValueError:
+            except TypeError:
+                return default
+            except ValueError:
                 return default
 
         x, y, w, h = num("PinX"), num("PinY"), num("Width"), num("Height")

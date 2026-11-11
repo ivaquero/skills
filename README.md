@@ -247,6 +247,34 @@ extras-plus 里哪些包的版本和 URL 已经对不上了？
 
 它与 `anchor-french` 架构相同，主要差别在考试等级体系——一个用 DELE，一个用 DELF/DALF——以及各自独立的话题库。第三条把问题一次答全，正是文档里写明会被跳过的情形。
 
+### typ2drawio
+
+触发词：*typ 转 drawio、typ2drawio、讲义生成思维导图、按讲义生成 .drawio、知识建模图、思维导图批量生成、vNN 讲义导图、drawio 批量生成。*
+
+```text
+把这批 vNN 讲义做成四向放射式 .drawio 思维导图。
+```
+
+```text
+按教案 docx 编号对齐产物，再跑一遍校验。
+```
+
+四向放射式版式、几何与配色一律照 `references/layout.md`；校验只读，挡住公式噪声、节点重叠和编号不对齐。
+
+### drawio2vsdx
+
+触发词：*drawio 转 vsdx、drawio2vsdx、批量转 vsdx、思维导图转 Visio、vsdx 形状不对、document 节点形状不对、vsdx 校验、形状保真回归、vsdx 产物过期。*
+
+```text
+把这批 .drawio 转成 Visio .vsdx，不装 Visio。
+```
+
+```text
+vsdx 里某个形状不对，定位到规则表再修。
+```
+
+纯 Python 生成 OPC 包，静态校验与反向渲染抽查成对出现，形状几何回归把「改一处、坏一片」挡在交付前。
+
 ## 目录
 
 | 分组         | Skill                                     | 一句话                                 |
@@ -254,6 +282,8 @@ extras-plus 里哪些包的版本和 URL 已经对不上了？
 | 工具         | [`skill-draft`](#skill-draft)             | 构建 skill 包，并为其中每个文件设门禁  |
 | 工具         | [`media-merge`](#media-merge)             | 音视频拼接：先出表再问，按组最省地合并 |
 | 工具         | [`svg2drawio`](#svg2drawio)               | SVG 转 draw.io：内嵌与重建两条工序     |
+| 工具         | [`typ2drawio`](#typ2drawio)               | Typst 讲义批量生成 draw.io 思维导图    |
+| 工具         | [`drawio2vsdx`](#drawio2vsdx)             | draw.io 导图保真转 Visio .vsdx         |
 | 项目规范     | [`project-py`](#project-py)               | Python：环境、包管理、风格、ruff + ty  |
 | 项目规范     | [`project-tex`](#project-tex)             | LaTeX 数学公式：环境、括号、记号       |
 | 项目规范     | [`project-typ`](#project-typ)             | Typst 课件：资源、版式、编译           |
@@ -408,6 +438,50 @@ flowchart TD
     V -->|RMSE 0.02–0.07 或 IoU 0.74| D["定点放大：线端、箭头尖、旋转文字"]
     V -->|出现实心亮块| B["结构性缺陷，退回对应阶段"]
     D --> E["6 报告：cells、单元数、文字可编辑性"]
+```
+
+### typ2drawio
+
+把一批 `vNN-*.typ` 讲义按固定版式批量生成为可编辑的 `mxGraphModel` .drawio：中心只写章名，四个扇区照 `references/layout.md` 的几何与配色排布，先修知识点只从教案 docx 取。有 docx 目录时产物编号取 docx 文件名，否则取讲义的 `NN`。
+
+```bash
+python <this skill dir>/scripts/typ2drawio.py --typ-dir LECTURES --docx-dir LESSONS --out-dir OUT --preview OUT/preview.html
+python <this skill dir>/scripts/verify_drawio.py --out-dir OUT --docx-dir LESSONS
+python <this skill dir>/scripts/selfcheck.py
+```
+
+生成与校验分开：校验只读，挡住公式与示例标识符噪声、节点矩形重叠、连线穿节点、标签压节点、包含关系箭头反向和编号不对齐；`selfcheck.py` 再核包内一致性、样例往返与外部规则表。
+
+```mermaid
+flowchart TD
+    A["1 列讲义与 docx，定编号来源"] --> B["2 解析标题 / 公式行 / 噪声词"]
+    B --> C["3 四向放射式布局，生成可编辑 mxCell"]
+    C --> D["4 写 .drawio 与预览页"]
+    D --> E{"5 verify_drawio 校验"}
+    E -->|不合格| B
+    E -->|通过| F["交付"]
+```
+
+### drawio2vsdx
+
+把 draw.io 的 `mxCell` 图保真转成 Visio .vsdx：纯 Python 直接生成 OPC 包，不需要装 Visio；`<br>` 归一化为真换行，页面尺寸按 96 PPI 换算。形状几何、颜色写法与端点约定集中在外部规则表里，改动先过反向测试。
+
+```bash
+python <this skill dir>/scripts/drawio2vsdx.py --in-dir OUT --out-dir VSDX
+python <this skill dir>/scripts/verify_vsdx.py --drawio-dir OUT --vsdx-dir VSDX
+python <this skill dir>/scripts/selfcheck.py
+```
+
+静态校验与反向渲染抽查成对出现：前者挡住 document 底边被压平、形状集合与规则表不符，后者把 VSDX 读回来再渲染一次；`selfcheck.py` 还会用负样本确认校验器真的会报错。
+
+```mermaid
+flowchart TD
+    A["1 读 .drawio 的 mxCell"] --> B["2 按规则表换算几何与样式"]
+    B --> C["3 生成 OPC 包写出 .vsdx"]
+    C --> D{"4 verify_vsdx 静态校验"}
+    D -->|不合格| B
+    D -->|通过| E["5 反向渲染抽查"]
+    E --> F["交付"]
 ```
 
 ## 项目规范

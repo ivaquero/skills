@@ -275,7 +275,13 @@ def read_prereq(path: Path) -> tuple[str, list[str]] | None:
     """
     try:
         paragraphs = docx_paragraphs(path)
-    except zipfile.BadZipFile, KeyError, ET.ParseError, OSError:
+    except zipfile.BadZipFile:
+        return None
+    except KeyError:
+        return None
+    except ET.ParseError:
+        return None
+    except OSError:
         return None
     for para in paragraphs:
         m = PREREQ_RE.search(para)

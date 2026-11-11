@@ -887,7 +887,9 @@ def dash_pattern(dash, sw):
     """
     try:
         vals = [float(v) for v in dash.replace(",", " ").split()]
-    except AttributeError, ValueError:
+    except AttributeError:
+        return "dashed=1"
+    except ValueError:
         return "dashed=1"
     vals = [v for v in vals if v >= 0]
     if not vals:

@@ -468,8 +468,10 @@ def main(argv: list[str] | None = None) -> int:
     typ.write_text(doc, encoding="utf-8")
 
     pdf.parent.mkdir(parents=True, exist_ok=True)
+    # typst 由 PATH 提供，安装位置随机器而异；包内禁止写死本机绝对路径，
+    # 故按名称调用，就地抑制 S607（不是放宽全仓规则）。
     r = subprocess.run(
-        ["typst", "compile", str(typ), str(pdf)],
+        ["typst", "compile", str(typ), str(pdf)],  # noqa: S607
         capture_output=True,
         text=True,
         cwd=str(src.parent),  # 让 md 里的相对路径（图片等）能解析

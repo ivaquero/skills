@@ -13,6 +13,8 @@ import json
 import os
 import re
 import struct
+import subprocess
+import sys
 import zlib
 from collections.abc import Callable
 from functools import cache
@@ -241,10 +243,65 @@ def no_local_paths(path: Path) -> list[str]:
     return []
 
 
+# Self-check entry points, keyed by script name. They are discovered from each
+# package's scripts/ directory, so adding a package needs no change here. A
+# package is checked once, through its SKILL.md (see the `only` filter in the
+# rules table). corner_skill.py is deliberately absent: run without arguments
+# it writes a brief file into the repo root.
+SELFCHECK_ENTRIES: dict[str, tuple[str, ...]] = {
+    "selfcheck.py": (),
+    "sm_selftest.py": (),
+    "corner_audit.py": (),
+    "corner_bank.py": (),
+    "check_style.py": ("--selfcheck",),
+    "checkers.py": (),
+}
+SELFCHECK_TIMEOUT = 120
+
+
+def package_selfcheck(path: Path) -> list[str]:
+    """Run the owning package's own self-tests, which the gate otherwise skips.
+
+    The gate runs ruff/ty/rumdl but not the per-package round-trip tests, and
+    those tests do not run ruff/ty. Wiring them into package_checks closes that
+    gap whenever the gate is aimed at a package tree. sys.executable keeps the
+    child on the same interpreter as the gate.
+    """
+    scripts = path.parent / "scripts"
+    if not scripts.is_dir():
+        return []
+    problems: list[str] = []
+    for name, args in sorted(SELFCHECK_ENTRIES.items()):
+        entry = scripts / name
+        if not entry.is_file():
+            continue
+        try:
+            result = subprocess.run(
+                [sys.executable, str(entry), *args],
+                capture_output=True,
+                text=True,
+                timeout=SELFCHECK_TIMEOUT,
+                check=False,
+            )
+        except subprocess.TimeoutExpired as exc:
+            problems.append(f"{name}: self-check timed out ({exc})")
+            continue
+        except OSError as exc:
+            problems.append(f"{name}: cannot start self-check ({exc})")
+            continue
+        if result.returncode != 0:
+            tail = (result.stdout + result.stderr).strip().splitlines()[-8:]
+            problems.append(
+                f"{name}: self-check exit {result.returncode}: " + " | ".join(tail)
+            )
+    return problems
+
+
 CHECKERS: dict[str, Checker] = {
     "python-syntax": python_syntax,
     "json-parse": json_parse,
     "skill-frontmatter": skill_frontmatter,
     "png-integrity": png_integrity,
     "no-local-paths": no_local_paths,
+    "package-selfcheck": package_selfcheck,
 }

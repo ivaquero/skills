@@ -28,7 +28,10 @@
     },
     "oxipng": { "suffixes": [".png"] }
   },
-  "package_checks": [{ "check": "no-local-paths" }],
+  "package_checks": [
+    { "check": "no-local-paths" },
+    { "check": "package-selfcheck", "only": ["SKILL.md"] }
+  ],
   "types": [
     {
       "id": "python",

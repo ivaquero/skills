@@ -353,11 +353,16 @@ def check_lint_baseline(check: Checker, repo: Path) -> None:
     if errors:
         for line in error_detail[:10]:
             print(f"        · {line}")
-    check.expect(
-        errors == 0,
-        "the existing bucket has no error-level findings",
-        f"{errors} errors" if errors else "",
-    )
+    # The bucket is external data maintained outside this skill package: its
+    # manifests can acquire error-level findings at any time. Keep reporting
+    # them loudly, but do not fail a package self-test on data we do not own.
+    if errors:
+        check.warn(
+            "external bucket has error-level findings (not owned by this package)",
+            f"{errors} errors; see the details above",
+        )
+    else:
+        check.ok("the existing bucket has no error-level findings")
 
 
 def check_docs(check: Checker) -> None:
