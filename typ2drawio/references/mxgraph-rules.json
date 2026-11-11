@@ -1,0 +1,55 @@
+{
+  "root_tag": "mxfile",
+  "diagram_tag": "diagram",
+  "model_tag": "mxGraphModel",
+  "root_cell_tag": "root",
+  "required_layer_cells": [
+    {
+      "id": "0",
+      "parent": null
+    },
+    {
+      "id": "1",
+      "parent": "0"
+    }
+  ],
+  "vertex_parent": "1",
+  "required_vertex_attrs": [
+    "id",
+    "value",
+    "style",
+    "vertex",
+    "parent"
+  ],
+  "required_edge_attrs": [
+    "id",
+    "value",
+    "style",
+    "edge",
+    "parent",
+    "source",
+    "target"
+  ],
+  "baseline_style_fragments": [
+    "whiteSpace=wrap",
+    "html=1",
+    "fontFamily=Microsoft YaHei",
+    "edgeStyle=noneExpr",
+    "endArrow=block",
+    "endFill=1",
+    "startArrow=none",
+    "labelBackgroundColor=#FFFFFF",
+    "shape=cylinder3",
+    "shape=mxgraph.flowchart.document",
+    "arcSize=50",
+    "x=\"0.2\" relative=\"1\""
+  ],
+  "required_relations": [
+    "\u5185\u5bb9\u5305\u542b",
+    "\u5305\u542b",
+    "\u652f\u6301"
+  ],
+  "min_vertices": 15,
+  "min_edges": 15,
+  "overlap_pairs": 0
+}
