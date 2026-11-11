@@ -53,14 +53,15 @@ BASE = (
     "whiteSpace=wrap;html=1;align=center;verticalAlign=middle;"
     "fontFamily=Microsoft YaHei;"
 )
-GRAY_BOX = f"rounded=0;fillColor={FILL};strokeColor={STROKE};"
+BOX = f"fillColor={FILL};strokeColor={STROKE};"
+RECT = f"{BASE}{BOX}rounded=0;"
 STYLES = {
-    "root": f"{BASE}{GRAY_BOX}fontColor={INK};fontSize=14;",
-    "branch": f"{BASE}{GRAY_BOX}fontColor={INK};fontSize=12;",
-    "branch_red": f"{BASE}{GRAY_BOX}fontColor={RED};fontSize=12;",
-    "branch_blue": f"{BASE}{GRAY_BOX}fontColor={BLUE};fontSize=12;",
-    "kid": f"{BASE}{GRAY_BOX}fontColor={INK};fontSize=10;",
-    "pill": f"{BASE}{GRAY_BOX}rounded=1;arcSize=50;fontColor={INK};fontSize=10;",
+    "root": f"{RECT}fontColor={INK};fontSize=14;",
+    "branch": f"{RECT}fontColor={INK};fontSize=12;",
+    "branch_red": f"{RECT}fontColor={RED};fontSize=12;",
+    "branch_blue": f"{RECT}fontColor={BLUE};fontSize=12;",
+    "kid": f"{RECT}fontColor={INK};fontSize=10;",
+    "pill": f"{BASE}{BOX}rounded=1;arcSize=50;fontColor={INK};fontSize=10;",
     "api": (
         f"{BASE}rounded=0;fillColor={API_FILL};strokeColor={API_STROKE};"
         f"fontColor={INK};fontSize=10;"
