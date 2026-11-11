@@ -11,8 +11,10 @@ import datetime
 import html
 import re
 import sys
+import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
+from xml.etree import ElementTree as ET
 
 # 几何常量：与 references/layout.md 的常量表逐项对应，selfcheck.py 会核对。
 ROOT_W = 300
@@ -25,6 +27,8 @@ DOC_W = 160
 DOC_H = 56
 CYL_W = 152
 CYL_H = 74
+PRE_W = 320
+PRE_H = 80
 MAX_KIDS = 4
 MAX_BRANCH = 9
 GAP_ROOT = 100
@@ -48,6 +52,7 @@ FILL, STROKE, INK = "#F0F0F0", "#B1B1B1", "#000000"
 CASE_FILL, CASE_STROKE = "#FFFFFF", "#BFA9C8"
 API_FILL, API_STROKE = "#DAE8FC", "#6C8EBF"
 RED, BLUE, LABEL = "#FF0000", "#0000FF", "#333333"
+GREEN = "#008000"
 
 BASE = (
     "whiteSpace=wrap;html=1;align=center;verticalAlign=middle;"
@@ -75,6 +80,7 @@ STYLES = {
         f"{BASE}shape=cylinder3;boundedLbl=1;fillColor={FILL};"
         f"strokeColor={STROKE};fontColor={INK};fontSize=11;"
     ),
+    "pre": f"{RECT}fontColor={GREEN};fontSize=10;",
 }
 EDGE_STYLE = (
     "edgeStyle=noneExpr;rounded=0;html=1;strokeColor=#666666;strokeWidth=1;"
@@ -84,6 +90,8 @@ EDGE_STYLE = (
 
 # 扇区顺序：右、左、上、下。主干按讲义顺序轮流落位，多则在同一扇区竖排/横排。
 ZONES = ("R", "L", "T", "B")
+# 前置知识节点放在空缺最多的一向，同数时优先正下方，其次正上方。
+PRE_ORDER = ("B", "T", "L", "R")
 BLUE_BRANCH = re.compile(r"识别|检测|应用|实战|实践|搜图|部署")
 PILL_KID = re.compile(r"(方法|规范|流程|步骤|技巧|策略|准则|操作)$")
 API_KID = re.compile(r"^(cv2?\.|np\.|dlib\.|sklearn\.|torch\.)|OpenCV|NumPy|scikit")
@@ -107,6 +115,10 @@ SKIP_L2 = (
 )
 TYP_NAME = re.compile(r"^v?(\d+)-(.+)\.typ$")
 DOCX_KEY = re.compile(r"-(\d+(?:-\d+)?)\.docx$")
+# 教案「学习先决知识」栏的唯一稳定写法：《上一讲章名》相关概念（理解、运用）；…
+PREREQ_RE = re.compile(r"《([^》]+)》\s*相关概念")
+LEVEL_SUFFIX = re.compile(r"[（(][^）)]*[）)]\s*$")
+DOCX_PARA_TAG = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p"
 
 PREVIEW_HEAD = (
     '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">'
@@ -243,6 +255,45 @@ def make_branches(groups: list[Group]) -> list[Branch]:
     return out
 
 
+def docx_paragraphs(path: Path) -> list[str]:
+    """按文档顺序读出正文段落文本。"""
+    with zipfile.ZipFile(path) as zf:
+        root = ET.fromstring(zf.read("word/document.xml"))  # noqa: S314 - 本地教案，非外部输入
+    out: list[str] = []
+    for para in root.iter(DOCX_PARA_TAG):
+        text = re.sub(r"\s+", " ", "".join(para.itertext())).strip()
+        if text:
+            out.append(text)
+    return out
+
+
+def read_prereq(path: Path) -> tuple[str, list[str]] | None:
+    """取教案「学习先决知识」栏：《上一讲章名》+ 其余同栏条目（去掉学习水平括注）。
+
+    空文件、损坏包或缺该栏一律返回 None，由调用方决定降级，不抛异常。
+    """
+    try:
+        paragraphs = docx_paragraphs(path)
+    except zipfile.BadZipFile, KeyError, ET.ParseError, OSError:
+        return None
+    for para in paragraphs:
+        m = PREREQ_RE.search(para)
+        if m is None:
+            continue
+        chapter = m.group(1).strip()
+        items = [s for s in (LEVEL_SUFFIX.sub("", p).strip() for p in para.split("；"))]
+        rest = [s for s in items if s and chapter not in s]
+        return chapter, rest
+    return None
+
+
+def prereq_text(chapter: str, rest: list[str]) -> str:
+    """前置知识节点文案：首行章名，次行同栏的支撑条目（最多两条）。"""
+    head = f"前置知识：《{chapter}》"
+    tail = " · ".join(rest[:2])
+    return f"{head}\n{tail}" if tail else head
+
+
 def esc(text: str) -> str:
     """换行写成 <br>，并转义 XML 属性值。"""
     return html.escape(text.replace("\n", "<br>"), quote=True)
@@ -369,7 +420,11 @@ class Diagram:
 
 
 def build_diagram(
-    key: str, title: str, branches: list[Branch], labels: Labels
+    key: str,
+    title: str,
+    branches: list[Branch],
+    labels: Labels,
+    prereq: str | None = None,
 ) -> Diagram:
     d = Diagram(name=title)
     root = d.vertex("root", title, 0, 0, ROOT_W, ROOT_H, "center")
@@ -382,6 +437,11 @@ def build_diagram(
     spare = min(ZONES[::-1], key=lambda z: (len(zones[z]), ZONES[::-1].index(z)))
     items.append(("cyl", labels.manual))
     zones[spare].append(len(items) - 1)
+    # 前置知识同属第一环，落在另一个空缺方向，箭头回指中心。
+    if prereq:
+        home = min(PRE_ORDER, key=lambda z: (len(zones[z]), PRE_ORDER.index(z)))
+        items.append(("pre", prereq))
+        zones[home].append(len(items) - 1)
 
     groups: dict[int, list[str]] = {}
     zone_of: dict[int, str] = {}
@@ -422,7 +482,19 @@ def footprint(kind: str, horizontal: bool) -> float:
     """节点在扇区切向上的自身尺寸。"""
     if kind == "cyl":
         return CYL_H if horizontal else CYL_W
+    if kind == "pre":
+        return PRE_H if horizontal else PRE_W
     return BRANCH_H if horizontal else BRANCH_W
+
+
+def first_ring(zone: str, lat: float, w: float, h: float) -> tuple[float, float]:
+    """第一环距离按节点自身尺寸计算，使中心到节点边缘恒为 GAP_ROOT。"""
+    return ring(
+        zone,
+        lat,
+        ROOT_W / 2 + GAP_ROOT + w / 2,
+        ROOT_H / 2 + GAP_ROOT + h / 2,
+    )
 
 
 def place_item(
@@ -438,14 +510,19 @@ def place_item(
     horizontal = zone in ("R", "L")
     ids: list[str] = []
     if kind == "cyl":
-        cx, cy = ring(zone, lat, D1H, D1V)
+        cx, cy = first_ring(zone, lat, CYL_W, CYL_H)
         ids.append(d.vertex("cyl", str(payload), cx, cy, CYL_W, CYL_H))
         d.edge(root, ids[0], "包含", 0.62)
         return ids
+    if kind == "pre":
+        cx, cy = first_ring(zone, lat, PRE_W, PRE_H)
+        pid = d.vertex("pre", str(payload), cx, cy, PRE_W, PRE_H)
+        d.edge(pid, root, "先修", 0.5)
+        return [pid]
 
     branch = payload
     assert isinstance(branch, Branch)
-    bx, by = ring(zone, lat, D1H, D1V)
+    bx, by = first_ring(zone, lat, BRANCH_W, BRANCH_H)
     accent = "red" if index == 0 else ("blue" if BLUE_BRANCH.search(branch.l1) else "")
     bid = d.vertex(
         f"branch_{accent}" if accent else "branch",
@@ -526,13 +603,16 @@ def resolve_corners(
 
 
 def svg_wrap(text: str, limit: int) -> list[str]:
+    """按显示宽度折行：CJK 逐字可断，ASCII 单词整体不拆。"""
+    tokens = re.findall(r"[A-Za-z0-9_.\-]+|\s+|.", text)
     lines: list[str] = []
     buf = ""
-    for ch in text:
-        buf += ch
-        if len(buf) >= limit:
+    for tok in tokens:
+        if buf and len(buf) + len(tok) > limit:
             lines.append(buf)
-            buf = ""
+            buf = "" if tok.isspace() else tok
+        else:
+            buf += tok
     if buf:
         lines.append(buf)
     return lines
@@ -548,6 +628,7 @@ SVG_FONT = {
     "api": 10,
     "doc": 10,
     "cyl": 11,
+    "pre": 10,
 }
 SVG_SHAPE = {"doc": "document", "cyl": "cylinder", "pill": "pill"}
 
@@ -561,6 +642,8 @@ def svg_paint(kind: str) -> tuple[str, str, str]:
         return FILL, STROKE, RED
     if kind == "branch_blue":
         return FILL, STROKE, BLUE
+    if kind == "pre":
+        return FILL, STROKE, GREEN
     return FILL, STROKE, INK
 
 
@@ -625,14 +708,17 @@ def render_svg(d: Diagram) -> str:
                 f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" '
                 f'fill="{fill}" stroke="{stroke}" stroke-width="1"/>'
             )
-        lines = svg_wrap(v.text.replace("\n", " "), max(5, int(w / (fs * 0.95))))
+        limit = max(5, int(w / (fs * 0.95)))
+        lines: list[str] = []
+        for para in v.text.split("\n"):
+            lines.extend(svg_wrap(para, limit))
         line_h = fs * 1.3
         cy0 = y + h / 2 - (len(lines) - 1) * line_h / 2
         out.extend(
             f'<text x="{x + w / 2}" y="{cy0 + i * line_h + fs * 0.35}" '
             f'font-size="{fs}" fill="{color}" text-anchor="middle" '
             f'font-family="Microsoft YaHei">{html.escape(ln)}</text>'
-            for i, ln in enumerate(lines[:4])
+            for i, ln in enumerate(lines[:6])
         )
     out.append("</svg>")
     return "".join(out)
@@ -714,8 +800,14 @@ def main(argv: list[str] | None = None) -> int:
         print(f"输入错误: {exc}", file=sys.stderr)
         return 2
 
-    rows: list[tuple[str, str, str, int, int, int, int]] = []
+    rows: list[tuple[str, str, str, int, int, int, int, str]] = []
     cards: list[str] = []
+    docx_by_key: dict[str, Path] = {}
+    if args.docx_dir:
+        for doc in sorted(Path(args.docx_dir).glob("*.docx")):
+            m = DOCX_KEY.search(doc.name)
+            if m is not None:
+                docx_by_key[m.group(1)] = doc
     for key, path, _vnum, title in jobs:
         groups, examples = parse_typ(path)
         branches = make_branches(groups)
@@ -735,12 +827,33 @@ def main(argv: list[str] | None = None) -> int:
                 file=sys.stderr,
             )
             branches = branches[:MAX_BRANCH]
-        d = build_diagram(key, title, branches, labels)
+        prereq: str | None = None
+        doc = docx_by_key.get(key)
+        if doc is not None:
+            found = read_prereq(doc)
+            if found is None:
+                print(
+                    f"提示: {doc.name} 没有「《…》相关概念」先决条目，本讲不加前置知识节点",
+                    file=sys.stderr,
+                )
+            else:
+                prereq = prereq_text(*found)
+        d = build_diagram(key, title, branches, labels, prereq)
         name = f"{key}-{title}.drawio"
         (out_dir / name).write_text(d.xml(modified), encoding="utf-8")
         n_kids = sum(len(b.kids[:MAX_KIDS]) for b in branches)
+        pre_show = prereq.split("\n")[0].replace("前置知识：", "") if prereq else "—"
         rows.append(
-            (key, path.name, name, len(branches), n_kids, len(d.verts), len(d.edges))
+            (
+                key,
+                path.name,
+                name,
+                len(branches),
+                n_kids,
+                len(d.verts),
+                len(d.edges),
+                pre_show,
+            )
         )
         if args.preview:
             cards.append(
@@ -756,10 +869,12 @@ def main(argv: list[str] | None = None) -> int:
 
     print(
         f"{'序号':<7} {'讲义':<26} {'输出文件':<34} {'主干':>6} {'知识点':>8} "
-        f"{'形状':>6} {'连线':>6}"
+        f"{'形状':>6} {'连线':>6} {'前置知识':<28}"
     )
-    for key, base, name, nb, nk, nn, ne in rows:
-        print(f"{key:<7} {base:<26} {name:<34} {nb:>6} {nk:>8} {nn:>6} {ne:>6}")
+    for key, base, name, nb, nk, nn, ne, pre in rows:
+        print(
+            f"{key:<7} {base:<26} {name:<34} {nb:>6} {nk:>8} {nn:>6} {ne:>6} {pre:<28}"
+        )
     print(f"已生成 {len(rows)} 个 .drawio -> {out_dir}")
     return 0
 

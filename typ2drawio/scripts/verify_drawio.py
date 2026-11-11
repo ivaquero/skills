@@ -51,7 +51,34 @@ def overlap_pairs(boxes: list[tuple[float, float, float, float]]) -> int:
     return count
 
 
-def check_file(path: Path) -> list[str]:
+def check_prereq(cells: list[ET.Element], edges: list[ET.Element]) -> list[str]:
+    """前置知识节点：绿色文字、文案以「前置知识：」开头、有一条指向中心的「先修」连线。"""
+    problems: list[str] = []
+    green = [
+        cell
+        for cell in cells
+        if cell.get("vertex") == "1"
+        and "fontColor=#008000" in (cell.get("style") or "")
+    ]
+    if len(green) != 1:
+        problems.append(f"前置知识节点应有且仅有 1 个，实际 {len(green)} 个")
+        return problems
+    node = green[0]
+    if not (node.get("value") or "").startswith("前置知识："):
+        problems.append("前置知识节点文字未以「前置知识：」开头")
+    linked = [
+        edge
+        for edge in edges
+        if (edge.get("value") or "") == "先修" and edge.get("source") == node.get("id")
+    ]
+    if not linked:
+        problems.append("前置知识节点缺少「先修」连线")
+    elif linked[0].get("target") != "center":
+        problems.append("「先修」连线应指向中心节点 center")
+    return problems
+
+
+def check_file(path: Path, require_prereq: bool = False) -> list[str]:
     problems: list[str] = []
     try:
         # 产物由本包自己写出，不是外部不可信输入；包内禁止第三方依赖，
@@ -91,13 +118,18 @@ def check_file(path: Path) -> list[str]:
     pairs = overlap_pairs(boxes_of(cells))
     if pairs:
         problems.append(f"节点矩形重叠 {pairs} 对")
+    if require_prereq:
+        problems.extend(check_prereq(cells, edges))
     return problems
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="校验 typ2drawio 产物")
     parser.add_argument("--out-dir", required=True, help="产物目录")
-    parser.add_argument("--docx-dir", help="可选，教案 docx 目录，用于编号对齐检查")
+    parser.add_argument(
+        "--docx-dir",
+        help="可选，教案 docx 目录：用于编号对齐，并检查前置知识节点（教案是先决知识的唯一来源）",
+    )
     args = parser.parse_args(argv)
     files = sorted(Path(args.out_dir).glob("*.drawio"))
     if not files:
@@ -106,7 +138,7 @@ def main(argv: list[str] | None = None) -> int:
 
     failed = 0
     for path in files:
-        problems = check_file(path)
+        problems = check_file(path, require_prereq=bool(args.docx_dir))
         if problems:
             failed += 1
             print(f"FAIL {path.name}")
