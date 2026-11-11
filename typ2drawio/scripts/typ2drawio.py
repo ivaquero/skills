@@ -27,8 +27,8 @@ DOC_W = 160
 DOC_H = 56
 CYL_W = 152
 CYL_H = 74
-PRE_W = 320
-PRE_H = 80
+PRE_W = 240
+PRE_H = 56
 MAX_KIDS = 4
 MAX_BRANCH = 9
 GAP_ROOT = 100
@@ -39,6 +39,7 @@ STEP_V = 172
 ROW_GAP = 36
 PAD = 60
 CORNER_SHIFT = 48
+SPOKE_SHIFT = 96
 
 # 派生半径：中心→主干、主干→知识点、知识点→案例，横竖两向分别计算。
 D1H = ROOT_W / 2 + GAP_ROOT + BRANCH_W / 2
@@ -288,10 +289,13 @@ def read_prereq(path: Path) -> tuple[str, list[str]] | None:
 
 
 def prereq_text(chapter: str, rest: list[str]) -> str:
-    """前置知识节点文案：首行章名，次行同栏的支撑条目（最多两条）。"""
-    head = f"前置知识：《{chapter}》"
-    tail = " · ".join(rest[:2])
-    return f"{head}\n{tail}" if tail else head
+    """前置知识节点只写先修知识点本身，不写「前置知识」前缀，也不写来源讲名。
+
+    章名只用来从教案里定位这一栏，落图时丢掉：节点文字应当能独立读懂，
+    而且越短越不容易压到邻近节点。没有同栏条目时返回空串，由调用方跳过该节点。
+    """
+    items = [s for s in rest if s and chapter not in s]
+    return "\n".join(items[:2])
 
 
 def esc(text: str) -> str:
@@ -426,6 +430,26 @@ def build_diagram(
     labels: Labels,
     prereq: str | None = None,
 ) -> Diagram:
+    """排布一次；若有连线斜穿无关节点，就整条扇区外推一段再排，直到干净。"""
+    extra = dict.fromkeys(ZONES, 0.0)
+    d = _build_once(title, branches, labels, prereq, extra)
+    for _ in range(12):
+        zones = crossed_zones(d)
+        if not zones:
+            break
+        for zone in zones:
+            extra[zone] += SPOKE_SHIFT
+        d = _build_once(title, branches, labels, prereq, extra)
+    return d
+
+
+def _build_once(
+    title: str,
+    branches: list[Branch],
+    labels: Labels,
+    prereq: str | None,
+    extra: dict[str, float],
+) -> Diagram:
     d = Diagram(name=title)
     root = d.vertex("root", title, 0, 0, ROOT_W, ROOT_H, "center")
 
@@ -450,32 +474,129 @@ def build_diagram(
             continue
         horizontal = zone in ("R", "L")
         step = STEP_H if horizontal else STEP_V
-        across = KID_H if horizontal else KID_W
-        extents: list[float] = []
-        for i in idxs:
-            payload = items[i][1]
-            own = footprint(items[i][0], horizontal)
-            fan = 0.0
-            doc_span = 0.0
-            if isinstance(payload, Branch):
-                if payload.kids:
-                    fan = (len(payload.kids[:MAX_KIDS]) - 1) * step + across
-                if payload.ex:
-                    n_doc = len(payload.ex[:2])
-                    doc_step = DOC_H + 22 if horizontal else DOC_W + 22
-                    doc_size = DOC_H if horizontal else DOC_W
-                    doc_span = (n_doc - 1) * doc_step + doc_size
-            extents.append(max(own, fan, doc_span))
-        total = sum(extents) + ROW_GAP * (len(idxs) - 1)
+        pairs = [(i, extent_of(items[i], horizontal)) for i in idxs]
+        pairs = move_specials_inward(pairs, items)
+        total = sum(ext for _, ext in pairs) + ROW_GAP * (len(pairs) - 1)
         cursor = -total / 2
-        for i, ext in zip(idxs, extents, strict=True):
+        for i, ext in pairs:
             lat = cursor + ext / 2
             cursor += ext + ROW_GAP
-            groups[i] = place_item(d, items[i], i, zone, lat, root, step)
+            groups[i] = place_item(d, items[i], i, zone, lat, root, step, extra[zone])
             zone_of[i] = zone
     resolve_corners(d, items, groups, zone_of)
     d.normalize(PAD)
     return d
+
+
+def extent_of(item: tuple[str, str | Branch], horizontal: bool) -> float:
+    """节点在扇区切向上占的宽度：自身尺寸、知识点扇面、案例跨度取最大。"""
+    kind, payload = item
+    own = footprint(kind, horizontal)
+    fan = 0.0
+    doc_span = 0.0
+    if isinstance(payload, Branch):
+        if payload.kids:
+            step = STEP_H if horizontal else STEP_V
+            across = KID_H if horizontal else KID_W
+            fan = (len(payload.kids[:MAX_KIDS]) - 1) * step + across
+        if payload.ex:
+            n_doc = len(payload.ex[:2])
+            doc_step = DOC_H + 22 if horizontal else DOC_W + 22
+            doc_size = DOC_H if horizontal else DOC_W
+            doc_span = (n_doc - 1) * doc_step + doc_size
+    return max(own, fan, doc_span)
+
+
+def move_specials_inward(
+    pairs: list[tuple[int, float]], items: list[tuple[str, str | Branch]]
+) -> list[tuple[int, float]]:
+    """把圆柱 / 前置知识换到最靠中心轴的槽位。
+
+    这两类节点只与中心相连，一旦排在扇区两端，连线就成了浅角斜线，
+    会从相邻扇区的节点框里穿过；挪到轴线附近，连线基本垂直于扇区，天然让开。
+    """
+    if len(pairs) < 2:
+        return pairs
+    lats: list[float] = []
+    total = sum(ext for _, ext in pairs) + ROW_GAP * (len(pairs) - 1)
+    cursor = -total / 2
+    for _, ext in pairs:
+        lats.append(cursor + ext / 2)
+        cursor += ext + ROW_GAP
+    specials = [p for p in pairs if items[p[0]][0] in ("cyl", "pre")]
+    if not specials:
+        return pairs
+    normals = [p for p in pairs if items[p[0]][0] not in ("cyl", "pre")]
+    slots = sorted(range(len(pairs)), key=lambda k: abs(lats[k]))[: len(specials)]
+    out: list[tuple[int, float] | None] = [None] * len(pairs)
+    for special, slot in zip(specials, sorted(slots), strict=True):
+        out[slot] = special
+    rest = iter(normals)
+    for k in range(len(pairs)):
+        if out[k] is None:
+            out[k] = next(rest)
+    return [p for p in out if p is not None]
+
+
+def seg_hits_box(
+    a: tuple[float, float],
+    b: tuple[float, float],
+    box: tuple[float, float, float, float],
+    margin: float = 3,
+) -> bool:
+    """线段是否穿过矩形内部（Liang–Barsky 裁剪），两端各留 margin 忽略贴边。"""
+    left, top = box[0] + margin, box[1] + margin
+    right, bottom = box[0] + box[2] - margin, box[1] + box[3] - margin
+    if right <= left or bottom <= top:
+        return False
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    t0, t1 = 0.0, 1.0
+    for p, q in (
+        (-dx, a[0] - left),
+        (dx, right - a[0]),
+        (-dy, a[1] - top),
+        (dy, bottom - a[1]),
+    ):
+        if p == 0:
+            if q < 0:
+                return False
+            continue
+        r = q / p
+        if p < 0:
+            if r > t1:
+                return False
+            t0 = max(t0, r)
+        else:
+            if r < t0:
+                return False
+            t1 = min(t1, r)
+    return t0 < t1
+
+
+def crossed_zones(d: Diagram) -> set[str]:
+    """找出「中心 ↔ 第一环节点」连线穿过别的节点框的扇区。"""
+    by_id = {v.id: v for v in d.verts}
+    root = by_id["center"]
+    bad: set[str] = set()
+    for edge in d.edges:
+        if edge.src != "center" and edge.dst != "center":
+            continue
+        other = by_id.get(edge.dst if edge.src == "center" else edge.src)
+        if other is None or other.kind == "root":
+            continue
+        dx, dy = other.cx - root.cx, other.cy - root.cy
+        zone = (
+            ("R" if dx > 0 else "L") if abs(dx) >= abs(dy) else ("B" if dy > 0 else "T")
+        )
+        for v in d.verts:
+            if v.id in ("center", other.id):
+                continue
+            if seg_hits_box(
+                (root.cx, root.cy), (other.cx, other.cy), (v.x, v.y, v.w, v.h)
+            ):
+                bad.add(zone)
+                break
+    return bad
 
 
 def footprint(kind: str, horizontal: bool) -> float:
@@ -487,13 +608,15 @@ def footprint(kind: str, horizontal: bool) -> float:
     return BRANCH_H if horizontal else BRANCH_W
 
 
-def first_ring(zone: str, lat: float, w: float, h: float) -> tuple[float, float]:
+def first_ring(
+    zone: str, lat: float, w: float, h: float, extra: float = 0.0
+) -> tuple[float, float]:
     """第一环距离按节点自身尺寸计算，使中心到节点边缘恒为 GAP_ROOT。"""
     return ring(
         zone,
         lat,
-        ROOT_W / 2 + GAP_ROOT + w / 2,
-        ROOT_H / 2 + GAP_ROOT + h / 2,
+        ROOT_W / 2 + GAP_ROOT + w / 2 + extra,
+        ROOT_H / 2 + GAP_ROOT + h / 2 + extra,
     )
 
 
@@ -505,24 +628,26 @@ def place_item(
     lat: float,
     root: str,
     step: float,
+    extra: float = 0.0,
 ) -> list[str]:
     kind, payload = item
     horizontal = zone in ("R", "L")
     ids: list[str] = []
     if kind == "cyl":
-        cx, cy = first_ring(zone, lat, CYL_W, CYL_H)
+        cx, cy = first_ring(zone, lat, CYL_W, CYL_H, extra)
         ids.append(d.vertex("cyl", str(payload), cx, cy, CYL_W, CYL_H))
         d.edge(root, ids[0], "包含", 0.62)
         return ids
     if kind == "pre":
-        cx, cy = first_ring(zone, lat, PRE_W, PRE_H)
+        cx, cy = first_ring(zone, lat, PRE_W, PRE_H, extra)
         pid = d.vertex("pre", str(payload), cx, cy, PRE_W, PRE_H)
-        d.edge(pid, root, "先修", 0.5)
+        # 先修知识点支撑本讲，箭头回指中心；关系名与案例一致，统一用「支持」。
+        d.edge(pid, root, "支持", 0.5)
         return [pid]
 
     branch = payload
     assert isinstance(branch, Branch)
-    bx, by = first_ring(zone, lat, BRANCH_W, BRANCH_H)
+    bx, by = first_ring(zone, lat, BRANCH_W, BRANCH_H, extra)
     accent = "red" if index == 0 else ("blue" if BLUE_BRANCH.search(branch.l1) else "")
     bid = d.vertex(
         f"branch_{accent}" if accent else "branch",
@@ -538,7 +663,7 @@ def place_item(
     kids = branch.kids[:MAX_KIDS]
     kid_ids: list[tuple[str, float]] = []
     for kid, off in zip(kids, offsets(len(kids), step), strict=False):
-        kx, ky = ring(zone, lat + off, D2H, D2V)
+        kx, ky = ring(zone, lat + off, D2H + extra, D2V + extra)
         kvid = d.vertex(kid_kind(kid), kid, kx, ky, KID_W, KID_H)
         kid_ids.append((kvid, off))
         ids.append(kvid)
@@ -550,11 +675,11 @@ def place_item(
     for doc, off in zip(
         branch.ex[:2], offsets(len(branch.ex[:2]), doc_step), strict=False
     ):
-        dx, dy = ring(zone, lat + off, D3H, D3V)
+        dx, dy = ring(zone, lat + off, D3H + extra, D3V + extra)
         did = d.vertex("doc", doc, dx, dy, DOC_W, DOC_H)
         ids.append(did)
         host = min(kid_ids, key=lambda entry: abs(entry[1] - off))[0]
-        d.edge(did, host, "支持", 0.45)
+        d.edge(host, did, "支持", 0.45)
     return ids
 
 
@@ -833,16 +958,21 @@ def main(argv: list[str] | None = None) -> int:
             found = read_prereq(doc)
             if found is None:
                 print(
-                    f"提示: {doc.name} 没有「《…》相关概念」先决条目，本讲不加前置知识节点",
+                    f"提示: {doc.name} 没有「《…》相关概念」先决条目，本讲不加先修节点",
                     file=sys.stderr,
                 )
             else:
-                prereq = prereq_text(*found)
+                prereq = prereq_text(*found) or None
+                if prereq is None:
+                    print(
+                        f"提示: {doc.name} 的先决栏只有章名、没有知识点，本讲不加先修节点",
+                        file=sys.stderr,
+                    )
         d = build_diagram(key, title, branches, labels, prereq)
         name = f"{key}-{title}.drawio"
         (out_dir / name).write_text(d.xml(modified), encoding="utf-8")
         n_kids = sum(len(b.kids[:MAX_KIDS]) for b in branches)
-        pre_show = prereq.split("\n")[0].replace("前置知识：", "") if prereq else "—"
+        pre_show = " · ".join(prereq.split("\n")) if prereq else "—"
         rows.append(
             (
                 key,
@@ -869,7 +999,7 @@ def main(argv: list[str] | None = None) -> int:
 
     print(
         f"{'序号':<7} {'讲义':<26} {'输出文件':<34} {'主干':>6} {'知识点':>8} "
-        f"{'形状':>6} {'连线':>6} {'前置知识':<28}"
+        f"{'形状':>6} {'连线':>6} {'先修知识点':<28}"
     )
     for key, base, name, nb, nk, nn, ne, pre in rows:
         print(

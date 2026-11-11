@@ -110,25 +110,28 @@ def write_docx(path: Path, paragraphs: list[str]) -> None:
 
 
 def check_prereq_node(path: Path) -> list[str]:
-    """前置知识节点：唯一、绿色、文案取到章名、有指向中心的「先修」连线。"""
+    """先修节点：唯一、绿色、只写知识点、有指向中心的「支持」连线。"""
     problems: list[str] = []
     cells = list(ET.fromstring(path.read_text(encoding="utf-8")).iter("mxCell"))  # noqa: S314
     green = [c for c in cells if "fontColor=#008000" in (c.get("style") or "")]
     if len(green) != 1:
-        return [f"前置知识节点应唯一，实际 {len(green)} 个"]
+        return [f"先修节点应唯一，实际 {len(green)} 个"]
     value = green[0].get("value") or ""
-    if "《上一讲章名》" not in value:
-        problems.append(f"前置知识未取到章名: {value!r}")
     if "Python 与 NumPy 基础" not in value:
-        problems.append("前置知识第二行丢了同栏条目")
+        problems.append(f"先修节点丢了同栏知识点: {value!r}")
+    problems.extend(
+        f"先修节点不该出现「{banned}」"
+        for banned in ("前置知识", "《", "》")
+        if banned in value
+    )
     if not any(
-        (c.get("value") or "") == "先修"
+        (c.get("value") or "") == "支持"
         and c.get("source") == green[0].get("id")
         and c.get("target") == "center"
         for c in cells
         if c.get("edge") == "1"
     ):
-        problems.append("缺少从前置知识指向中心的「先修」连线")
+        problems.append("缺少从先修节点指向中心的「支持」连线")
     return problems
 
 
