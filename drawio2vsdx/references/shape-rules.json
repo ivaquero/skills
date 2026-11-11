@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "ppi": 96,
+  "note": "VSDX 形状几何与兼容项的外部基线。改 drawio2vsdx.py 的几何函数后必须同步本表，并让 selfcheck.py 的反向测试仍然能抓到改动。",
+  "required_parts": [
+    "[Content_Types].xml",
+    "_rels/.rels",
+    "visio/document.xml",
+    "visio/pages/pages.xml",
+    "visio/pages/page1.xml",
+    "visio/pages/_rels/pages.xml.rels"
+  ],
+  "compat": {
+    "forbidden_bytes": ["RGB(", "Master=\"-1\""],
+    "required_bytes": ["AsianFont"]
+  },
+  "shapes": {
+    "Rect": {"points": 5, "v_min": 0.0, "v_max": 1.0},
+    "Label": {"points": 5, "v_min": 0.0, "v_max": 1.0},
+    "Capsule": {"points": 31, "v_min": 0.0, "v_max": 1.0},
+    "Cylinder": {"points": 28, "v_min": 0.0, "v_max": 1.0},
+    "Document": {"points": 28, "v_min": 0.0, "v_max": 1.0}
+  },
+  "document": {
+    "baseline": 0.92,
+    "bottom_v_min": 0.84,
+    "bottom_v_max": 1.0,
+    "s_wave": true,
+    "note": "底边取 Geometry 的 pts[2:-1]（排除闭合点）。两端必须落在 baseline，波浪在 [bottom_v_min, bottom_v_max] 内，且同时存在高于与低于 baseline 的点，才是 S 形波而非三团鼓包。"
+  }
+}
