@@ -34,6 +34,7 @@ STEP_H = 62
 STEP_V = 172
 ROW_GAP = 36
 PAD = 60
+CORNER_SHIFT = 48
 
 # 派生半径：中心→主干、主干→知识点、知识点→案例，横竖两向分别计算。
 D1H = ROOT_W / 2 + GAP_ROOT + BRANCH_W / 2
@@ -131,7 +132,6 @@ class Labels:
     """可替换的课程专有词，让同一套版式能用于别的讲义。"""
 
     manual: str = "OpenCV 官方手册"
-    fallback: str = "本讲要点"
 
 
 @dataclass
@@ -226,7 +226,7 @@ def parse_typ(path: Path) -> tuple[list[Group], list[str]]:
     return groups, examples
 
 
-def make_branches(groups: list[Group], labels: Labels) -> list[Branch]:
+def make_branches(groups: list[Group]) -> list[Branch]:
     out: list[Branch] = []
     seen: set[str] = set()
     for group in groups:
@@ -235,7 +235,9 @@ def make_branches(groups: list[Group], labels: Labels) -> list[Branch]:
             l1 += "（进阶）"
         seen.add(l1)
         ex = dedupe(group.ex, 2)
-        kids = dedupe([*group.kids, *ex], MAX_KIDS) or [labels.fallback]
+        kids = dedupe(group.kids, MAX_KIDS)
+        if not kids and ex:
+            kids, ex = dedupe(group.ex, MAX_KIDS), []
         out.append(Branch(l1=l1, kids=kids, ex=ex))
     return out
 
@@ -368,69 +370,152 @@ def build_diagram(key: str, title: str, branches: list[Branch], labels: Labels) 
     root = d.vertex("root", title, 0, 0, ROOT_W, ROOT_H, "center")
 
     items: list[tuple[str, str | Branch]] = [("branch", b) for b in branches]
-    items.append(("cyl", labels.manual))
-
     zones: dict[str, list[int]] = {z: [] for z in ZONES}
     for i in range(len(items)):
         zones[ZONES[i % 4]].append(i)
+    # 手册圆柱体放进最空的扇区，避免它挤在别的分支旁边显得像是下级节点。
+    spare = min(ZONES[::-1], key=lambda z: (len(zones[z]), ZONES[::-1].index(z)))
+    items.append(("cyl", labels.manual))
+    zones[spare].append(len(items) - 1)
 
-    placed: dict[int, tuple[str, float, float]] = {}
+    groups: dict[int, list[str]] = {}
+    zone_of: dict[int, str] = {}
     for zone, idxs in zones.items():
         if not idxs:
             continue
-        step = STEP_H if zone in ("R", "L") else STEP_V
-        across = KID_H if zone in ("R", "L") else KID_W
-        widest = max(
-            [len(items[i][1].kids) for i in idxs if isinstance(items[i][1], Branch)]
-            or [1]
-        )
-        spacing = (widest - 1) * step + across + ROW_GAP
-        for j, i in enumerate(idxs):
-            lat = (j - (len(idxs) - 1) / 2) * spacing
-            placed[i] = (zone, lat, spacing)
-
-    for i, (kind, payload) in enumerate(items):
-        zone, lat, _ = placed[i]
-        if kind == "cyl":
-            cx, cy = ring(zone, lat, D1H, D1V)
-            cid = d.vertex("cyl", str(payload), cx, cy, CYL_W, CYL_H)
-            d.edge(root, cid, "包含", 0.62)
-            continue
-
-        branch = payload
-        assert isinstance(branch, Branch)
-        bx, by = ring(zone, lat, D1H, D1V)
-        accent = "red" if i == 0 else ("blue" if BLUE_BRANCH.search(branch.l1) else "")
-        bid = d.vertex(
-            f"branch_{accent}" if accent else "branch",
-            branch.l1,
-            bx,
-            by,
-            BRANCH_W,
-            BRANCH_H,
-        )
-        d.edge(root, bid, "内容包含", 0.62)
-
-        step = STEP_H if zone in ("R", "L") else STEP_V
-        kids = branch.kids[:MAX_KIDS]
-        kid_ids: list[tuple[str, float]] = []
-        for kid, off in zip(kids, offsets(len(kids), step), strict=False):
-            kx, ky = ring(zone, lat + off, D2H, D2V)
-            kvid = d.vertex(kid_kind(kid), kid, kx, ky, KID_W, KID_H)
-            kid_ids.append((kvid, off))
-            d.edge(bid, kvid, "包含", 0.58)
-
-        if not branch.ex:
-            continue
-        doc_step = DOC_H + 22 if zone in ("R", "L") else DOC_W + 22
-        for doc, off in zip(branch.ex[:2], offsets(len(branch.ex[:2]), doc_step), strict=False):
-            dx, dy = ring(zone, lat + off, D3H, D3V)
-            did = d.vertex("doc", doc, dx, dy, DOC_W, DOC_H)
-            host = min(kid_ids, key=lambda item: abs(item[1] - off))[0]
-            d.edge(did, host, "支持", 0.45)
-
+        horizontal = zone in ("R", "L")
+        step = STEP_H if horizontal else STEP_V
+        across = KID_H if horizontal else KID_W
+        extents: list[float] = []
+        for i in idxs:
+            payload = items[i][1]
+            own = footprint(items[i][0], horizontal)
+            fan = 0.0
+            doc_span = 0.0
+            if isinstance(payload, Branch):
+                if payload.kids:
+                    fan = (len(payload.kids[:MAX_KIDS]) - 1) * step + across
+                if payload.ex:
+                    n_doc = len(payload.ex[:2])
+                    doc_step = DOC_H + 22 if horizontal else DOC_W + 22
+                    doc_size = DOC_H if horizontal else DOC_W
+                    doc_span = (n_doc - 1) * doc_step + doc_size
+            extents.append(max(own, fan, doc_span))
+        total = sum(extents) + ROW_GAP * (len(idxs) - 1)
+        cursor = -total / 2
+        for i, ext in zip(idxs, extents, strict=True):
+            lat = cursor + ext / 2
+            cursor += ext + ROW_GAP
+            groups[i] = place_item(d, items[i], i, zone, lat, root, step)
+            zone_of[i] = zone
+    resolve_corners(d, items, groups, zone_of)
     d.normalize(PAD)
     return d
+
+
+def footprint(kind: str, horizontal: bool) -> float:
+    """节点在扇区切向上的自身尺寸。"""
+    if kind == "cyl":
+        return CYL_H if horizontal else CYL_W
+    return BRANCH_H if horizontal else BRANCH_W
+
+
+def place_item(
+    d: Diagram,
+    item: tuple[str, str | Branch],
+    index: int,
+    zone: str,
+    lat: float,
+    root: str,
+    step: float,
+) -> list[str]:
+    kind, payload = item
+    horizontal = zone in ("R", "L")
+    ids: list[str] = []
+    if kind == "cyl":
+        cx, cy = ring(zone, lat, D1H, D1V)
+        ids.append(d.vertex("cyl", str(payload), cx, cy, CYL_W, CYL_H))
+        d.edge(root, ids[0], "包含", 0.62)
+        return ids
+
+    branch = payload
+    assert isinstance(branch, Branch)
+    bx, by = ring(zone, lat, D1H, D1V)
+    accent = "red" if index == 0 else ("blue" if BLUE_BRANCH.search(branch.l1) else "")
+    bid = d.vertex(
+        f"branch_{accent}" if accent else "branch",
+        branch.l1,
+        bx,
+        by,
+        BRANCH_W,
+        BRANCH_H,
+    )
+    ids.append(bid)
+    d.edge(root, bid, "内容包含", 0.62)
+
+    kids = branch.kids[:MAX_KIDS]
+    kid_ids: list[tuple[str, float]] = []
+    for kid, off in zip(kids, offsets(len(kids), step), strict=False):
+        kx, ky = ring(zone, lat + off, D2H, D2V)
+        kvid = d.vertex(kid_kind(kid), kid, kx, ky, KID_W, KID_H)
+        kid_ids.append((kvid, off))
+        ids.append(kvid)
+        d.edge(bid, kvid, "包含", 0.58)
+
+    if not branch.ex:
+        return ids
+    doc_step = DOC_H + 22 if horizontal else DOC_W + 22
+    for doc, off in zip(branch.ex[:2], offsets(len(branch.ex[:2]), doc_step), strict=False):
+        dx, dy = ring(zone, lat + off, D3H, D3V)
+        did = d.vertex("doc", doc, dx, dy, DOC_W, DOC_H)
+        ids.append(did)
+        host = min(kid_ids, key=lambda entry: abs(entry[1] - off))[0]
+        d.edge(did, host, "支持", 0.45)
+    return ids
+
+
+def bbox(by_id: dict[str, Vertex], ids: list[str]) -> tuple[float, float, float, float]:
+    vs = [by_id[i] for i in ids]
+    return (
+        min(v.x for v in vs),
+        min(v.y for v in vs),
+        max(v.x + v.w for v in vs),
+        max(v.y + v.h for v in vs),
+    )
+
+
+def intersects(a: tuple[float, ...], b: tuple[float, ...], margin: float = 4) -> bool:
+    return (min(a[2], b[2]) - max(a[0], b[0]) > -margin) and (
+        min(a[3], b[3]) - max(a[1], b[1]) > -margin
+    )
+
+
+def resolve_corners(
+    d: Diagram,
+    items: list[tuple[str, str | Branch]],
+    groups: dict[int, list[str]],
+    zones_of: dict[int, str],
+) -> None:
+    """上下扇区与左右扇区在四角会互相压住：把起冲突的上下项整体沿轴向外推。"""
+    by_id = {v.id: v for v in d.verts}
+    for _ in range(120):
+        moved = False
+        for i in sorted(groups):
+            zone = zones_of[i]
+            if zone not in ("T", "B"):
+                continue
+            here = bbox(by_id, groups[i])
+            for j in sorted(groups):
+                if j == i or not intersects(here, bbox(by_id, groups[j])):
+                    continue
+                dy = -CORNER_SHIFT if zone == "T" else CORNER_SHIFT
+                for vid in groups[i]:
+                    by_id[vid].y += dy
+                    by_id[vid].cy += dy
+                moved = True
+                break
+        if not moved:
+            return
 
 
 def svg_wrap(text: str, limit: int) -> list[str]:
@@ -626,16 +711,23 @@ def main(argv: list[str] | None = None) -> int:
     cards: list[str] = []
     for key, path, _vnum, title in jobs:
         groups, examples = parse_typ(path)
-        branches = make_branches(groups, labels)
+        branches = make_branches(groups)
         if len(branches) < 3:
+            used = {item for b in branches for item in b.ex}
+            spare_ex = [e for e in dedupe(examples) if e not in used]
             branches.append(
                 Branch(
                     l1="实践案例",
-                    kids=dedupe(examples, MAX_KIDS) or [labels.fallback],
-                    ex=dedupe(examples, 2),
+                    kids=spare_ex[:MAX_KIDS] or dedupe(examples, MAX_KIDS),
+                    ex=[],
                 )
             )
-        branches = branches[:MAX_BRANCH]
+        if len(branches) > MAX_BRANCH:
+            print(
+                f"提示: {path.name} 有 {len(branches)} 个主干，超过上限 {MAX_BRANCH}，已截断",
+                file=sys.stderr,
+            )
+            branches = branches[:MAX_BRANCH]
         d = build_diagram(key, title, branches, labels)
         name = f"{key}-{title}.drawio"
         (out_dir / name).write_text(d.xml(modified), encoding="utf-8")
