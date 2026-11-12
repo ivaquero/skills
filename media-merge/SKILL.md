@@ -90,7 +90,7 @@ ffmpeg -v error -i out.mp4 -f null -   # 无输出即无错误
 | :--- | :--- | :--- | :--- |
 | 几何、视频编码、音轨**全部一致** | `copy` | concat demuxer + `-c copy` | 零重编码 |
 | **仅视频编码不同**，其余一致 | `encode-minor` | 只重编编码不同的那几段 | 只编少数段 |
-| 几何或音轨**任一不同** | `normalize` | 逐段等比缩放补边到统一画布 | 全量重编 |
+| 几何或音轨**任一不同** | `normalize` | 逐段等比缩放补边到统一画布 | 只编偏离目标的段 |
 
 音频（看编码、采样率、声道三元组）：
 
@@ -105,6 +105,13 @@ ffmpeg -v error -i out.mp4 -f null -   # 无输出即无错误
 **档位（profile）不参与定档。** 同是 `h264`，一段 High 一段 Constrained Baseline，`-c copy` 拼接后依然逐帧像素一致——SPS/PPS 在流内随 IDR 重复，解码器自己换档（实测见 `references/casebook.md` 案例七）。但成品头里只记首段的档位，`ffprobe` 也只报首段，所以差异行用 `[info] 档位` 把这处分歧列出来，别默默抹平。
 
 指定画布（`-c`）或 `--uniform` 让目标与素材对不上时，`copy` 与 `encode-minor` 都不成立——后者不过缩放滤镜——脚本会把模式自动升级到 `normalize`，并在说明里写明原因。
+
+**`normalize` 不是「全部重编」。** 目标参数由最长那段推出，而多数素材本来就是那个形态；逐段比对后，已经等于目标的段原样进 concat 清单，只有真正偏离的段才过滤镜重编。说明行会写成「其中 N 段本就与目标一致，直接拷贝」。实测 12 分 30 秒主段 + 3 分 47 秒异构段，按老逻辑要重编 16 分钟，新逻辑只编 3 分 47 秒（见 `references/casebook.md` 案例八）。
+
+重编出来的段要补两件事，否则成品会退化：
+
+- **档位跟主段走**，不写死 `high`。主段是 Main 就编 `-profile:v main`，省得成品里出现两套档位。
+- **色彩标记要显式补**。重编码会丢掉源里的 VUI，`-color_primaries` / `-color_trc` 实测**写不进** VUI（编完 `ffprobe` 仍是 `unknown`），得用 `-bsf:v "h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1"`（1 = bt709）。脚本已对 `bt709` 源自动挂上；BT.2020 不猜，宁可留空。
 
 ## 分组：一致还是最省
 

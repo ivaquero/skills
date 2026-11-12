@@ -252,6 +252,25 @@ def check_video_roundtrip(work: Path) -> None:
         f"{video.get('width')}x{video.get('height')} duration={duration:.2f}",
     )
 
+    # normalize 曾经无条件重编所有段，连本来就等于目标的主段也要多压一代。
+    # 现在只有偏离目标的段才进 segs/，其余原样进 concat 清单。
+    home = work / "norm"
+    home.mkdir(parents=True, exist_ok=True)
+    proc = run_entry(
+        "-o", str(home / "out.mp4"), "--run", str(first), str(odd), cwd=home
+    )
+    listing = home / ".mmerge-tmp" / "list.txt"
+    text = listing.read_text(encoding="utf-8") if listing.is_file() else ""
+    passthrough = str(first).replace("\\", "/") in text.replace("\\", "/")
+    segs = (
+        list((home / ".mmerge-tmp" / "segs").glob("*.mp4")) if listing.is_file() else []
+    )
+    check(
+        proc.returncode == 0 and passthrough and len(segs) == 1,
+        "normalize 只重编偏离目标的段（主段原样进清单）",
+        f"code={proc.returncode} 清单含主段={passthrough} 转码段={len(segs)}",
+    )
+
 
 # --------------------------------------------------------------------------- #
 # 2. 真实数据往返：分组与表格

@@ -427,6 +427,41 @@ def _hits_canvas(infos: list[Info], width: int, height: int, fps: Fraction) -> b
     )
 
 
+def _x264_profile(info: Info) -> str:
+    """把 ffprobe 的档位名映射成 libx264 认的取值。"""
+    name = (info.profile or "").strip().lower()
+    if not name:
+        return "high"
+    if name.startswith("constrained baseline"):
+        return "baseline"
+    if name.startswith("high"):
+        return "high"
+    if name.startswith("main"):
+        return "main"
+    if name.startswith("baseline"):
+        return "baseline"
+    return "high"
+
+
+def _color_filter(color: str) -> list[str]:
+    """按源色彩空间补 VUI 标记。
+
+    libx264 的 -color_primaries / -color_trc 实测不写 VUI（输出仍是 unknown），
+    h264_metadata 比特流滤镜才真的改 SPS，所以在编码这一步就挂上。
+    只处理 bt709：Info 只探测到矩阵（color_space），BT.2020 的传输特性
+    可能是 PQ 也可能是 HLG，猜错比不写更糟，所以其余情况原样留空。
+    """
+    if color != "bt709":
+        return []
+    return [
+        "-bsf:v",
+        (
+            "h264_metadata=colour_primaries=1:transfer_characteristics=1:"
+            "matrix_coefficients=1"
+        ),
+    ]
+
+
 # --------------------------------------------------------------------------- #
 # 目标与计划
 # --------------------------------------------------------------------------- #
@@ -467,6 +502,34 @@ class VideoTarget:
     tb_den: int
     pix_fmt: str
     audio: AudioTarget | None
+    profile: str = "high"
+
+
+def _conforms(info: Info, target: VideoTarget, vcodec: str) -> bool:
+    """单段是否已与目标逐项相同，相同就能原样拷贝，不必重编。
+
+    normalize 的初衷是「让所有段变成同一套参数」，但多数素材本来就等于目标
+    （目标由最长段推导），重编它们只是白烧 CPU 并多压一代。只有真正偏离的段
+    才需要过滤镜与编码。音轨按签名三元组比，档位（profile）不比：
+    h264 的 SPS 随 IDR 在流内重复，混档位解码器能自行切换。
+    """
+    if info.vcodec != vcodec:
+        return False
+    if (info.width, info.height) != target.canvas:
+        return False
+    if info.fps != target.fps or str(info.pix_fmt) != target.pix_fmt:
+        return False
+    if info.sar not in ("1:1", "0:1"):
+        return False
+    if target.audio is None:
+        return not info.has_audio
+    if not info.has_audio:
+        return False
+    return info.audio_key == (
+        str(target.audio.encoder),
+        target.audio.sample_rate,
+        target.audio.channels,
+    )
 
 
 @dataclass
@@ -562,6 +625,18 @@ def build_video_plan(
     tb_den = (track[0] if track else main).tb_den
     level = guess_level(width, height, float(main.fps))
     audio = _video_audio_target(basis_infos)
+    vt = VideoTarget(
+        codec=vcodec,
+        canvas=(width, height),
+        fps=main.fps,
+        level=level,
+        preset=preset,
+        crf=crf,
+        tb_den=tb_den,
+        pix_fmt=str(main.pix_fmt),
+        audio=audio,
+        profile=_x264_profile(main),
+    )
 
     if mode == "copy":
         reason = "参数一致，直接流拷贝，视频与音轨都原样保留"
@@ -600,6 +675,10 @@ def build_video_plan(
             if mode == "encode-minor" and info.vcodec == vcodec:
                 entries.append(_p(info.path))
                 continue
+            if mode == "normalize" and _conforms(info, vt, vcodec):
+                # 这一段本来就等于目标，重编只会多压一代，直接原样进清单
+                entries.append(_p(info.path))
+                continue
             target = seg_dir / f"{info.path.stem}.mp4"
             cmd = [FFMPEG, "-y", "-i", _p(info.path)]
             if mode == "normalize":
@@ -612,12 +691,13 @@ def build_video_plan(
                 "-crf",
                 str(crf),
                 "-profile:v",
-                "high",
+                vt.profile,
                 "-level",
                 level,
                 "-pix_fmt",
                 str(main.pix_fmt),
             ]
+            cmd += _color_filter(str(main.color))
             if audio is None:
                 cmd += ["-an"]
             else:
@@ -637,6 +717,11 @@ def build_video_plan(
             encodes.append(cmd)
             entries.append(_p(target))
 
+    if mode == "normalize":
+        kept = len(infos) - len(encodes)
+        if kept:
+            reason += f"；其中 {kept} 段本就与目标一致，直接拷贝"
+
     concat = [FFMPEG, "-y", "-f", "concat", "-safe", "0", "-i", _p(list_file)]
     concat += ["-c", "copy"]
     if out.suffix.lower() in MP4_SUFFIX:
@@ -649,17 +734,7 @@ def build_video_plan(
         out=out,
         reason=reason,
         duration=sum(info.duration for info in infos),
-        target=VideoTarget(
-            codec=vcodec,
-            canvas=(width, height),
-            fps=main.fps,
-            level=level,
-            preset=preset,
-            crf=crf,
-            tb_den=tb_den,
-            pix_fmt=str(main.pix_fmt),
-            audio=audio,
-        ),
+        target=vt,
         encodes=encodes,
         concat=concat,
         list_file=list_file,
@@ -970,14 +1045,14 @@ def _plan_lines(plan: Plan) -> list[str]:
         lines.append("  模式        [encode-minor] 仅编码不同 -> 只重编少数段")
     else:
         scope = "几何或音轨" if plan.kind == "video" else "采样率或声道"
-        lines.append(f"  模式        [normalize] {scope}不一致 -> 逐段归一化")
+        lines.append(f"  模式        [normalize] {scope}不一致 -> 只重编不一致的段")
 
     target = plan.target
     if isinstance(target, VideoTarget):
         width, height = target.canvas
         encode = (
             f"-c:v libx264 -preset {target.preset} -crf {target.crf} "
-            f"-profile:v high -level {target.level}"
+            f"-profile:v {target.profile} -level {target.level}"
         )
         if plan.mode == "copy":
             lines.append(f"  分辨率      {width}x{height}（原样）")

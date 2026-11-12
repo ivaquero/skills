@@ -85,7 +85,7 @@ mp3、m4a、flac 都可以内嵌封面，ffprobe 会把它报成一条 `codec_ty
 
 ## 案例七：同编码不同档位，照样能 copy
 
-`hddj-dancer-merged-01/03/04/05.mp4` 四段全 `h264`、全 `1080x1920@30`、全 `yuv420p`、全 `aac 44100/2ch`，九项差异检测无一分歧，判成 `copy` 顺理成章。但四段里 `-03` 是 **High**，其余是 **Constrained Baseline**——判档逻辑只看 `vcodec`，看不见这一层。
+`video-merged-01/03/04/05.mp4` 四段全 `h264`、全 `1080x1920@30`、全 `yuv420p`、全 `aac 44100/2ch`，九项差异检测无一分歧，判成 `copy` 顺理成章。但四段里 `-03` 是 **High**，其余是 **Constrained Baseline**——判档逻辑只看 `vcodec`，看不见这一层。
 
 第一反应是「混 profile 必坏」：`-c copy` 拼接时 `avcC` 只写首段，后面 High 的 CABAC 片用 Baseline 的 SPS 解，理应花屏。于是拿 20 秒样本（首段尾 + `-03` 头）实测，结论与直觉相反：
 
@@ -99,22 +99,44 @@ mp3、m4a、flac 都可以内嵌封面，ffprobe 会把它报成一条 `codec_ty
 
 **方法论上的收获**：小样本实验能证伪「必然坏」的直觉，但小样本本身要干净。这次用 `-sseof -12` 截尾段时，成品解出 632 帧而两段实际只有 602 帧——多出的 30 帧是抽取边界造成的重复帧，不是拼接问题；真合并时帧数与时长都严丝合缝。**判断依据要落在成品上，不能只落在样本上。**
 
+## 案例八：`normalize` 不该重编主段（`video-04` + `05`）
+
+`video-04.mp4`（12:30，h264 **Main** L4.0，aac 44100）与 `video-05.mp4`（3:47，hevc Main，aac **48000**）两处不同：视频编码、音频采样率。按旧逻辑，任一项音轨差异都把模式打到 `normalize`，而 `normalize` 的实现是**逐段重编**——12 分 30 秒的主段明明就是目标形态（目标参数本来就由它推导），也要陪着多压一代。
+
+改法是给 `normalize` 加一道「逐段比对目标」：编解码器、画布、帧率、像素格式、SAR、音轨签名六项全中就直接原样进 concat 清单。于是 16 分 16 秒的活缩到 3 分 47 秒，主段零代际损失（成品与源逐点 PSNR `inf`），追加段重编后 48.3/49.5 dB。
+
+同一批改动里还有两个必须一起做，否则成品退化：
+
+1. **档位跟主段走。** 旧代码写死 `-profile:v high`，主段是 Main 时成品里就出现两套档位。现在取最长段的档位（`Main`/`High`/`Baseline` 都映射得到）。混档位本身能解（案例七），但没有必要制造这种混搭。
+2. **色彩标记显式补。** 源 `05` 的 `color_transfer` / `color_primaries` 是 `unknown`，主段是 `bt709`。重编码时加 `-color_primaries bt709 -color_trc bt709 -colorspace bt709`，编完 `ffprobe` 仍然是 `unknown`——**这三个参数对 libx264 不写 VUI**。真正有效的是比特流滤镜：
+
+   ```text
+   -bsf:v "h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1"
+   ```
+
+   （1 = bt709）。实测同一批参数下 flags 版输出 `unknown`，bsf 版输出 `bt709`。脚本现在对 `bt709` 源自动挂 bsf；BT.2020 不猜——传输特性可能是 PQ 也可能是 HLG，写错比留空更糟。
+
+**踩到的坑**：手工把转码段「补标记」时用的是 `-c copy` + bsf 重封装，漏了 `-video_track_timescale 30`，时间基从 `1/30` 回落成 `1/15360`。拼进主段（`1/30`）后 `concat` 直接报 `DTS ... next:750000000 invalid dropping`，产出的成品时长 116905 秒。**`-c copy` 重封装会重置时间基，凡是拼 mp4 的中间步骤，`-video_track_timescale` 必须一路带着。**
+
 ## 通用坑清单
 
-| 现象                                         | 原因                                                                        | 处理                                                                              |
-| :------------------------------------------- | :-------------------------------------------------------------------------- | :-------------------------------------------------------------------------------- |
-| `ffmpeg` 返回 127，像「找不到命令」          | 输出文件的父目录不存在（如 `segs/` 未建）                                   | 转码前无条件 `mkdir -p`；不要把 127 一律当环境问题                                |
-| 纯音频被判成视频                             | 内嵌封面是 mjpeg 视频流                                                     | 按 `disposition.attached_pic` 跳过                                                |
-| flac 拼接只认第一段                          | raw flac 不接受 copy 拼接，STREAMINFO 与数据不符                            | 改走 concat 滤镜重编                                                              |
-| 拼接后每段之间多几十毫秒                     | mp3/aac 每段的编码器延迟与 priming 样本                                     | 时长偏差校验；音乐类素材需在软件里重新对齐                                        |
-| bash 里分辨率比较静默失败                    | Windows 下 `ffprobe` 输出 CRLF，`read` 把 `\r` 留在值里（`1280\r != 1280`） | 解析后 `v="${v%$'\r'}"`；改用 Python 读 JSON 则整类问题消失                       |
-| `ffprobe: Impossible to open '/c/Users/...'` | ffmpeg 是原生 Windows 程序，不认 MSYS 的 `/c/...`                           | 转成 `C:/Users/...`（正斜杠可用，不必转反斜杠）                                   |
-| `[: 30.000: integer expected`                | `[ -le ]` 只接受整数，而帧率是浮点                                          | 用 awk 或 Python 比                                                               |
-| Markdown 表格/终端表格列错位                 | `printf %-11s` 按字节计宽，中文占 3 字节算 1 个字符                         | 表头改 ASCII，或按显示宽度手工补                                                  |
-| `Unknown cover type: 0x1`                    | `.mov` 容器里带封面图元数据                                                 | 无害，忽略                                                                        |
-| 分段 mp4 无法探测                            | 转码中断，moov 未写入                                                       | 拼接前逐段校验时长，失败即删                                                      |
-| 首次 `concat` 报 `Non-monotonic DTS`         | 首段音轨比视频长几十毫秒                                                    | 通常无害，以全片解码校验为准                                                      |
-| 同编码混档位（High / Baseline）              | 判档只看 `vcodec`，看不到 profile                                           | 不必升级 `normalize`：SPS 在流内重复，copy 仍像素一致；但要提示成品头只记首段档位 |
+| 现象                                          | 原因                                                                        | 处理                                                                                          |
+| :-------------------------------------------- | :-------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| `ffmpeg` 返回 127，像「找不到命令」           | 输出文件的父目录不存在（如 `segs/` 未建）                                   | 转码前无条件 `mkdir -p`；不要把 127 一律当环境问题                                            |
+| 纯音频被判成视频                              | 内嵌封面是 mjpeg 视频流                                                     | 按 `disposition.attached_pic` 跳过                                                            |
+| flac 拼接只认第一段                           | raw flac 不接受 copy 拼接，STREAMINFO 与数据不符                            | 改走 concat 滤镜重编                                                                          |
+| 拼接后每段之间多几十毫秒                      | mp3/aac 每段的编码器延迟与 priming 样本                                     | 时长偏差校验；音乐类素材需在软件里重新对齐                                                    |
+| bash 里分辨率比较静默失败                     | Windows 下 `ffprobe` 输出 CRLF，`read` 把 `\r` 留在值里（`1280\r != 1280`） | 解析后 `v="${v%$'\r'}"`；改用 Python 读 JSON 则整类问题消失                                   |
+| `ffprobe: Impossible to open '/c/Users/...'`  | ffmpeg 是原生 Windows 程序，不认 MSYS 的 `/c/...`                           | 转成 `C:/Users/...`（正斜杠可用，不必转反斜杠）                                               |
+| `[: 30.000: integer expected`                 | `[ -le ]` 只接受整数，而帧率是浮点                                          | 用 awk 或 Python 比                                                                           |
+| Markdown 表格/终端表格列错位                  | `printf %-11s` 按字节计宽，中文占 3 字节算 1 个字符                         | 表头改 ASCII，或按显示宽度手工补                                                              |
+| `Unknown cover type: 0x1`                     | `.mov` 容器里带封面图元数据                                                 | 无害，忽略                                                                                    |
+| 分段 mp4 无法探测                             | 转码中断，moov 未写入                                                       | 拼接前逐段校验时长，失败即删                                                                  |
+| 首次 `concat` 报 `Non-monotonic DTS`          | 首段音轨比视频长几十毫秒                                                    | 通常无害，以全片解码校验为准                                                                  |
+| 同编码混档位（High / Baseline）               | 判档只看 `vcodec`，看不到 profile                                           | 不必升级 `normalize`：SPS 在流内重复，copy 仍像素一致；但要提示成品头只记首段档位             |
+| 重编码后色彩标记变 `unknown`                  | libx264 不把 `-color_primaries` / `-color_trc` 写进 VUI                     | 挂 `-bsf:v h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1` |
+| `concat` 报 `next:750000000 invalid dropping` | 中间段被 `-c copy` 重封装过，时间基回落成 1/15360 与主段 1/30 不一致        | 每次重封装都带 `-video_track_timescale`，与主段一致                                           |
+| 分段 mp4 探测报 `moov atom not found`         | 传输中断，文件被截在 `mdat` 里，少了尾部 `moov`                             | 解析顶层 box 比对 `mdat` 声明长度与实际大小即可定位；moov 缺失无法修复，只能重传              |
 
 ## 一条流程性的经验
 
