@@ -28,7 +28,8 @@
    整页。圆角/胶囊、圆柱体、波浪底文档均以多段折线近似，Visio 渲染确定。
    其中 document（mxgraph.flowchart.document）按参考图还原为「顶/左/右三边
    平直、左右下角为直角、底边一条 S 形波浪」，波浪由 style 的 size 控制。
-4. 连线：从源/目标矩形边界裁剪后画 1-D Connector，保留线色、线宽与实心箭头；
+4. 连线：从源/目标矩形边界裁剪后画 1-D Connector；箭头另画成实心三角
+   几何形状 ArrowHead（不用 EndArrow 单元格，见 contract.md 第 9 节）；
    关系标签做成白底独立文本框，按 mxGeometry/@x 沿连线插值定位。
 5. 样式：颜色直接写 #RRGGBB（写 RGB(r,g,b) 在 Visio 会导出全黑）；中文显式
    AsianFont=Microsoft YaHei；Shape 上不写 Master="-1"（会让 Visio 静默丢弃整页）。
@@ -288,19 +289,69 @@ def shape_xml(
     )
 
 
+def arrow_head_xml(
+    sid: int,
+    p1_px: tuple[float, float],
+    p2_px: tuple[float, float],
+    ppi: float,
+    page_h_px: float,
+    color_hex: str,
+    length_px: float,
+    half_px: float,
+) -> str:
+    """把 draw.io 的 endArrow=block 画成实心三角形 Shape（NameU=ArrowHead）。
+
+    尖端落在连线终点 p2，底边沿线段反向退 length_px；三角形完全落在目标
+    节点框外，不会被上层节点遮住。刻意不写 EndArrow 单元格：Visio 对自建
+    1-D 形状（无 Master、无 BeginX/EndX、无 EndArrowSize）不保证渲染该单元格，
+    实测表现为「连线在、箭头没了」。几何三角形是普通填充多边形，任何渲染器
+    都会画，且尺寸由源样式的 endSize 决定。
+    """
+    dx, dy = p2_px[0] - p1_px[0], p2_px[1] - p1_px[1]
+    norm = math.hypot(dx, dy) or 1.0
+    ux, uy = dx / norm, dy / norm
+    nx, ny = -uy, ux
+    bx, by = p2_px[0] - ux * length_px, p2_px[1] - uy * length_px
+    tri_px = [
+        p2_px,
+        (bx + nx * half_px, by + ny * half_px),
+        (bx - nx * half_px, by - ny * half_px),
+    ]
+    # 像素左上原点 -> 英寸左下原点
+    tri = [(x / ppi, (page_h_px - y) / ppi) for x, y in tri_px]
+    xs, ys = [p[0] for p in tri], [p[1] for p in tri]
+    left, bottom = min(xs), min(ys)
+    w, h = (max(xs) - left) or 1e-4, (max(ys) - bottom) or 1e-4
+    poly = [((x - left) / w, 1.0 - (y - bottom) / h) for x, y in tri]
+    poly.append(poly[0])  # 闭合，4 点
+    return shape_xml(
+        sid,
+        "ArrowHead",
+        (left, bottom, w, h),
+        poly,
+        color_hex,
+        color_hex,
+        0.0,
+        "",
+        0.0,
+        color_hex,
+        has_fill=True,
+        has_line=False,
+    )
+
+
 def connector_xml(
     sid: int,
     p1: tuple[float, float],
     p2: tuple[float, float],
     line: str,
     line_w_in: float,
-    arrow: bool,
 ) -> str:
     """沿用 visio skill 中已被 Visio 实测打开的连接线骨架。
 
     形状框以线段中点为 Pin，Width/Height 取 |dx|,|dy|；Geometry 的起止点按
     dx/dy 符号换算到局部坐标，从而正确表达四个方向（原骨架固定 (0,0)->(w,h)，
-    遇到 dx<0 或 dy<0 会把线画反）。
+    遇到 dx<0 或 dy<0 会把线画反）。箭头由 arrow_head_xml 单独生成。
     """
     dx, dy = p2[0] - p1[0], p2[1] - p1[1]
     w = abs(dx) or 1e-4
@@ -316,8 +367,6 @@ def connector_xml(
         '<Cell N="FillPattern" V="0"/>',
         f'<Cell N="LineColor" V="{line}"/><Cell N="LineWeight" V="{line_w_in:.6f}"/>',
     ]
-    if arrow:
-        cells.append('<Cell N="EndArrow" V="4"/>')
     geom = (
         '<Section N="Geometry" IX="0">'
         f'<Row T="MoveTo" IX="1"><Cell N="X" V="{sx:.6f}"/><Cell N="Y" V="{sy:.6f}"/></Row>'
@@ -501,9 +550,21 @@ def build_page(diagram: dict, ppi: float) -> dict:
         line = color(st.get("strokeColor"), "#666666")
         lw = float(st.get("strokeWidth", 1)) / ppi
         arrow = st.get("endArrow", "block").lower() not in ("none", "")
-        shapes.append(
-            connector_xml(len(shapes) + 1, to_in(p1), to_in(p2), line, lw, arrow)
-        )
+        shapes.append(connector_xml(len(shapes) + 1, to_in(p1), to_in(p2), line, lw))
+        if arrow:
+            size = max(1.0, float(st.get("endSize", 7)))
+            shapes.append(
+                arrow_head_xml(
+                    len(shapes) + 1,
+                    p1,
+                    p2,
+                    ppi,
+                    page_h_px,
+                    line,
+                    size,
+                    size * 0.5,
+                )
+            )
         if e["label"].strip():
             t = e["t"]
             lx = p1[0] + (p2[0] - p1[0]) * t

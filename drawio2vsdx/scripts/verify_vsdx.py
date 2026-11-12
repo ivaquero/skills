@@ -19,6 +19,7 @@ import argparse
 import base64
 import collections
 import json
+import math
 import re
 import zipfile
 import zlib
@@ -53,19 +54,29 @@ def model_of(diagram: ET.Element) -> ET.Element:
     return ET.fromstring(unquote(data.decode("utf-8")))
 
 
-def source_stats(path: Path) -> tuple[collections.Counter, int, int]:
-    """从源 .drawio 直接数文本、形状数与页数，不依赖转换器的解析结果。"""
+def has_arrow(cell: ET.Element) -> bool:
+    """与转换器一致：endArrow 缺省视为 block（有箭头）。"""
+    st = dict(p.split("=", 1) for p in (cell.get("style") or "").split(";") if "=" in p)
+    return st.get("endArrow", "block").lower() not in ("none", "")
+
+
+def source_stats(path: Path) -> tuple[collections.Counter, int, int, int]:
+    """从源 .drawio 直接数文本、形状数、箭头数与页数，不依赖转换器。"""
     root = ET.parse(path).getroot()
     diagrams = root.findall("diagram") if root.tag == "mxfile" else [root]
     if not diagrams:
         raise ValueError("未找到 diagram")
     texts: collections.Counter = collections.Counter()
     n_shapes = 0
+    n_arrows = 0
     for diagram in diagrams:
         for cell in model_of(diagram).findall(".//mxCell"):
             value = cell.get("value") or ""
             if cell.get("edge") == "1":
                 n_shapes += 1
+                if has_arrow(cell):
+                    n_shapes += 1  # 每条带箭头的边另有一个 ArrowHead 形状
+                    n_arrows += 1
                 if value.strip():
                     texts[visio_text(value)] += 1
                     n_shapes += 1
@@ -73,7 +84,7 @@ def source_stats(path: Path) -> tuple[collections.Counter, int, int]:
                 n_shapes += 1
                 if value.strip():
                     texts[visio_text(value)] += 1
-    return texts, n_shapes, len(diagrams)
+    return texts, n_shapes, len(diagrams), n_arrows
 
 
 def shape_points(shape: ET.Element) -> list[tuple[float, float]]:
@@ -132,11 +143,74 @@ def check_geometry(root: ET.Element, rules: dict, label: str) -> list[str]:
     return errs
 
 
+def cells_of(shape: ET.Element) -> dict[str, str]:
+    return {
+        e.get("N", ""): e.get("V", "")
+        for e in shape.iter()
+        if localname(e.tag) == "Cell"
+    }
+
+
+def geometry_points(shape: ET.Element) -> list[tuple[float, float]]:
+    pts: list[tuple[float, float]] = []
+    for row in shape.iter():
+        if localname(row.tag) != "Row":
+            continue
+        cx = row.find('{*}Cell[@N="X"]')
+        cy = row.find('{*}Cell[@N="Y"]')
+        if cx is not None and cy is not None:
+            pts.append((float(cx.get("V", 0)), float(cy.get("V", 0))))
+    return pts
+
+
+def check_arrows(root: ET.Element, rules: dict, label: str) -> tuple[list[str], int]:
+    """箭头必须是 VSDX 里的几何三角形：数量、闭合、填充色、尖端对齐连线终点。"""
+    errs: list[str] = []
+    ar = rules["arrows"]
+    tol = ar["tip_tolerance_in"]
+    shapes = [s for s in root.iter() if localname(s.tag) == "Shape"]
+    connectors = [s for s in shapes if s.get("NameU") == "Connector"]
+    heads = [s for s in shapes if s.get("NameU") == "ArrowHead"]
+    line_colors = {cells_of(s).get("LineColor") for s in connectors}
+    ends: list[tuple[float, float]] = []
+    for s in connectors:
+        c = cells_of(s)
+        pts = geometry_points(s)
+        if len(pts) < 2:
+            errs.append(f"{label}: Connector {s.get('ID')} 几何点数不足")
+            continue
+        ox = float(c["PinX"]) - float(c["Width"]) / 2
+        oy = float(c["PinY"]) - float(c["Height"]) / 2
+        ends.append((ox + pts[-1][0], oy + pts[-1][1]))
+    for s in heads:
+        c = cells_of(s)
+        pts = geometry_points(s)
+        sid = s.get("ID")
+        if len(pts) != ar["points"] or pts[0] != pts[-1]:
+            errs.append(f"{label}: 箭头 {sid} 不是 {ar['points']} 点闭合三角")
+            continue
+        if c.get("FillPattern") != "1":
+            errs.append(
+                f"{label}: 箭头 {sid} 未填充（FillPattern={c.get('FillPattern')}）"
+            )
+        if c.get("FillForegnd") not in line_colors:
+            errs.append(f"{label}: 箭头 {sid} 填充色与连线不一致")
+        ox = float(c["PinX"]) - float(c["Width"]) / 2
+        oy = float(c["PinY"]) - float(c["Height"]) / 2
+        tip = (
+            ox + pts[0][0] * float(c["Width"]),
+            oy + pts[0][1] * float(c["Height"]),
+        )
+        if not any(math.hypot(tip[0] - e[0], tip[1] - e[1]) <= tol for e in ends):
+            errs.append(f"{label}: 箭头 {sid} 尖端未落在任何连线终点（方向可能反了）")
+    return errs, len(heads)
+
+
 def check_pair(drawio: Path, vsdx: Path, rules: dict) -> tuple[list[str], dict]:
     errs: list[str] = []
     label = vsdx.name
     try:
-        texts, n_shapes, n_pages = source_stats(drawio)
+        texts, n_shapes, n_pages, n_arrows = source_stats(drawio)
     except (ET.ParseError, ValueError) as exc:
         return [f"{label}: 源 drawio 解析失败 {exc}"], {}
 
@@ -157,6 +231,7 @@ def check_pair(drawio: Path, vsdx: Path, rules: dict) -> tuple[list[str], dict]:
             errs.append(f"{label}: 页数 {len(pages)} != {n_pages}")
         got: collections.Counter = collections.Counter()
         total = 0
+        n_heads = 0
         for part in pages:
             raw = z.read(part)
             for token in rules["compat"]["forbidden_bytes"]:
@@ -177,14 +252,24 @@ def check_pair(drawio: Path, vsdx: Path, rules: dict) -> tuple[list[str], dict]:
                 elif tag == "Text" and (el.text or "").strip():
                     got[el.text] += 1
             errs.extend(check_geometry(root, rules, label))
+            arrow_errs, heads = check_arrows(root, rules, label)
+            errs.extend(arrow_errs)
+            n_heads += heads
 
+    if n_heads != n_arrows:
+        errs.append(f"{label}: 箭头数 {n_heads} != 源中带箭头连线数 {n_arrows}")
     if got != texts:
         errs.append(
             f"{label}: 文本不符 缺{sum((texts - got).values())}/多{sum((got - texts).values())}"
         )
     if total != n_shapes:
         errs.append(f"{label}: 形状数 {total} != {n_shapes}")
-    return errs, {"shapes": total, "texts": sum(got.values()), "pages": len(pages)}
+    return errs, {
+        "shapes": total,
+        "texts": sum(got.values()),
+        "pages": len(pages),
+        "arrows": n_heads,
+    }
 
 
 def main() -> int:
@@ -206,15 +291,17 @@ def main() -> int:
     errs = [f"缺产物: {stem}.vsdx" for stem in sorted(set(draws) - set(vsdxx))]
     errs += [f"多余产物: {stem}.vsdx" for stem in sorted(set(vsdxx) - set(draws))]
 
-    n_shape = n_text = 0
+    n_shape = n_text = n_arrow = 0
     for stem in sorted(set(draws) & set(vsdxx)):
         e, stat = check_pair(draws[stem], vsdxx[stem], rules)
         errs.extend(e)
         n_shape += stat.get("shapes", 0)
         n_text += stat.get("texts", 0)
+        n_arrow += stat.get("arrows", 0)
 
     print(
-        f"配对 {len(set(draws) & set(vsdxx))} 组 | {n_shape} 形状 | {n_text} 文本 | 失败 {len(errs)} 项"
+        f"配对 {len(set(draws) & set(vsdxx))} 组 | {n_shape} 形状 | {n_text} 文本 | "
+        f"{n_arrow} 箭头 | 失败 {len(errs)} 项"
     )
     for e in errs[:20]:
         print("  - " + e)

@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import argparse
 import html
-import math
 import subprocess
 import xml.etree.ElementTree as ET
 import zipfile
@@ -99,22 +98,8 @@ def svg_of(vsdx: Path) -> tuple[str, float, float, int]:
             f'<path d="{d}" fill="{fill_v}" stroke="{line_v}" stroke-width="{max(lw, 0.6):.2f}" '
             'stroke-linejoin="round"/>'
         )
-        if "EndArrow" in c and not closed:
-            (ax, ay), (bx, by) = pts[-2], pts[-1]
-            dx, dy = bx - ax, by - ay
-            length = math.hypot(dx, dy) or 1.0
-            ux, uy = dx / length, dy / length
-            nx, ny = -uy, ux
-            tri = [
-                (bx, by),
-                (bx - ux * 8 + nx * 3.6, by - uy * 8 + ny * 3.6),
-                (bx - ux * 8 - nx * 3.6, by - uy * 8 - ny * 3.6),
-            ]
-            out.append(
-                '<polygon points="{}" fill="{}"/>'.format(
-                    " ".join("{:.2f},{:.2f}".format(*p) for p in tri), line
-                )
-            )
+        # 箭头是 VSDX 里的 ArrowHead 实心三角 Shape，此处不再补画：
+        # 预览必须只反映产物自身的几何，否则会掩盖「EndArrow 在 Visio 里不显示」。
         text = shape.find("{*}Text")
         if text is not None and (text.text or "").strip():
             fs = num("Size", 10 / 72.0) * PPI

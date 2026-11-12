@@ -1,6 +1,6 @@
 ---
 name: drawio2vsdx
-description: 把一批 draw.io .drawio 思维导图保真转换为 Visio .vsdx（纯 Python 生成 OPC 包，不依赖 Visio 安装），并做静态校验、反向渲染抽查与形状几何回归；含「vsdx 里某个形状不对」时的定位、修复与反向测试闭环。触发词：drawio 转 vsdx、drawio2vsdx、批量转 vsdx、思维导图转 Visio、vsdx 形状不对、document 节点形状不对、vsdx 校验、形状保真回归、vsdx 产物过期。
+description: 把一批 draw.io .drawio 思维导图保真转换为 Visio .vsdx（纯 Python 生成 OPC 包，不依赖 Visio 安装），并做静态校验、反向渲染抽查与形状几何回归；含「vsdx 里某个形状不对 / 箭头缺失」时的定位、修复与反向测试闭环。触发词：drawio 转 vsdx、drawio2vsdx、批量转 vsdx、思维导图转 Visio、vsdx 形状不对、document 节点形状不对、vsdx 缺少箭头、vsdx 箭头不显示、vsdx 校验、形状保真回归、vsdx 产物过期。
 agent_created: true
 ---
 
@@ -29,7 +29,7 @@ agent_created: true
 
 统计所有 `mxCell` 的 vertex / edge 数量、style 变体、特殊 shape、页面 `pageWidth/pageHeight`、坐标包围盒，并检查 HTML 文本、空节点、悬空边。据此定下形状映射表，不要边写边猜。
 
-**完成标准**：四类节点（直角矩形、胶囊、圆柱体、波浪底文档）与关系标签的数量、样式取值、页面尺寸已列成表。
+**完成标准**：四类节点（直角矩形、胶囊、圆柱体、波浪底文档）与关系标签的数量、样式取值、页面尺寸已列成表；连线的 `endArrow` / `endFill` / `endSize` 取值与带箭头边数已单独统计。
 
 ### 3 转换
 
@@ -49,7 +49,7 @@ python scripts/verify_vsdx.py --drawio-dir DIR --vsdx-dir DIR
 python scripts/selfcheck.py
 ```
 
-前者逐文件核对编号一一对应、ZIP CRC、必需部件、XML 可解析、文本多重集、形状数、样式兼容项，以及四类形状的几何不变量（含 `Document` 的下角基线与 S 形波）。后者校验技能包自身。`selfcheck.py` 用 `assets/minimal.drawio` 做真实往返，并故意压平 document 底边做反向测试，断言校验器能报错。
+前者逐文件核对编号一一对应、ZIP CRC、必需部件、XML 可解析、文本多重集、形状数、样式兼容项，以及四类形状的几何不变量（含 `Document` 的下角基线与 S 形波）；形状数按 `节点 + 2×带箭头连线 + 标签` 计算，并逐条检查箭头数量、闭合、填充色与尖端是否落在连线终点。后者校验技能包自身。`selfcheck.py` 用 `assets/minimal.drawio` 做真实往返，并故意压平 document 底边、删除全部箭头做两组反向测试，断言校验器能报错。
 
 **完成标准**：两条命令退出码均为 0，反向测试确实抓到被破坏的形状。
 
@@ -59,9 +59,9 @@ python scripts/selfcheck.py
 python scripts/vsdx_preview.py --in-dir DIR --out-html DIR/preview.html --png-dir DIR/png
 ```
 
-脚本从 `.vsdx` 读回 Shape / Geometry / Text 自绘 SVG；`--png-dir` 需要 `rsvg-convert`。目视抽查主干最多与最少的两张，看中心结构、箭头方向、四类形状、中文与关系标签。这是**数据一致性**验证，不是 Visio 自身排版。
+脚本从 `.vsdx` 读回 Shape / Geometry / Text 自绘 SVG；`--png-dir` 需要 `rsvg-convert`。目视抽查主干最多与最少的两张，看中心结构、箭头方向、四类形状、中文与关系标签。这是**数据一致性**验证，不是 Visio 自身排版。渲染器只画 `pageN.xml` 里真实存在的 Shape，**绝不能**按 `EndArrow` 之类的单元格标记自行补画三角形——那会造成「预览有箭头、Visio 里没有」的自绘自验假象。
 
-**完成标准**：无穿页连线、无形状拉伸、无文字溢出，四类形状可辨认。
+**完成标准**：无穿页连线、无形状拉伸、无文字溢出，四类形状可辨认；每条带箭头的连线末端都有可见实心三角，方向指向子节点。
 
 ### 6 「形状不对」时的回归闭环
 
@@ -85,7 +85,7 @@ python scripts/vsdx_preview.py --in-dir DIR --out-html DIR/preview.html --png-di
 
 ### 8 交付
 
-交付 `.vsdx`、预览页与转换脚本，说明命名规则、静态校验结果、以及尚未闭环的限制：Visio 自身打开是否实测、连线是静态线段（不含 glue，移动节点不跟随）、圆柱体/波浪底/胶囊为折线近似。本机没有 draw.io Desktop/CLI 时不要擅自安装。
+交付 `.vsdx`、预览页与转换脚本，说明命名规则、静态校验结果、以及尚未闭环的限制：Visio 自身打开是否实测、连线与箭头都是静态形状（不含 glue，移动节点不跟随）、圆柱体/波浪底/胶囊为折线近似。本机没有 draw.io Desktop/CLI 时不要擅自安装。
 
 **完成标准**：用户能直接复跑转换，并清楚哪些是已验证、哪些只是静态校验与反向渲染的结论。
 
@@ -97,6 +97,8 @@ python scripts/vsdx_preview.py --in-dir DIR --out-html DIR/preview.html --png-di
 - **颜色写 `#RRGGBB`**，中文显式 `AsianFont`，Shape 不写 `Master="-1"`，否则导出全黑、中文错位或整页被静默丢弃。
 - **连线几何要按 `dx/dy` 符号换算局部坐标**。固定 `(0,0)->(w,h)` 的骨架遇到向左或向下的边会把线画反。
 - **document 不是三团向下鼓包**。正确形态是顶/左/右三边平直、左右下角为直角、底边一条完整 S 形波（`cycles=1`，两端落回 `base=1-size/2`）；`1-cos` 多周期波形既改错波形又削掉下角。
+- **别只写 `EndArrow` 单元格**。自建 1-D `Connector` 无 Master、无 `BeginX/EndX`、无 `EndArrowSize` 时，Visio 不保证渲染该箭头（省略 `EndArrowSize` 取 0 = Very small，实测表现为「连线在、箭头没了」）。必须把箭头画成独立的填充三角 `ArrowHead`；规则见 `references/contract.md` 第 9 节。
+- **预览不许自行补画箭头**。早期 `vsdx_preview.py` 检测到 `EndArrow` 就画个三角形，等于自己给自己打分，把产物缺陷盖住；渲染器只能如实画产物里的 Shape。
 - **写底边断言排除闭合点**。取 `pts[2:-1]`；把 `(0,0)`（v=0）算进去会让每个 document 都误报「波浪越界」。
 - **判断产物过期要逐部件比 ZIP 内容**，不要比文件哈希，也不要只看 mtime。
 - **Visio COM 可能被安全策略拦截**。禁止实例化 COM 对象时，改用静态校验 + 反向渲染，并如实说明「Visio 自身打开未实测」，不要把自绘 SVG 说成 Visio 排版。

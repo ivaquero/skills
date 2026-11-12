@@ -62,7 +62,15 @@ def package_consistency(rules: dict, failures: list[str]) -> None:
     refs = set(re.findall(r"(?:scripts|references|assets)/[\w.-]+", skill))
     missing = sorted(r for r in refs if not (PKG / r).exists())
     check(not missing, f"SKILL.md 引用的包内文件都存在（缺 {missing}）", failures)
-    for field in ("schema", "ppi", "required_parts", "compat", "shapes", "document"):
+    for field in (
+        "schema",
+        "ppi",
+        "required_parts",
+        "compat",
+        "shapes",
+        "arrows",
+        "document",
+    ):
         check(field in rules, f"规则表含字段 {field}", failures)
 
 
@@ -88,6 +96,11 @@ def roundtrip(rules: dict, failures: list[str]) -> Path:
         all(p in names for p in rules["required_parts"]), "OPC 必需部件齐全", failures
     )
     check("示例案例\n第二行" in raw.decode("utf-8"), "<br> 已归一化为真换行", failures)
+    check(
+        b'NameU="ArrowHead"' in raw and b"EndArrow" not in raw,
+        "箭头是几何 ArrowHead，且未回退到 EndArrow 单元格",
+        failures,
+    )
     check(
         'V="9.375000"' in pages and 'V="5.208333"' in pages,
         "页面尺寸按 96 PPI 换算 (900x500 px)",
@@ -153,6 +166,41 @@ def negative_test(tmp: Path, failures: list[str]) -> None:
     )
     check(r.returncode != 0, "压平 document 底边后校验器报错（退出码非 0）", failures)
     check("不是 S 形波" in r.stdout, "报错定位到 document 几何规则", failures)
+
+    # 反向测试 2：删掉全部 ArrowHead，校验器必须报「箭头数不符」。
+    noarrow = tmp / "noarrow.vsdx"
+    shutil.copy2(tmp / "minimal.drawio", tmp / "noarrow.drawio")
+    with (
+        zipfile.ZipFile(good) as src,
+        zipfile.ZipFile(noarrow, "w", zipfile.ZIP_DEFLATED) as dst,
+    ):
+        for name in src.namelist():
+            data = src.read(name)
+            if name == "visio/pages/page1.xml":
+                root = ET.fromstring(data)
+                holders = [
+                    e for e in root.iter() if e.tag.rsplit("}", 1)[-1] == "Shapes"
+                ]
+                check(bool(holders), "page1.xml 含 Shapes 容器", failures)
+                for holder in holders:
+                    for shape in list(holder):
+                        if shape.get("NameU") == "ArrowHead":
+                            holder.remove(shape)
+                data = ET.tostring(root, encoding="utf-8")
+            dst.writestr(name, data)
+    isolated2 = tmp / "noarrow_dir"
+    isolated2.mkdir(exist_ok=True)
+    shutil.copy2(tmp / "noarrow.drawio", isolated2 / "noarrow.drawio")
+    shutil.copy2(noarrow, isolated2 / "noarrow.vsdx")
+    r = run(
+        "verify_vsdx.py",
+        "--drawio-dir",
+        str(isolated2),
+        "--vsdx-dir",
+        str(isolated2),
+    )
+    check(r.returncode != 0, "移除全部箭头后校验器报错（退出码非 0）", failures)
+    check("箭头数" in r.stdout, "报错定位到箭头数量规则", failures)
 
 
 def main() -> int:

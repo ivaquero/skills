@@ -31,6 +31,7 @@
 - 连线是静态 1-D `Connector`：`Pin` 取线段中点，`Width/Height` 取 `|dx|,|dy|`，
   Geometry 用**带符号的局部坐标**表达四个方向；不写 `BeginX/EndX` 等端点单元格，
   也不生成 glue / `Connects`，移动节点时连线不会自动跟随。
+- 箭头不是连线的属性，而是紧随连线生成的独立实心三角 `ArrowHead` 形状（见第 9 节）。
 
 ## 3 形状映射
 
@@ -44,6 +45,7 @@ X/Y 取 `[0,1]` 相对比例，`Y = 1 - v`（v 为左上原点的归一化纵坐
 | `Capsule` | `rounded=1` | 31 | 四角各 7 点圆弧折线近似 |
 | `Cylinder` | `shape=cylinder3` | 28 | 顶椭圆上半弧 + 侧线 + 底椭圆下半弧 |
 | `Document` | `shape=*document*` | 28 | 见第 5 节 |
+| `ArrowHead` | 边的 `endArrow!=none` | 4 | 归一化闭合实心三角，见第 9 节 |
 | `Connector` | 边 | 2 | 绝对局部坐标，不参与归一化几何断言 |
 
 刻意避开 `RelEllipticalArcTo`：该行的 A/B 若传英寸绝对值，Visio 会生成巨型弧面覆盖整页。
@@ -58,6 +60,7 @@ X/Y 取 `[0,1]` 相对比例，`Y = 1 - v`（v 为左上原点的归一化纵坐
 | Shape 上不写 `Master="-1"` | 会让 Visio 静默丢弃整页 |
 | 源文本 `<br>` 必须转成真换行 `\n` | 原样写入会印出字面量 `<br>` |
 | 不写 glue / `BeginX` 端点 | 静态线段由 Geometry 决定，写端点会被 Visio 重算错位 |
+| 不写 `EndArrow` 单元格 | 自建 1-D 形状无 Master / 端点 / `EndArrowSize` 时 Visio 不保证渲染，见第 9 节 |
 
 `visio_text()` 是唯一的文本归一化入口：比对源 `.drawio` 与产物文本多重集之前必须过它，
 否则含 `<br>` 的图会全部误报。
@@ -79,7 +82,10 @@ X/Y 取 `[0,1]` 相对比例，`Y = 1 - v`（v 为左上原点的归一化纵坐
 ## 6 反向渲染的边界
 
 `vsdx_preview.py` 从 `.vsdx` 读回 `Shape / Geometry / Text` 自绘 SVG，
-可验证坐标映射、四类形状、连线箭头与标签位置，**但它不是 Visio 自身排版**。
+可验证坐标映射、五类节点形状、几何箭头与标签位置，**但它不是 Visio 自身排版**。
+渲染器**不得**根据单元格标记自行补画箭头：早期的 `if "EndArrow" in c: 画三角形`
+会把「VSDX 里其实没有箭头」伪装成「预览里有箭头」，从而掩盖 Visio 端的真实缺失。
+预览只能画 `pageN.xml` 里真实存在的 Shape。
 `rsvg-convert` 只用于把 SVG 转 PNG 做目视抽查。
 Visio COM 在部分自动化通道会被安全策略拦截（禁止实例化 COM 对象），
 此时以静态校验 + 反向渲染为准，并如实告知用户「Visio 自身打开未实测」。
@@ -105,3 +111,30 @@ Visio COM 在部分自动化通道会被安全策略拦截（禁止实例化 COM
 
 规则码按各文件实际命中情况精确列出；`ruff format --check`、`ruff check` 与
 `ty check` 仍必须全绿，自检里的反向测试负责证明抑制没有掩盖真实缺陷。
+
+## 9 箭头硬约定（2026-11-12 修复）
+
+**结论：draw.io 的 `endArrow=block` 必须转换成 VSDX 里的几何形状，不能只写
+`<Cell N="EndArrow" V="4"/>`。**
+
+原因：转换器生成的 `Connector` 是自建 1-D 形状，没有 Master、没有
+`BeginX/EndX` 端点单元格、也没有 `EndArrowSize`。MS-VSDX 里 `EndArrow` 属于
+Line Format section（1–45 为箭头样式），`EndArrowSize` 省略时取 0 = Very small；
+在这种缺少默认样式继承的形状上，Visio 端实测表现为「连线在、箭头没了」。
+尺寸极小或完全不渲染都取决于版本，不能依赖。
+
+生成规则：
+
+- 每条 `endArrow != none` 的边额外产出**一个** `NameU="ArrowHead"` 的 Shape。
+- 三角形尖端 = 连线终点 `p2`，底边沿线段反向退 `endSize` 像素（默认 7），
+  半宽 `endSize/2`；三角形完全落在目标节点框外，不会被上层节点遮住。
+- 归一化 `RelMoveTo` + 3 条 `RelLineTo`（4 点、首尾重合闭合），
+  `FillPattern=1`、`FillForegnd=连线 LineColor`、`LineWeight=0`。
+- 形状数因此是 `节点 + 2×带箭头连线 + 标签`；校验器按此计数。
+
+机器判据（`shape-rules.json` 的 `arrows` 段 + `verify_vsdx.py`）：
+箭头数必须等于源里带箭头边数；每个箭头 4 点闭合且已填充；
+尖端与同页某条 `Connector` 的终点距离 ≤ 0.002 in（防方向画反）；
+填充色必须等于某条连线的线色；`compat.forbidden_bytes` 含 `EndArrow`，
+防止后来者改回单元格写法。`selfcheck.py` 会删除全部 `ArrowHead`
+并断言校验器报「箭头数」错误。

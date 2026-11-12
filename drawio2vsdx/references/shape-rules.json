@@ -1,7 +1,7 @@
 {
-  "schema": 1,
+  "schema": 2,
   "ppi": 96,
-  "note": "VSDX 形状几何与兼容项的外部基线。改 drawio2vsdx.py 的几何函数后必须同步本表，并让 selfcheck.py 的反向测试仍然能抓到改动。",
+  "note": "VSDX 形状几何与兼容项的外部基线。改 drawio2vsdx.py 的几何函数后必须同步本表，并让 selfcheck.py 的反向测试仍然能抓到改动。schema=2 起把箭头固化为几何 Shape，禁止回退到 EndArrow 单元格。",
   "required_parts": [
     "[Content_Types].xml",
     "_rels/.rels",
@@ -11,7 +11,7 @@
     "visio/pages/_rels/pages.xml.rels"
   ],
   "compat": {
-    "forbidden_bytes": ["RGB(", "Master=\"-1\""],
+    "forbidden_bytes": ["RGB(", "Master=\"-1\"", "EndArrow"],
     "required_bytes": ["AsianFont"]
   },
   "shapes": {
@@ -19,7 +19,14 @@
     "Label": {"points": 5, "v_min": 0.0, "v_max": 1.0},
     "Capsule": {"points": 31, "v_min": 0.0, "v_max": 1.0},
     "Cylinder": {"points": 28, "v_min": 0.0, "v_max": 1.0},
-    "Document": {"points": 28, "v_min": 0.0, "v_max": 1.0}
+    "Document": {"points": 28, "v_min": 0.0, "v_max": 1.0},
+    "ArrowHead": {"points": 4, "v_min": 0.0, "v_max": 1.0}
+  },
+  "arrows": {
+    "required_per_edge": true,
+    "points": 4,
+    "tip_tolerance_in": 0.002,
+    "note": "每条 endArrow!=none 的边必须产出一个 NameU=ArrowHead 的填充闭合三角。尖端=poly[0]，须与同页某条 Connector 的终点重合（容差 0.002 in）；FillPattern=1，FillForegnd 等于连线 LineColor。禁止写 EndArrow 单元格：自建 1-D 形状无 Master/BeginX/EndX/EndArrowSize 时 Visio 不保证渲染它。"
   },
   "document": {
     "baseline": 0.92,
