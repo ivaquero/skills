@@ -212,5 +212,10 @@ $ <bellman>
 | `@preview/algo:0.3.6`     | 伪代码    | `algo`、`comment`、`d`、`i` |
 | `@preview/pinit:0.2.2`    | 元素标注  | `pin`、`pinit-point-from`   |
 | `@preview/keyle:0.4.0`    | 键位      | `kbd`                       |
+| `@preview/phonokit:0.8.0` | 语音图表  | `phonokit-init`、`consonants`、`vowels`、`sound-shift`、`vot` |
+
+`phonokit` 的 `vowels()` 有两处硬缺陷——`/ʌ/`–`/ɔ/`、`/ɑ/`–`/ɒ/` 同点异圆唇会被画成一个黑点，
+且不认长音 `ː`——所以元音舌位图要自绘。四张图（辅音表 / 元音舌位 / 声变 / VOT）各用哪个函数、
+必须绕开的坑，见 `phonokit.md`。
 
 `lib/ml.typ` 另有（按需单独 import）：`lilaq`、`suiji`、`tiptoe`、`cetz`、`cetz-venn`、`fletcher`。
