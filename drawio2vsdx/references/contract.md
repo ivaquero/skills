@@ -86,7 +86,9 @@ X/Y 取 `[0,1]` 相对比例，`Y = 1 - v`（v 为左上原点的归一化纵坐
 渲染器**不得**根据单元格标记自行补画箭头：早期的 `if "EndArrow" in c: 画三角形`
 会把「VSDX 里其实没有箭头」伪装成「预览里有箭头」，从而掩盖 Visio 端的真实缺失。
 预览只能画 `pageN.xml` 里真实存在的 Shape。
-`rsvg-convert` 只用于把 SVG 转 PNG 做目视抽查。
+SVG -> PNG 只是目视抽查手段：`svg_to_png()` 优先 `rsvg-convert`，缺失时回退
+ImageMagick `magick`（由 `shutil.which` 探测，不假定某台机器一定装了哪个）。
+两者都缺失时跳过 PNG 并给出提示，**不抛异常**——HTML 预览必须仍能生成。
 Visio COM 在部分自动化通道会被安全策略拦截（禁止实例化 COM 对象），
 此时以静态校验 + 反向渲染为准，并如实告知用户「Visio 自身打开未实测」。
 

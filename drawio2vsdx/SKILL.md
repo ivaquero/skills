@@ -59,7 +59,7 @@ python scripts/selfcheck.py
 python scripts/vsdx_preview.py --in-dir DIR --out-html DIR/preview.html --png-dir DIR/png
 ```
 
-脚本从 `.vsdx` 读回 Shape / Geometry / Text 自绘 SVG；`--png-dir` 需要 `rsvg-convert`。目视抽查主干最多与最少的两张，看中心结构、箭头方向、四类形状、中文与关系标签。这是**数据一致性**验证，不是 Visio 自身排版。渲染器只画 `pageN.xml` 里真实存在的 Shape，**绝不能**按 `EndArrow` 之类的单元格标记自行补画三角形——那会造成「预览有箭头、Visio 里没有」的自绘自验假象。
+脚本从 `.vsdx` 读回 Shape / Geometry / Text 自绘 SVG；`--png-dir` 优先用 `rsvg-convert`，缺失时自动回退 ImageMagick `magick`（由 `shutil.which` 探测），两者都没装则跳过 PNG 但仍生成 HTML 预览——不要假定本机一定装了某个渲染器。目视抽查主干最多与最少的两张，看中心结构、箭头方向、四类形状、中文与关系标签。这是**数据一致性**验证，不是 Visio 自身排版。渲染器只画 `pageN.xml` 里真实存在的 Shape，**绝不能**按 `EndArrow` 之类的单元格标记自行补画三角形——那会造成「预览有箭头、Visio 里没有」的自绘自验假象。
 
 **完成标准**：无穿页连线、无形状拉伸、无文字溢出，四类形状可辨认；每条带箭头的连线末端都有可见实心三角，方向指向子节点。
 

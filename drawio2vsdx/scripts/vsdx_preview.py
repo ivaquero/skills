@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# ruff: noqa: B023, PLW1510, S314, S607, UP031
+# ruff: noqa: B023, PLW1510, S314, UP031
 # 门控内联抑制（skill-draft 约定）：解析对象是本包自己生成的本地 .drawio/.vsdx，
 # 不是不可信网络输入；包内只用标准库、不能安装 defusedxml，故 S314 不适用。
 # 以下规则按各文件实际命中情况精确列出；逐项改写会引入行为漂移。
@@ -13,7 +13,7 @@
 用法
 ----
     python vsdx_preview.py                                  # 全部 .vsdx -> HTML
-    python vsdx_preview.py --png-dir DIR                    # 额外导出 PNG（需 rsvg-convert）
+    python vsdx_preview.py --png-dir DIR                    # 额外导出 PNG（rsvg-convert 或 magick）
     python vsdx_preview.py --only 09-KNN与SVM 16-2-DNN推理
 """
 
@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import shutil
 import subprocess
 import xml.etree.ElementTree as ET
 import zipfile
@@ -31,7 +32,7 @@ L = lambda tag: tag.rsplit("}", 1)[-1]  # noqa: E731
 
 
 def cells_of(shape: ET.Element) -> dict[str, str]:
-    return {e.get("N"): e.get("V") for e in shape.iter() if L(e.tag) == "Cell"}  # ty: ignore[invalid-return-type]
+    return {e.get("N"): e.get("V") for e in shape.iter() if L(e.tag) == "Cell"}  # ty: ignore[invalid-explicit-return]
 
 
 def svg_of(vsdx: Path) -> tuple[str, float, float, int]:
@@ -113,21 +114,43 @@ def svg_of(vsdx: Path) -> tuple[str, float, float, int]:
                     f'dy=".35em">{html.escape(lines[0])}</text>'
                 )
             else:
-                # Visio 里换行是真实的多行，这里按行拆成 tspan，预览才与 Visio 一致。
-                spans = []
+                # 每行独立 <text> 绝对定位：tspan 的 dy 是累加偏移，各渲染器解释不一致，
+                # 且 1.25em 行距对中文太挤；这里统一 1.4em，避免两行糊成一团。
                 for i, line in enumerate(lines):
-                    offset = (i - (len(lines) - 1) / 2) * fs * 1.25 + fs * 0.35
-                    spans.append(
-                        f'<tspan x="{cx:.2f}" dy="{offset:.2f}">{html.escape(line)}</tspan>'
+                    y = cy + (i - (len(lines) - 1) / 2) * fs * 1.4
+                    out.append(
+                        f'<text x="{cx:.2f}" y="{y:.2f}" font-size="{fs:.2f}" fill="{color}" '
+                        'text-anchor="middle" font-family="Microsoft YaHei, sans-serif" '
+                        f'dy=".35em">{html.escape(line)}</text>'
                     )
-                out.append(
-                    '<text y="{:.2f}" font-size="{:.2f}" fill="{}" text-anchor="middle" '
-                    'font-family="Microsoft YaHei, sans-serif">{}</text>'.format(
-                        cy, fs, color, "".join(spans)
-                    )
-                )
     out.append("</svg>")
     return "\n".join(out), w_px, h_px, count
+
+
+def svg_to_png(svg_path: Path, png_path: Path) -> tuple[bool, str]:
+    """SVG -> PNG：优先 rsvg-convert，缺失时回退 ImageMagick magick。
+
+    两者都没有时返回 False 而不是抛 FileNotFoundError——HTML 预览仍要正常生成。
+    """
+    cmd: list[str] | None = None
+    renderer = shutil.which("rsvg-convert")
+    if renderer:
+        cmd = [renderer, "-o", str(png_path), str(svg_path)]
+    else:
+        renderer = shutil.which("magick")
+        if renderer:
+            cmd = [renderer, str(svg_path), str(png_path)]
+    if cmd is None:
+        return False, "未找到 rsvg-convert / magick，跳过 PNG"
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+    except OSError as exc:
+        return False, f"渲染器调用失败：{exc}"
+    if result.returncode != 0 or not png_path.exists():
+        return False, (result.stderr or result.stdout or "渲染器返回码非 0").strip()[
+            :160
+        ]
+    return True, ""
 
 
 def main() -> int:
@@ -136,7 +159,9 @@ def main() -> int:
     ap.add_argument(
         "--out-html", default=None, help="默认 <in-dir>/.workbuddy/vsdx-preview.html"
     )
-    ap.add_argument("--png-dir", default=None, help="可选：用 rsvg-convert 导出 PNG")
+    ap.add_argument(
+        "--png-dir", default=None, help="可选：用 rsvg-convert / magick 导出 PNG"
+    )
     ap.add_argument("--only", nargs="*", default=None)
     args = ap.parse_args()
 
@@ -157,6 +182,7 @@ def main() -> int:
         png_dir.mkdir(parents=True, exist_ok=True)
 
     cards, png_ok = [], 0
+    png_note = ""
     for f in files:
         svg, w, h, n = svg_of(f)
         cards.append(
@@ -167,13 +193,11 @@ def main() -> int:
         if png_dir:
             tmp = png_dir / (f.stem + ".svg")
             tmp.write_text(svg, encoding="utf-8")
-            r = subprocess.run(
-                ["rsvg-convert", "-o", str(png_dir / (f.stem + ".png")), str(tmp)],
-                capture_output=True,
-                text=True,
-            )
-            if r.returncode == 0:
+            ok, note = svg_to_png(tmp, png_dir / (f.stem + ".png"))
+            if ok:
                 png_ok += 1
+            elif note:
+                png_note = note
     out_html.parent.mkdir(parents=True, exist_ok=True)
     out_html.write_text(
         '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">'
@@ -196,6 +220,8 @@ def main() -> int:
     print("预览：%d 张 -> %s" % (len(files), out_html))
     if png_dir:
         print("PNG：%d/%d 张 -> %s" % (png_ok, len(files), png_dir))
+        if png_note:
+            print("提示：%s" % png_note)
     return 0
 
 
