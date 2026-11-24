@@ -180,6 +180,7 @@ class Edge:
     dst: str
     label: str
     pos: float | None = None
+    points: list[tuple[float, float]] = field(default_factory=list)
 
 
 def tidy(text: str) -> str:
@@ -415,10 +416,17 @@ class Diagram:
             for v in self.verts
         )
         for i, e in enumerate(self.edges, start=1):
+            pts_xml = ""
+            if e.points:
+                inner = "".join(
+                    f'<mxPoint x="{round(px)}" y="{round(py)}"/>'
+                    for px, py in e.points
+                )
+                pts_xml = f'<Array as="points">{inner}</Array>'
             geom = (
-                f'<mxGeometry x="{e.pos}" relative="1" as="geometry"/>'
+                f'<mxGeometry x="{e.pos}" relative="1" as="geometry">{pts_xml}</mxGeometry>'
                 if e.pos is not None
-                else '<mxGeometry relative="1" as="geometry"/>'
+                else f'<mxGeometry relative="1" as="geometry">{pts_xml}</mxGeometry>'
             )
             parts.append(
                 f'<mxCell id="e{i}" value="{esc(e.label)}" style="{EDGE_STYLE}" edge="1" '
@@ -445,6 +453,7 @@ def build_diagram(
         for zone in zones:
             extra[zone] += SPOKE_SHIFT
         d = _build_once(title, branches, labels, prereq, extra)
+    route_forks(d)
     return d
 
 
@@ -602,6 +611,116 @@ def crossed_zones(d: Diagram) -> set[str]:
                 bad.add(zone)
                 break
     return bad
+
+
+def border_point(v: Vertex, tx: float, ty: float) -> tuple[float, float]:
+    """中心连线与节点矩形边界的交点（与 draw.io 浮动端点的求交规则一致）。"""
+    dx, dy = tx - v.cx, ty - v.cy
+    if dx == 0 and dy == 0:
+        return v.cx, v.cy
+    sx = (v.w / 2) / abs(dx) if dx else float("inf")
+    sy = (v.h / 2) / abs(dy) if dy else float("inf")
+    s = min(sx, sy)
+    return v.cx + dx * s, v.cy + dy * s
+
+
+def _simplify(
+    pts: list[tuple[float, float]],
+    e: tuple[float, float],
+    n: tuple[float, float],
+) -> list[tuple[float, float]]:
+    """去掉重复折点与落在相邻段延长线上的折点；全共线时退化为直线（空表）。"""
+    out: list[tuple[float, float]] = []
+    for p in pts:
+        if not out or abs(p[0] - out[-1][0]) > 0.5 or abs(p[1] - out[-1][1]) > 0.5:
+            out.append(p)
+    seq = [e, *out, n]
+    keep: list[tuple[float, float]] = []
+    for i, p in enumerate(out, start=1):
+        a, b = seq[i - 1], seq[i + 1]
+        crossv = (p[0] - a[0]) * (b[1] - a[1]) - (p[1] - a[1]) * (b[0] - a[0])
+        if abs(crossv) > 0.5:
+            keep.append(p)
+    return keep
+
+
+def _route_hits(
+    src: Vertex, dst: Vertex, verts: list[Vertex], pts: list[tuple[float, float]]
+) -> int:
+    """折线路径（出入口按首末段方向贴边求交）穿过无关节点框的节点数。"""
+    if pts:
+        e = border_point(src, pts[0][0], pts[0][1])
+        n = border_point(dst, pts[-1][0], pts[-1][1])
+    else:
+        e = border_point(src, dst.cx, dst.cy)
+        n = border_point(dst, src.cx, src.cy)
+    seq = [e, *pts, n]
+    hits = 0
+    for v in verts:
+        if v.id in (src.id, dst.id):
+            continue
+        if any(
+            seg_hits_box(a, b, (v.x, v.y, v.w, v.h))
+            for a, b in zip(seq[:-1], seq[1:])
+        ):
+            hits += 1
+    return hits
+
+
+def route_forks(d: Diagram) -> None:
+    """给分叉连线（同一父节点 ≥2 条出边）排直角折线，直连保持直线。
+
+    候选按中心连线的主导轴排序：Z 形（中轴走廊扫掠）优先，L 形（单折点）
+    兜底；所有折线候选都比直线更脏时退回直线。折点只存内部拐点，出入口由
+    draw.io 按「中心 → 首末折点」方向贴边求交，与 border_point 保持一致。
+    """
+    by_id = {v.id: v for v in d.verts}
+    out_cnt: dict[str, int] = {}
+    for e in d.edges:
+        out_cnt[e.src] = out_cnt.get(e.src, 0) + 1
+    for e in d.edges:
+        src, dst = by_id.get(e.src), by_id.get(e.dst)
+        if src is None or dst is None or out_cnt.get(e.src, 0) < 2:
+            continue
+        dx, dy = dst.cx - src.cx, dst.cy - src.cy
+        horiz = abs(dx) >= abs(dy)
+        cands: list[list[tuple[float, float]]] = []
+        if horiz:
+            ex = src.cx + src.w / 2 * (1 if dx > 0 else -1)
+            ny = dst.cy
+            nx = dst.cx + dst.w / 2 * (-1 if dx > 0 else 1)
+            lo, hi = sorted((ex, nx))
+            for t in (0.5, 0.65, 0.35, 0.8, 0.2, 0.9, 0.1):
+                mx = lo + (hi - lo) * t
+                cands.append([(mx, src.cy), (mx, ny)])
+            # L 形入口走孩子的上/下边，折点横向必须在孩子框的 y 跨度之外。
+            if not dst.y - 3 <= src.cy <= dst.y + dst.h + 3:
+                cands.append([(dst.cx, src.cy)])
+        else:
+            ey = src.cy + src.h / 2 * (1 if dy > 0 else -1)
+            nx2 = dst.cx
+            ny2 = dst.cy + dst.h / 2 * (-1 if dy > 0 else 1)
+            lo, hi = sorted((ey, ny2))
+            for t in (0.5, 0.65, 0.35, 0.8, 0.2, 0.9, 0.1):
+                my = lo + (hi - lo) * t
+                cands.append([(src.cx, my), (nx2, my)])
+            if not dst.x - 3 <= src.cx <= dst.x + dst.w + 3:
+                cands.append([(src.cx, dst.cy)])
+        base = _route_hits(src, dst, d.verts, [])
+        best: list[tuple[float, float]] | None = None
+        best_hits = -1
+        for pts in cands:
+            e_p = border_point(src, pts[0][0], pts[0][1])
+            n_p = border_point(dst, pts[-1][0], pts[-1][1])
+            sp = _simplify(pts, e_p, n_p)
+            h = _route_hits(src, dst, d.verts, sp)
+            if h == 0:
+                best, best_hits = sp, 0
+                break
+            if best is None or h < best_hits:
+                best, best_hits = sp, h
+        if best and (best_hits == 0 or best_hits < base):
+            e.points = best
 
 
 def footprint(kind: str, horizontal: bool) -> float:

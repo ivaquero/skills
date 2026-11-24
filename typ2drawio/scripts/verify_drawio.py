@@ -68,21 +68,72 @@ def vertices_of(
     return out
 
 
-def crosses(
-    box_a: tuple[float, ...], box_b: tuple[float, ...], box: tuple[float, ...]
+def border_point(
+    box: tuple[float, ...], tx: float, ty: float
+) -> tuple[float, float]:
+    """中心连线与节点矩形边界的交点（与生成器 border_point 同一算法）。"""
+    cx, cy = box[0] + box[2] / 2, box[1] + box[3] / 2
+    dx, dy = tx - cx, ty - cy
+    if dx == 0 and dy == 0:
+        return cx, cy
+    sx = (box[2] / 2) / abs(dx) if dx else float("inf")
+    sy = (box[3] / 2) / abs(dy) if dy else float("inf")
+    s = min(sx, sy)
+    return cx + dx * s, cy + dy * s
+
+
+def seg_hits(
+    a: tuple[float, float],
+    b: tuple[float, float],
+    box: tuple[float, ...],
+    margin: float = 3,
 ) -> bool:
-    """两条中心连线是否穿过 box 内部；按比例采样，够判重叠，不引入依赖。"""
-    ax, ay = box_a[0] + box_a[2] / 2, box_a[1] + box_a[3] / 2
-    bx, by = box_b[0] + box_b[2] / 2, box_b[1] + box_b[3] / 2
-    for step in range(1, 200):
-        t = step / 200
-        x, y = ax + (bx - ax) * t, ay + (by - ay) * t
-        if (
-            box[0] + 3 < x < box[0] + box[2] - 3
-            and box[1] + 3 < y < box[1] + box[3] - 3
-        ):
-            return True
-    return False
+    """线段是否穿过矩形内部（Liang–Barsky 裁剪），贴边 margin 内忽略。"""
+    left, top = box[0] + margin, box[1] + margin
+    right, bottom = box[0] + box[2] - margin, box[1] + box[3] - margin
+    if right <= left or bottom <= top:
+        return False
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    t0, t1 = 0.0, 1.0
+    for p, q in (
+        (-dx, a[0] - left),
+        (dx, right - a[0]),
+        (-dy, a[1] - top),
+        (dy, bottom - a[1]),
+    ):
+        if p == 0:
+            if q < 0:
+                return False
+            continue
+        r = q / p
+        if p < 0:
+            if r > t1:
+                return False
+            t0 = max(t0, r)
+        else:
+            if r < t0:
+                return False
+            t1 = min(t1, r)
+    return t0 < t1
+
+
+def edge_path(
+    src: tuple[float, ...], dst: tuple[float, ...], geom: ET.Element | None
+) -> list[tuple[float, float]]:
+    """连线实际路径：贴边出入口 + 存储折点；无折点时走中心连线。"""
+    arr = geom.find("Array") if geom is not None else None
+    pts = (
+        [(float(p.get("x")), float(p.get("y"))) for p in arr]
+        if arr is not None
+        else []
+    )
+    if pts:
+        e = border_point(src, pts[0][0], pts[0][1])
+        n = border_point(dst, pts[-1][0], pts[-1][1])
+    else:
+        e = border_point(src, dst[0] + dst[2] / 2, dst[1] + dst[3] / 2)
+        n = border_point(dst, src[0] + src[2] / 2, src[1] + src[3] / 2)
+    return [e, *pts, n]
 
 
 OUTWARD_LABELS = ("内容包含", "支持")
@@ -100,11 +151,12 @@ def check_edges(cells: list[ET.Element], edges: list[ET.Element]) -> list[str]:
         )
         if src is None or dst is None:
             continue
+        path = edge_path(src, dst, edge.find("mxGeometry"))
         hit = [
             vid
             for vid, box in verts.items()
             if vid not in (edge.get("source"), edge.get("target"))
-            and crosses(src, dst, box)
+            and any(seg_hits(a, b, box) for a, b in zip(path[:-1], path[1:]))
         ]
         if hit:
             problems.append(f"连线 {edge.get('id')} 穿过节点 {hit[0]} 等 {len(hit)} 个")
@@ -112,8 +164,21 @@ def check_edges(cells: list[ET.Element], edges: list[ET.Element]) -> list[str]:
         if label:
             geom = edge.find("mxGeometry")
             pos = float(geom.get("x", "0.5")) if geom is not None else 0.5
-            lx = src[0] + src[2] / 2 + (dst[0] + dst[2] / 2 - src[0] - src[2] / 2) * pos
-            ly = src[1] + src[3] / 2 + (dst[1] + dst[3] / 2 - src[1] - src[3] / 2) * pos
+            # 标签沿折线按弧长取比例，与 draw.io 的相对定位一致。
+            segs = list(zip(path[:-1], path[1:]))
+            total = sum(
+                ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5 for a, b in segs
+            )
+            lx, ly = path[0]
+            if total > 0:
+                walked, target = 0.0, total * pos
+                for a, b in segs:
+                    seg_len = ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
+                    if walked + seg_len >= target or (a, b) == segs[-1]:
+                        t = (target - walked) / seg_len if seg_len else 0.0
+                        lx, ly = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
+                        break
+                    walked += seg_len
             half_w, half_h = (len(label) * 9 + 8) / 2, 6
             buried = [
                 vid
