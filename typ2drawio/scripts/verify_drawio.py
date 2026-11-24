@@ -71,7 +71,7 @@ def vertices_of(
 def border_point(
     box: tuple[float, ...], tx: float, ty: float
 ) -> tuple[float, float]:
-    """中心连线与节点矩形边界的交点（与生成器 border_point 同一算法）。"""
+    """中心连线与节点矩形边界的交点（与 draw.io 浮动端点的求交规则一致）。"""
     cx, cy = box[0] + box[2] / 2, box[1] + box[3] / 2
     dx, dy = tx - cx, ty - cy
     if dx == 0 and dy == 0:
