@@ -49,10 +49,10 @@ D1V = ROOT_H / 2 + GAP_ROOT + BRANCH_H / 2
 D2V = D1V + BRANCH_H / 2 + GAP_BRANCH + KID_H / 2
 D3V = D2V + KID_H / 2 + GAP_DOC + DOC_H / 2
 
-FILL, STROKE, INK = "#F0F0F0", "#B1B1B1", "#000000"
+FILL, STROKE, INK = "#FFFFFF", "#000000", "#000000"
 CASE_FILL, CASE_STROKE = "#FFFFFF", "#BFA9C8"
 API_FILL, API_STROKE = "#DAE8FC", "#6C8EBF"
-RED, BLUE, LABEL = "#FF0000", "#0000FF", "#333333"
+RED, LABEL = "#FF0000", "#333333"
 GREEN = "#008000"
 
 BASE = (
@@ -61,13 +61,13 @@ BASE = (
 )
 BOX = f"fillColor={FILL};strokeColor={STROKE};"
 RECT = f"{BASE}{BOX}rounded=0;"
+CAPSULE = f"{BASE}{BOX}rounded=1;arcSize=50;"
 STYLES = {
-    "root": f"{RECT}fontColor={INK};fontSize=14;",
-    "branch": f"{RECT}fontColor={INK};fontSize=12;",
+    "root": f"{CAPSULE}fontColor={INK};fontSize=14;",
+    "branch": f"{RECT}fontColor={RED};fontSize=12;",
     "branch_red": f"{RECT}fontColor={RED};fontSize=12;",
-    "branch_blue": f"{RECT}fontColor={BLUE};fontSize=12;",
     "kid": f"{RECT}fontColor={INK};fontSize=10;",
-    "pill": f"{BASE}{BOX}rounded=1;arcSize=50;fontColor={INK};fontSize=10;",
+    "pill": f"{CAPSULE}fontColor={INK};fontSize=10;",
     "api": (
         f"{BASE}rounded=0;fillColor={API_FILL};strokeColor={API_STROKE};"
         f"fontColor={INK};fontSize=10;"
@@ -84,7 +84,7 @@ STYLES = {
     "pre": f"{RECT}fontColor={GREEN};fontSize=10;",
 }
 EDGE_STYLE = (
-    "edgeStyle=noneExpr;rounded=0;html=1;strokeColor=#666666;strokeWidth=1;"
+    "edgeStyle=noneExpr;rounded=0;html=1;strokeColor=#000000;strokeWidth=1;"
     "endArrow=block;endFill=1;endSize=7;startArrow=none;"
     f"fontSize=9;fontColor={LABEL};labelBackgroundColor=#FFFFFF;"
 )
@@ -93,7 +93,6 @@ EDGE_STYLE = (
 ZONES = ("R", "L", "T", "B")
 # 前置知识节点放在空缺最多的一向，同数时优先正下方，其次正上方。
 PRE_ORDER = ("B", "T", "L", "R")
-BLUE_BRANCH = re.compile(r"识别|检测|应用|实战|实践|搜图|部署")
 PILL_KID = re.compile(r"(方法|规范|流程|步骤|技巧|策略|准则|操作)$")
 API_KID = re.compile(r"^(cv2?\.|np\.|dlib\.|sklearn\.|torch\.)|OpenCV|NumPy|scikit")
 
@@ -642,7 +641,7 @@ def place_item(
     if kind == "cyl":
         cx, cy = first_ring(zone, lat, CYL_W, CYL_H, extra)
         ids.append(d.vertex("cyl", str(payload), cx, cy, CYL_W, CYL_H))
-        d.edge(root, ids[0], "包含", 0.62)
+        d.edge(root, ids[0], "内容包含", 0.62)
         return ids
     if kind == "pre":
         cx, cy = first_ring(zone, lat, PRE_W, PRE_H, extra)
@@ -654,9 +653,8 @@ def place_item(
     branch = payload
     assert isinstance(branch, Branch)
     bx, by = first_ring(zone, lat, BRANCH_W, BRANCH_H, extra)
-    accent = "red" if index == 0 else ("blue" if BLUE_BRANCH.search(branch.l1) else "")
     bid = d.vertex(
-        f"branch_{accent}" if accent else "branch",
+        "branch_red",
         branch.l1,
         bx,
         by,
@@ -673,7 +671,7 @@ def place_item(
         kvid = d.vertex(kid_kind(kid), kid, kx, ky, KID_W, KID_H)
         kid_ids.append((kvid, off))
         ids.append(kvid)
-        d.edge(bid, kvid, "包含", 0.58)
+        d.edge(bid, kvid, "内容包含", 0.58)
 
     if not branch.ex:
         return ids
@@ -753,7 +751,6 @@ SVG_FONT = {
     "root": 14,
     "branch": 12,
     "branch_red": 12,
-    "branch_blue": 12,
     "kid": 10,
     "pill": 10,
     "api": 10,
@@ -761,7 +758,7 @@ SVG_FONT = {
     "cyl": 11,
     "pre": 10,
 }
-SVG_SHAPE = {"doc": "document", "cyl": "cylinder", "pill": "pill"}
+SVG_SHAPE = {"doc": "document", "cyl": "cylinder", "pill": "pill", "root": "pill"}
 
 
 def svg_paint(kind: str) -> tuple[str, str, str]:
@@ -771,8 +768,6 @@ def svg_paint(kind: str) -> tuple[str, str, str]:
         return CASE_FILL, CASE_STROKE, INK
     if kind == "branch_red":
         return FILL, STROKE, RED
-    if kind == "branch_blue":
-        return FILL, STROKE, BLUE
     if kind == "pre":
         return FILL, STROKE, GREEN
     return FILL, STROKE, INK
@@ -787,7 +782,7 @@ def render_svg(d: Diagram) -> str:
         f'<rect width="{d.page_w}" height="{d.page_h}" fill="#FFFFFF"/>',
         (
             '<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" '
-            'markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#666666"/>'
+            'markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#000000"/>'
             "</marker></defs>"
         ),
     ]
@@ -798,7 +793,7 @@ def render_svg(d: Diagram) -> str:
             continue
         out.append(
             f'<line x1="{a.cx}" y1="{a.cy}" x2="{b.cx}" y2="{b.cy}" '
-            f'stroke="#666666" stroke-width="1" marker-end="url(#ar)"/>'
+            f'stroke="#000000" stroke-width="1" marker-end="url(#ar)"/>'
         )
         if e.label:
             t = 0.5 if e.pos is None else e.pos

@@ -39,20 +39,17 @@
     "endFill=1",
     "startArrow=none",
     "labelBackgroundColor=#FFFFFF",
-    "strokeColor=#666666",
-    "fillColor=#F0F0F0",
-    "strokeColor=#B1B1B1",
+    "strokeColor=#000000",
+    "fillColor=#FFFFFF",
     "shape=mxgraph.flowchart.document",
     "shape=cylinder3",
     "arcSize=50",
     "fillColor=#DAE8FC",
     "fontColor=#FF0000",
-    "fontColor=#0000FF",
     "x=\"0.62\" relative=\"1\""
   ],
   "required_relations": [
     "内容包含",
-    "包含",
     "支持"
   ],
   "min_vertices": 15,

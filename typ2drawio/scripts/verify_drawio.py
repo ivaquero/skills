@@ -85,7 +85,7 @@ def crosses(
     return False
 
 
-OUTWARD_LABELS = ("包含", "内容包含", "支持")
+OUTWARD_LABELS = ("内容包含", "支持")
 
 
 def check_edges(cells: list[ET.Element], edges: list[ET.Element]) -> list[str]:
