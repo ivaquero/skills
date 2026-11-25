@@ -42,8 +42,8 @@ ls "$env:APPDATA/typst/packages/preview"    # 已发布版
 // 三线表：data 是由「行」组成的数组（csv() 的返回值正好是这个形状）
 #tableq(data, k, inset: 0.3em, stroke-color: rgb("000"))
 
-// 三线表描边规则，可单独取出用于手写 table()
-#table(columns: 3, stroke: table-three-line(rgb("000")), ...)
+// 三线表描边规则，可单独取出用于手写 table()（列宽一律 (auto,) * 实际列数）
+#table(columns: (auto,) * 3, stroke: table-three-line(rgb("000")), ...)
 
 // 左右不封边的网格描边
 table-no-left-right(stroke-color)

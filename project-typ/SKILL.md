@@ -140,7 +140,10 @@ agent_created: true
 - CSV **第一行是表头**，`csv()` 读回来即可直接喂给 `tableq(data, 列数)`。
 - 需要表格编号/引用时用 `figure(tableq(...), caption: "标题", supplement: "Table", kind: table)`；
   课件里更常见的是 `figure(tableq(...), caption: "...")`。
-- 手写表格（少量、无外部数据）直接 `table(columns: n, stroke: table-three-line(rgb("000")), ...)`。
+- 手写表格（少量、无外部数据）直接 `table(columns: (auto,) * n, stroke: table-three-line(rgb("000")), ...)`。
+  **列宽一律 `(auto,) * n`，n 取实际列数**（五列表写 `* 5`）。不写简写 `columns: n`，也不用 `(1fr,) * n`
+  或从 Excel 换算来的 `pt` 定宽 —— `1fr` 把表拉满正文宽、`pt` 是魔数，而 `auto` 让表按内容收缩居中，
+  与仍留在 xlsx 的表视觉一致。代价是表间同名列宽不齐，接受。
 - 只有确实需要多工作表或单元格公式时才用 `xlsx`；`encoding: none` 是必需的（否则二进制被当文本解码）。
   写法见 `references/syntax.md` 的「表格」节。
 
@@ -332,7 +335,7 @@ p.write_text(p.read_text(encoding="utf-8"), encoding="utf-8", newline="\r\n")
 - [ ] 新增函数前已检索 qooklet / touying-quick；重复实现的已删除，改用包的版本
 - [ ] 图片放在 `images/`，用 `figure(image(...), caption: none)` 包裹，`height` / `width` 只用百分数
       且以 **5 的倍数**为准（40%~100%），没有 `pt` / `em` / `auto`
-- [ ] 数据放在 `data/`，是 CSV；表格用 `tableq(data, 列数)`
+- [ ] 数据放在 `data/`，是 CSV；表格用 `tableq(data, 列数)`；手写表一律 `table(columns: (auto,) * n, …)`
 - [ ] 中文长句保持完整，未被切分成短句
 - [ ] 分栏块二选一：**摘壳的**用裸 `columns()`（不套 `block(height:)`）且**每栏之间都有 `#colbreak()`**（n 栏块 n−1 个）；**块内有有序列表的**保留 `#block(height: ..., …)` 且**一个 `#colbreak()` 都不加**。两种都每栏用 `#[ … ]` 包住
 - [ ] 分栏块里图片的 `height` / `width` 只用百分数（无绝对 `pt` / `em`）；摘过外壳的块，数值已按新基准重新标定

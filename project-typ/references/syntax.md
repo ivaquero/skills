@@ -143,7 +143,7 @@ python code/unwrap_columns_block.py --splits .tmp/columns-split.json --apply # �
 // 2) 手写三线表
 #figure(
   table(
-    columns: 3,
+    columns: (auto,) * 3,
     inset: 0.3em,
     align: center + horizon,
     stroke: table-three-line(rgb("000")),
@@ -169,6 +169,16 @@ python code/unwrap_columns_block.py --splits .tmp/columns-split.json --apply # �
 
 `csv()` 返回「行数组」，每个元素是「列数组」，与 `tableq` 的 `data` 参数形状一致，
 用 `..data.flatten()` 展开成 table 的位置参数。
+
+**列宽一律 `columns: (auto,) * n`，n 取实际列数。** 三种写法里只有这一种同时满足两条要求：
+`(1fr,) * n` 把表拉满正文宽（短表变空荡，长列被硬撑、词距被拉开），`pt` 定宽是从 Excel 列宽换算来的
+魔数、换字号即失准；`auto` 让每列按内容收缩、整表居中，与 `xlsx-parser` 出来的窄表视觉一致。
+`columns: n`（int 形式）在 typst 里与 `(auto,) * n` 完全等价，但按约定仍写数组形式 —— 一眼看得见列数。
+
+**n 必须是实际列数。** 轨数少于单元格数时 typst 按轨数循环折行且**不报错**：五列表写成 `* 4`，
+10 个单元格会被折成「4 + 4 + 2」三行，只能靠肉眼发现。五列就写 `* 5`。
+
+单元格内容走 markup 解析，`*` 与 `'` 要转义（`/g/\*`、`I\'ll`）；`table.cell(colspan: 2)[…]` 可跨列。
 
 ## 代码块
 
